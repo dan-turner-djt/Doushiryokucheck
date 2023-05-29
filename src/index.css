@@ -29,11 +29,11 @@ body {
   font-size: 30px;
 }
 .navbar-full h1 {
-  margin-left: 5%;
+  margin-left: 3%;
 }
 .navbar-full .links {
   margin-left: auto;
-  margin-right: 5%;
+  margin-right: 3%;
 }
 
 .navbar a {

@@ -13,7 +13,7 @@ export interface IAppProps {}
 const App: React.FunctionComponent<IAppProps> = (props) => {
   const navbarTitle: string = "動詞力チェック / Doushiryoku Check";
   const navbarItems: {name: string, link: string}[]  = [
-    { name: "Home", link: links.Home }
+    //{ name: "Home", link: links.Home }
   ];
 
   const { clientHeight, clientWidth } = useContext(WindowContext);
