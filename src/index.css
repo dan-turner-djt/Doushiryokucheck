@@ -104,3 +104,8 @@ body {
   box-sizing: border-box;
   display: block;
 }
+
+.form-button-row button {
+  margin-left: 6px;
+  margin-right: 6px;
+}
