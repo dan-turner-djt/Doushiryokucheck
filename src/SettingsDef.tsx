@@ -38,3 +38,19 @@ export const DefaultSettings: SettingsObject = {
   testType: TestType.Amount,
   testTypeObject: DefaultAmountSettings
 }
+
+/* Name definitions */
+
+export const getTestTypeName = (testType: TestType):string => {
+  switch (testType) {
+    case TestType.Endless: {
+      return "Unlimited Amount Test"
+    }
+    case TestType.Timed: {
+      return "Timed Test"
+    }
+    default: {
+      return "Set Amount Test"
+    }
+  }
+}

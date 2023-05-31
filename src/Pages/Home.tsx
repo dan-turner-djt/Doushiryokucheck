@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import SettingsForm from "../Components/SettingsForm";
 import TestForm from "../Components/TestForm";
-import { SettingsObject } from "../SettingsDef";
+import { DefaultSettings, SettingsObject } from "../SettingsDef";
 
 const Home = () => {
 
   const [inTest, setInTest] = useState<boolean>(false);
-  const [currentSettings, setCurrentSettings] = useState<SettingsObject>();
+  const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 
   const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
     setCurrentSettings(newSettings);
@@ -29,10 +29,10 @@ const Home = () => {
       </div>
       <div>
         {inTest && 
-          <TestForm quitHandler={ quitTest }></TestForm>
+          <TestForm testSettings={ currentSettings } quitHandler={ quitTest }></TestForm>
         }
         {!inTest && 
-          <SettingsForm submitHandler={ handleSubmitSettingsForm }></SettingsForm>
+          <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
         }
       </div>
     </div>
