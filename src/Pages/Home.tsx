@@ -23,7 +23,7 @@ const Home = () => {
 
   return (
     <div className="home">
-      <h2 className="page-title">Welcome</h2>
+      <h2 className="page-title">Japanese Verb Conjugation Tester</h2>
       <div className="content">
         <p>Welcome!</p>
       </div>

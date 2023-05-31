@@ -39,7 +39,7 @@ export const DefaultSettings: SettingsObject = {
   testTypeObject: DefaultAmountSettings
 }
 
-/* Name definitions */
+/* Getter utils */
 
 export const getTestTypeName = (testType: TestType):string => {
   switch (testType) {
@@ -54,3 +54,18 @@ export const getTestTypeName = (testType: TestType):string => {
     }
   }
 }
+
+export const getTestTypeDefaultSettings = (testType: TestType):AmountSettingsObject|EndlessSettingsObject|TimedSettingsObject => {
+  switch (testType) {
+    case TestType.Endless: {
+      return DefaultEndlessSettings
+    }
+    case TestType.Timed: {
+      return DefaultTimedSettings
+    }
+    default: {
+      return DefaultAmountSettings
+    }
+  }
+}
+
