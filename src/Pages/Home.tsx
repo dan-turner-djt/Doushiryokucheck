@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import SettingsForm from "../Components/SettingsForm";
 import TestForm from "../Components/TestForm";
+import { SettingsObject } from "../SettingsDef";
 
 const Home = () => {
 
   const [inTest, setInTest] = useState<boolean>(false);
+  const [currentSettings, setCurrentSettings] = useState<SettingsObject>();
 
-  const handleSubmitSettingsForm = () => {
+  const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
+    setCurrentSettings(newSettings);
     startNewTest();
   }
 

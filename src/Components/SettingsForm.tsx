@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
+import { DefaultSettings, SettingsObject } from "../SettingsDef";
 
 export type SettingsFormProps = {
-  submitHandler: () => void;
+  submitHandler: (newSettings: SettingsObject) => void;
 }
 
 const SettingsForm = (props: SettingsFormProps) => {
+  const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 
   const handleSubmit = () => {
-    props.submitHandler();
+    props.submitHandler(currentSettings);
   }
 
   return (
