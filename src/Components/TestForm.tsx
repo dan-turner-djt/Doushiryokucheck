@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { AmountSettingsObject, SettingsObject, TestType, getTestTypeName } from "../SettingsDef";
+import { AmountSettingsObject, SettingsObject, TestType, TimedSettingsObject, getTestTypeName } from "../SettingsDef";
+import Timer from "./Timer";
 
 export type TestFormProps = {
   testSettings: SettingsObject;
@@ -100,6 +101,9 @@ const TestForm = (props: TestFormProps) => {
         {!testFinished && <div>
           <span>
             <p>Correct: { answeredCorrectlyTotal }</p>
+            {props.testSettings.testType === TestType.Timed &&
+              <Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
+            }
           </span>
           <p>Question {questionNumber + 1}:</p>
           {showAnswerResult && <div>
