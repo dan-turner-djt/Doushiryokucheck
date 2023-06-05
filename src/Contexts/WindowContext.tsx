@@ -1,5 +1,4 @@
 import React from "react";
-import { useCallback, useEffect, useState } from 'react';
 
 export type WindowContextProps = {
   clientHeight: number | undefined;
@@ -13,17 +12,17 @@ export type WindowContextProviderProps = {
 };
 
 export const WindowContextProvider: React.FC<WindowContextProviderProps> = ({ children }) => {
-  const getVh = useCallback(() => {
+  const getVh = React.useCallback(() => {
     return window.visualViewport?.height;
   }, []);
-  const getVw = useCallback(() => {
+  const getVw = React.useCallback(() => {
     return window.visualViewport?.width;
   }, []);
 
-  const [clientHeight, setVh] = useState<number | undefined>(getVh());
-  const [clientWidth, setVw] = useState<number | undefined>(getVw());
+  const [clientHeight, setVh] = React.useState<number | undefined>(getVh());
+  const [clientWidth, setVw] = React.useState<number | undefined>(getVw());
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleResize = () => {
       setVh(getVh());
       setVw(getVw());

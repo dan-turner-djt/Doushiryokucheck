@@ -1,5 +1,6 @@
-import React, { ChangeEvent, useState } from "react";
-import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, AmountSettingsObject, TimedSettingsObject } from "../SettingsDef";
+import React from "react";
+import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../SettingsDef";
+import Field, { FieldRef, StaticFieldData } from "./Field";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -7,35 +8,87 @@ export type SettingsFormProps = {
 }
 
 const SettingsForm = (props: SettingsFormProps) => {
-  const [currentSettings, setCurrentSettings] = useState<SettingsObject>(props.initialSettings);
+  const [currentSettings, setCurrentSettings] = React.useState<SettingsObject>(props.initialSettings);
+  
+  const wordAmountRef = React.useRef<React.ElementRef<typeof Field>>(null);
+  const timeLimitRef = React.useRef<React.ElementRef<typeof Field>>(null);
+  const [fieldData, setFieldData] = React.useState({
+    wordAmount: {
+      staticData: {
+        label: "Word Amount",
+        minimum: 1, maximum: 100,
+        startingValue: DefaultAmountSettings.amount
+      },
+      valid: true,
+      focus: false,
+      ref: wordAmountRef
+    },
+    timeLimit: {
+      staticData: {
+        label: "Time Limit (seconds)",
+        minimum: 1, maximum: 3600,
+        startingValue: DefaultTimedSettings.time
+      }, 
+      value: Number,
+      valid: true, 
+      focus: false,
+      ref: timeLimitRef
+    }
+  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    props.submitHandler(currentSettings);
+
+    const firstInvalidField: React.RefObject<FieldRef> | undefined = getFirstInvalidField();
+    if (!firstInvalidField) {
+      // Form is valid, submit
+      props.submitHandler(currentSettings);
+    } else {
+      if (firstInvalidField.current) {
+        firstInvalidField.current.giveFocus();
+      }
+    }
   }
 
-  const handleTestTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const getFirstInvalidField = (): React.RefObject<FieldRef> | undefined => {
+    let result: React.RefObject<FieldRef> | undefined;
+    Object.values(fieldData).forEach((o: {staticData: StaticFieldData, valid: boolean, focus: boolean, ref: React.RefObject<FieldRef>}) => {
+      if (o.valid === false) {
+        result = o.ref;
+        return;
+      } 
+    });
+
+    return result;
+  }
+
+  const handleTestTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCurrentSettings({...currentSettings, testType: Number(e.target.value), testTypeObject: getTestTypeDefaultSettings(Number(e.target.value))});
+    setFieldData({...fieldData, wordAmount: {...fieldData.wordAmount, valid: true}, timeLimit: {...fieldData.timeLimit, valid: true}});
   }
 
-  const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    let toSet: number = Number(e.target.value);
-    if (isNaN(toSet)) {
-      return;
-    }
-    setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, amount: toSet}});
+  const setNewWordAmount = (newWordAmount: number, valid: boolean) => {
+    setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, amount: newWordAmount}});
+    setFieldData({...fieldData, wordAmount: {...fieldData.wordAmount, valid: valid}});
+    
   }
 
-  const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    let toSet: number = Number(e.target.value);
-    if (isNaN(toSet)) {
-      return;
-    }
-    setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, time: toSet}});
+  const setNewTime = (newTime: number, valid: boolean) => {
+    setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, time: newTime}});
+    setFieldData({...fieldData, timeLimit: {...fieldData.timeLimit, valid: valid}});
   }
 
   const handleRestoreDefaults = () => {
     setCurrentSettings(DefaultSettings);
+
+    if (wordAmountRef.current) {
+      wordAmountRef.current.resetValue();
+      setFieldData({...fieldData, wordAmount: {...fieldData.wordAmount, valid: true}});
+    }
+    if (timeLimitRef.current) {
+      timeLimitRef.current.resetValue();
+      setFieldData({...fieldData, timeLimit: {...fieldData.timeLimit, valid: true}});
+    }
   }
 
   return (
@@ -54,14 +107,20 @@ const SettingsForm = (props: SettingsFormProps) => {
         </select>
         <div className="type-sub-form">
           {currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
-            <label>Word amount</label>
-            <input value={(currentSettings.testTypeObject as AmountSettingsObject).amount} onChange={handleAmountChange}></input>
+            <Field
+              ref={ wordAmountRef }
+              staticData={ fieldData.wordAmount.staticData }
+              focus={ fieldData.wordAmount.focus }
+              valueSetter={ setNewWordAmount }></Field>
           </div>}
           {currentSettings.testType === TestType.Endless && <div className="endless-sub-form">
           </div>}
           {currentSettings.testType === TestType.Timed && <div className="timed-sub-form">
-            <label>Time limit (seconds)</label>
-            <input value={(currentSettings.testTypeObject as TimedSettingsObject).time} onChange={handleTimeChange}></input>
+            <Field
+              ref={ timeLimitRef }
+              staticData={ fieldData.timeLimit.staticData }
+              focus={ fieldData.timeLimit.focus }
+              valueSetter={ setNewTime }></Field>
           </div>}
         </div>
         <div className="form-button-row">

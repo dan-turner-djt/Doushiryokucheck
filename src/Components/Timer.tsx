@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 export type TimerProps = {
   startingTime: number;
@@ -6,11 +6,11 @@ export type TimerProps = {
 }
 
 const Timer = (props: TimerProps) => {
-  const [currentTime, setCurrentTime] = useState<number>(props.startingTime);
-  const [seconds, setSeconds] = useState<string>("");
-  const [minutes, setMinutes] = useState<string>("");
+  const [currentTime, setCurrentTime] = React.useState<number>(props.startingTime);
+  const [seconds, setSeconds] = React.useState<string>("");
+  const [minutes, setMinutes] = React.useState<string>("");
 
-  useEffect(() => {
+  React.useEffect(() => {
     setTimeValues(currentTime);
 
     if (currentTime === 0) {

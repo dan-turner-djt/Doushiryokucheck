@@ -1,10 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Links } from "../utils";
 import { WindowContext } from "../Contexts/WindowContext";
 
 const Navbar = ({ title, items }: { title: string, items: {name: string, link: string}[]}) => {
-  const { clientHeight, clientWidth } = useContext(WindowContext);
+  const { clientHeight, clientWidth } = React.useContext(WindowContext);
   const isMobile = (clientWidth && clientHeight) && (clientHeight > clientWidth);
   const navigator = useNavigate();
 
