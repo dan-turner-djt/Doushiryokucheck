@@ -29,7 +29,6 @@ const SettingsForm = (props: SettingsFormProps) => {
         minimum: 1, maximum: 3600,
         startingValue: DefaultTimedSettings.time
       }, 
-      value: Number,
       valid: true, 
       focus: false,
       ref: timeLimitRef
@@ -64,7 +63,12 @@ const SettingsForm = (props: SettingsFormProps) => {
 
   const handleTestTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCurrentSettings({...currentSettings, testType: Number(e.target.value), testTypeObject: getTestTypeDefaultSettings(Number(e.target.value))});
-    setFieldData({...fieldData, wordAmount: {...fieldData.wordAmount, valid: true}, timeLimit: {...fieldData.timeLimit, valid: true}});
+
+    // Reset these fields' validity which belong to test type sub settings
+    setFieldData({...fieldData, 
+      wordAmount: {...fieldData.wordAmount, valid: true}, 
+      timeLimit: {...fieldData.timeLimit, valid: true}
+    });
   }
 
   const setNewWordAmount = (newWordAmount: number, valid: boolean) => {
@@ -81,13 +85,11 @@ const SettingsForm = (props: SettingsFormProps) => {
   const handleRestoreDefaults = () => {
     setCurrentSettings(DefaultSettings);
 
-    if (wordAmountRef.current) {
-      wordAmountRef.current.resetValue();
-      setFieldData({...fieldData, wordAmount: {...fieldData.wordAmount, valid: true}});
-    }
-    if (timeLimitRef.current) {
-      timeLimitRef.current.resetValue();
-      setFieldData({...fieldData, timeLimit: {...fieldData.timeLimit, valid: true}});
+    // Reset each field's value and validity
+    for (const [key, value] of Object.entries(fieldData)) {
+      value.ref.current?.resetValue();
+      value.valid = true;
+      setFieldData({...fieldData, [key]: value});
     }
   }
 
