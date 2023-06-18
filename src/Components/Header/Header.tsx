@@ -1,10 +1,10 @@
-import React from "react";
+import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { WindowContext } from "../Contexts/WindowContext";
+import { WindowContext, WindowContextProps } from "../../Contexts/WindowContext";
 
-const Navbar = ({ title, items }: { title: string, items: {name: string, link: string}[]}) => {
-  const { clientHeight, clientWidth } = React.useContext(WindowContext);
-  const isMobile = (clientWidth && clientHeight) && (clientHeight > clientWidth);
+const Header = ({ title, items }: { title: string, items: {name: string, link: string}[]}) => {
+  const { clientHeight, clientWidth } = useContext<WindowContextProps>(WindowContext);
+  const isMobile = (clientHeight > clientWidth);
   const navigator = useNavigate();
 
   const cleanupBeforeNav = () => {
@@ -73,4 +73,4 @@ const Navbar = ({ title, items }: { title: string, items: {name: string, link: s
   );
 }
  
-export default Navbar;
+export default Header;

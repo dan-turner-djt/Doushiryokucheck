@@ -1,12 +1,12 @@
-import React from "react";
-import SettingsForm from "../Components/SettingsForm";
-import TestForm from "../Components/TestForm";
-import { DefaultSettings, SettingsObject } from "../SettingsDef";
+import { useState } from "react";
+import SettingsForm from "../../Components/SettingsForm/SettingsForm";
+import TestForm from "../../Components/TestForm/TestForm";
+import { DefaultSettings, SettingsObject } from "../../SettingsDef";
 
 const Home = () => {
 
-  const [inTest, setInTest] = React.useState<boolean>(false);
-  const [currentSettings, setCurrentSettings] = React.useState<SettingsObject>(DefaultSettings);
+  const [inTest, setInTest] = useState<boolean>(false);
+  const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 
   const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
     setCurrentSettings(newSettings);

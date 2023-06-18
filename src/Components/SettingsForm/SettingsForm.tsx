@@ -1,6 +1,6 @@
-import React from "react";
-import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../SettingsDef";
-import Field, { FieldRef, StaticFieldData } from "./Field";
+import { ChangeEvent, ElementRef, FormEvent, RefObject, useRef, useState } from "react";
+import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
+import Field, { FieldRef, StaticFieldData } from "../Field/Field";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -8,11 +8,11 @@ export type SettingsFormProps = {
 }
 
 const SettingsForm = (props: SettingsFormProps) => {
-  const [currentSettings, setCurrentSettings] = React.useState<SettingsObject>(props.initialSettings);
+  const [currentSettings, setCurrentSettings] = useState<SettingsObject>(props.initialSettings);
   
-  const wordAmountRef = React.useRef<React.ElementRef<typeof Field>>(null);
-  const timeLimitRef = React.useRef<React.ElementRef<typeof Field>>(null);
-  const [fieldData, setFieldData] = React.useState({
+  const wordAmountRef = useRef<ElementRef<typeof Field>>(null);
+  const timeLimitRef = useRef<ElementRef<typeof Field>>(null);
+  const [fieldData, setFieldData] = useState({
     wordAmount: {
       staticData: {
         label: "Word Amount",
@@ -35,10 +35,10 @@ const SettingsForm = (props: SettingsFormProps) => {
     }
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const firstInvalidField: React.RefObject<FieldRef> | undefined = getFirstInvalidField();
+    const firstInvalidField: RefObject<FieldRef> | undefined = getFirstInvalidField();
     if (!firstInvalidField) {
       // Form is valid, submit
       props.submitHandler(currentSettings);
@@ -49,9 +49,9 @@ const SettingsForm = (props: SettingsFormProps) => {
     }
   }
 
-  const getFirstInvalidField = (): React.RefObject<FieldRef> | undefined => {
-    let result: React.RefObject<FieldRef> | undefined;
-    Object.values(fieldData).forEach((o: {staticData: StaticFieldData, valid: boolean, focus: boolean, ref: React.RefObject<FieldRef>}) => {
+  const getFirstInvalidField = (): RefObject<FieldRef> | undefined => {
+    let result: RefObject<FieldRef> | undefined;
+    Object.values(fieldData).forEach((o: {staticData: StaticFieldData, valid: boolean, focus: boolean, ref: RefObject<FieldRef>}) => {
       if (o.valid === false) {
         result = o.ref;
         return;
@@ -61,7 +61,7 @@ const SettingsForm = (props: SettingsFormProps) => {
     return result;
   }
 
-  const handleTestTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleTestTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setCurrentSettings({...currentSettings, testType: Number(e.target.value), testTypeObject: getTestTypeDefaultSettings(Number(e.target.value))});
 
     // Reset these fields' validity which belong to test type sub settings

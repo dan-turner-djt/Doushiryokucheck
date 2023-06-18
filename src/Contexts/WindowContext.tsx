@@ -1,28 +1,35 @@
-import React from "react";
+import { FC, ReactNode, createContext } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 export type WindowContextProps = {
-  clientHeight: number | undefined;
-  clientWidth: number | undefined;
+  clientHeight: number;
+  clientWidth: number;
 };
 
-export const WindowContext = React.createContext<WindowContextProps>({ clientHeight: 0, clientWidth: 0, });
+export const WindowContext = createContext<WindowContextProps>({ clientHeight: 0, clientWidth: 0, });
 
 export type WindowContextProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
-export const WindowContextProvider: React.FC<WindowContextProviderProps> = ({ children }) => {
-  const getVh = React.useCallback(() => {
-    return window.visualViewport?.height;
+export const WindowContextProvider: FC<WindowContextProviderProps> = ({ children }) => {
+  const getVh = useCallback(() => {
+    return Math.max(
+      document.documentElement.clientHeight || 0,
+      window.innerHeight || 0
+    );
   }, []);
-  const getVw = React.useCallback(() => {
-    return window.visualViewport?.width;
+  const getVw = useCallback(() => {
+    return Math.max(
+      document.documentElement.clientWidth || 0,
+      window.innerWidth || 0
+    );
   }, []);
 
-  const [clientHeight, setVh] = React.useState<number | undefined>(getVh());
-  const [clientWidth, setVw] = React.useState<number | undefined>(getVw());
+  const [clientHeight, setVh] = useState<number>(getVh());
+  const [clientWidth, setVw] = useState<number>(getVw());
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       setVh(getVh());
       setVw(getVw());

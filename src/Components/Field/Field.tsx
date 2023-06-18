@@ -1,4 +1,4 @@
-import React from "react";
+import { ChangeEvent, forwardRef, useImperativeHandle, useRef, useState } from "react";
 
 export type StaticFieldData = {
   label: string,
@@ -19,14 +19,14 @@ export type FieldRef = {
   resetValue: () => void;
 }
 
-const Field = React.forwardRef<FieldRef, FieldProps>((props, ref) => {
-  const [value, setValue] = React.useState<number>(props.staticData.startingValue);
-  const [isValid, setIsValid] = React.useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
+const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
+  const [value, setValue] = useState<number>(props.staticData.startingValue);
+  const [isValid, setIsValid] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  React.useImperativeHandle(ref, () => ({
+  useImperativeHandle(ref, () => ({
 
     giveFocus() {
       if (inputRef.current) {
@@ -39,7 +39,7 @@ const Field = React.forwardRef<FieldRef, FieldProps>((props, ref) => {
     }
   }));
 
-  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleValueChange = (e: ChangeEvent<HTMLInputElement>) => {
     let newVal: number = Number(e.target.value);
     if (isNaN(newVal)) {
       return;

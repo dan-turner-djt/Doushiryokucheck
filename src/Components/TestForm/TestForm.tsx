@@ -1,6 +1,6 @@
-import React from "react";
-import { AmountSettingsObject, SettingsObject, TestType, TimedSettingsObject, getTestTypeName } from "../SettingsDef";
-import Timer from "./Timer";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { AmountSettingsObject, SettingsObject, TestType, TimedSettingsObject, getTestTypeName } from "../../SettingsDef";
+import Timer from "../Timer/Timer";
 
 export type TestFormProps = {
   testSettings: SettingsObject;
@@ -8,14 +8,14 @@ export type TestFormProps = {
 }
 
 const TestForm = (props: TestFormProps) => {
-  const [testFinished, setTestFinished] = React.useState<boolean>(false);
-  const [questionNumber, setQuestionNumber] = React.useState<number>(0);
-  const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = React.useState<number>(0);
-  const [answerInput, setAnswerInput] = React.useState<string>("");
-  const [showAnswerResult, setShowAnswerResult] = React.useState<boolean>(false);
-  const [answeredCorrectly, setAnsweredCorrectly] = React.useState<boolean>(true);
+  const [testFinished, setTestFinished] = useState<boolean>(false);
+  const [questionNumber, setQuestionNumber] = useState<number>(0);
+  const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = useState<number>(0);
+  const [answerInput, setAnswerInput] = useState<string>("");
+  const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
+  const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (testFinished) {
@@ -83,7 +83,7 @@ const TestForm = (props: TestFormProps) => {
     props.quitHandler();
   }
 
-  const handleAnswerInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAnswerInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setAnswerInput(e.target.value);
   }
 
