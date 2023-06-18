@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import "~@fontsource/quicksand/400.css";
+@import "~@fontsource/quicksand/500.css";
+@import "~@fontsource/quicksand/700.css";
 
 /* base styles */
 * {
@@ -60,6 +62,7 @@ body {
   background-color: white;
   border-radius: 10px;
   min-height: 700px;
+  text-align: center;
 }
 
 .content {

@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.scss';
+import './styles.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { WindowContextProvider } from './Contexts/WindowContext';
