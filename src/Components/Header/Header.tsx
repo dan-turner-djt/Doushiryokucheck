@@ -1,74 +1,26 @@
-import { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { WindowContext, WindowContextProps } from "../../Contexts/WindowContext";
+import './Header.scss';
+import { AppBar, Box, Container, Toolbar } from '@mui/material';
 
-const Header = ({ title, items }: { title: string, items: {name: string, link: string}[]}) => {
-  const { clientHeight, clientWidth } = useContext<WindowContextProps>(WindowContext);
-  const isMobile = (clientHeight > clientWidth);
-  const navigator = useNavigate();
 
-  const cleanupBeforeNav = () => {
-    resetScroll();
-  }
-
-  const resetScroll = () => {
-    window.scrollTo(0,0);
-  }
-
-  const renderFullMode = () => {
-    return <nav className="navbar-full">
-      <h1>{ title }</h1>
-      <span className="links">
-        <span>
-          {items.map((item) => (
-            <span className="item" key={ item.name }>
-              <Link onClick={cleanupBeforeNav} to={ item.link }>{ item.name }</Link>
-            </span>
-          ))}
-        </span>
-      </span>
-    </nav>
-  }
-
-  const renderMobileModeLinks = () => {
-    const subItems2 = items.slice(0);
-    const subItems1 = subItems2.splice(0, 4);
-    return (
-      <div className="split-links">
-        <div>
-          {subItems1.map((item) => (
-            <span className="item" key={ item.name }>
-              <Link onClick={cleanupBeforeNav} to={ item.link }>{ item.name }</Link>
-            </span>
-          ))}
-        </div>
-        <div>
-          {subItems2.map((item) => (
-            <span className="item" key={ item.name }>
-              <Link onClick={cleanupBeforeNav} to={ item.link }>{ item.name }</Link>
-            </span>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  const renderMobileMode = () => {
-    return <nav className="navbar-mobile">
-      <div style={{display: "flex", justifyContent: "flex-start", marginBottom: "10px", alignItems: "center"}}>
-        <h1 style={{flex: "0 1 auto", left: "50%", transform: "translateX(-50%)", position: "absolute"}}>{ title }</h1>
-      </div>
-      <div className="links">
-        { renderMobileModeLinks() }
-      </div>
-    </nav>
-  }
-  
+const Header = () => {
+  const japaneseTitle: string = "動詞力チェック";
+  const englishTitle: string = "Doushiryoku Check";
 
   return ( 
-    <nav className="navbar">
-      {!isMobile && renderFullMode()}
-      {isMobile && renderMobileMode()}
+    <nav data-cy="header" className="header">
+      <AppBar color="appbarBlue">
+        <Container maxWidth={false} sx={{ paddingLeft: '6px', paddingRight: '6px' }}>
+          <Toolbar className="toolbar" disableGutters sx={{ justifyContent: 'left' }}>
+            <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+              <h1>{ japaneseTitle } / { englishTitle }</h1>
+            </Box>
+            <Box className="xsTitle" sx={{ display: { xs: 'block', sm: 'none' }, width: '100%' }}>
+              <h1>{ japaneseTitle }</h1>
+              <h2>{ englishTitle }</h2>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
     </nav>   
   );
 }

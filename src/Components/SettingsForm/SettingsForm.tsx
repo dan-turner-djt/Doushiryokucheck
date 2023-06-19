@@ -1,6 +1,7 @@
 import { ChangeEvent, ElementRef, FormEvent, RefObject, useRef, useState } from "react";
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, StaticFieldData } from "../Field/Field";
+import { Button } from "@mui/material";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -126,8 +127,8 @@ const SettingsForm = (props: SettingsFormProps) => {
           </div>}
         </div>
         <div className="form-button-row">
-          <button type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</button>
-          <button type="submit" className="button-primary">Start</button>
+          <Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
+          <Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>
         </div>
       </fieldset>
     </form>

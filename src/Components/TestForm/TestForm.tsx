@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { AmountSettingsObject, SettingsObject, TestType, TimedSettingsObject, getTestTypeName } from "../../SettingsDef";
 import Timer from "../Timer/Timer";
+import { Button } from "@mui/material";
 
 export type TestFormProps = {
   testSettings: SettingsObject;
@@ -94,8 +95,8 @@ const TestForm = (props: TestFormProps) => {
         {testFinished && <div>
           <p>Total Correct: { answeredCorrectlyTotal }</p>
           <div className="form-button-row">
-            <button type="submit" className="button-primary">Restart</button>
-            <button type="button" className="button-primary" onClick={ quitTest }>Quit</button>
+            <Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
+            <Button variant="contained" color="darkBlue" type="submit" className="button-primary">Restart</Button>
           </div>
         </div>}
         {!testFinished && <div>
@@ -116,8 +117,8 @@ const TestForm = (props: TestFormProps) => {
           </div>}
           <input value={ answerInput } onChange={ handleAnswerInputChange }></input>
           <div className="form-button-row">
-            <button type="submit" className="button-primary">{ showAnswerResult? "Next" : "Check"}</button>
-            <button type="button" className="button-primary" onClick={ quitTest }>Quit</button>
+            <Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
+            <Button variant="contained" color="darkBlue" type="submit" className="button-primary">{ showAnswerResult? "Next" : "Check"}</Button>
           </div>
         </div>}
       </fieldset>
