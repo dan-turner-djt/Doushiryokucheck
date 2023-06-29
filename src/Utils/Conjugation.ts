@@ -1,12 +1,15 @@
 import { VerbInfo, VerbType } from "./VerbDefs";
+import { formType } from "./VerbFormDefs";
 
 export enum PoliteForms {
   Masu, Masen, Mashita, Masendeshita, Mashite, Masende, Mashou
 }
 
 export enum NegativeForms {
-  Nai, Nakute, Nakatta, Naide, Nakereba, Nakattara
+  Nai, Nakute, Nakatta, Naide, Nakereba, Nakattara, Zu
 }
+
+const kudasai: string = "ください";
 
 export const getPoliteForm = (verbInfo: VerbInfo, formType: PoliteForms): string => {
   const stem = getStem(verbInfo, 1);
@@ -48,6 +51,8 @@ export const getNegativeForm = (verbInfo: VerbInfo, formType: NegativeForms): st
       return stem + "ければ";
     case NegativeForms.Nakattara:
       return stem + "かったら";
+    case NegativeForms.Zu:
+      return stem + "ず";
     default:
       console.log("Unknown negative form");
       return stem;
@@ -134,6 +139,140 @@ const getRaw = (verbInfo: VerbInfo): string => {
 
 const getEndingChar = (verbInfo: VerbInfo): string => {
   return verbInfo.verb.slice(-1);
+}
+
+/* Verb form getters */
+
+export const getPresent = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getPresentPol = (verbInfo: VerbInfo): string => {
+  return getPoliteForm(verbInfo, PoliteForms.Masu);
+}
+
+export const getNegative = (verbInfo: VerbInfo): string => {
+  return getNegativeForm(verbInfo, NegativeForms.Nai);
+}
+
+export const getNegPol = (verbInfo: VerbInfo): string => {
+  return getPoliteForm(verbInfo, PoliteForms.Masen);
+}
+
+export const getPast = (verbInfo: VerbInfo): string => {
+  return getTaForm(verbInfo);
+}
+
+export const getPastPol = (verbInfo: VerbInfo): string => {
+  return getPoliteForm(verbInfo, PoliteForms.Mashita);
+}
+
+export const getNegPast = (verbInfo: VerbInfo): string => {
+  return getNegativeForm(verbInfo, NegativeForms.Nakatta);
+}
+
+export const getNegPastPol = (verbInfo: VerbInfo): string => {
+  return getPoliteForm(verbInfo, PoliteForms.Masendeshita);
+}
+
+export const getTe = (verbInfo: VerbInfo): string => {
+  return getTeForm(verbInfo);
+}
+
+export const getTeReq = (verbInfo: VerbInfo): string => {
+  return getTeForm(verbInfo) + kudasai;
+}
+
+export const getNegTe = (verbInfo: VerbInfo): string => {
+  return getNegativeForm(verbInfo, NegativeForms.Nakute);
+}
+
+export const getNegReq = (verbInfo: VerbInfo): string => {
+  return getNegativeForm(verbInfo, NegativeForms.Nai) + kudasai;
+}
+
+export const getNaide = (verbInfo: VerbInfo): string => {
+  return getNegativeForm(verbInfo, NegativeForms.Naide);
+}
+
+export const getZu = (verbInfo: VerbInfo): string => {
+  return getNegativeForm(verbInfo, NegativeForms.Zu);
+}
+
+export const getPotentialFull = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getPotentialShort = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getNegPotentialFull = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getNegPotentialShort = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getPassive = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getNegPassive = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getCausative = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getNegCausative = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getCausPassive = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getNegCausPassive = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getImperative = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getNegImperative = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb + "な";
+}
+
+export const getNasai = (verbInfo: VerbInfo): string => {
+  return getStem(verbInfo, 1) + "なさい";
+}
+
+export const getVolitional = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getVolitionalPol = (verbInfo: VerbInfo): string => {
+  return getPoliteForm(verbInfo, PoliteForms.Mashou);
+}
+
+export const getEbaConditional = (verbInfo: VerbInfo): string => {
+  return verbInfo.verb;
+}
+
+export const getNegEbaConditional = (verbInfo: VerbInfo): string => {
+  return getNegativeForm(verbInfo, NegativeForms.Nakereba);
+}
+
+export const getTaraConditional = (verbInfo: VerbInfo): string => {
+  return getTaForm(verbInfo) + "ら";
+}
+
+export const getNegTaraConditional = (verbInfo: VerbInfo): string => {
+  return getNegativeForm(verbInfo, NegativeForms.Nakattara);
 }
 
 
