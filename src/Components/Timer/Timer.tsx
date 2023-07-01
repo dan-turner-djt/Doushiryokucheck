@@ -5,17 +5,20 @@ export type TimerProps = {
   timeUpFunction: Function;
 }
 
-const Timer = (props: TimerProps) => {
-  const [currentTime, setCurrentTime] = useState<number>(props.startingTime);
+const Timer = ({startingTime, timeUpFunction}: TimerProps) => {
+  const [currentTime, setCurrentTime] = useState<number>(startingTime);
   const [seconds, setSeconds] = useState<string>("");
   const [minutes, setMinutes] = useState<string>("");
 
   useEffect(() => {
-    setTimeValues(currentTime);
+    const secs = currentTime % 60;
+    const mins = (currentTime - secs) / 60;
+    setMinutes(String(mins));
+    setSeconds(toSecondsString(secs, mins));
 
     if (currentTime === 0) {
       // Time up
-      props.timeUpFunction();
+      timeUpFunction();
 
     } else {
       // Decrement timer
@@ -23,14 +26,7 @@ const Timer = (props: TimerProps) => {
         setCurrentTime(currentTime - 1);
       }, 1000);
     }
-  }, [currentTime]);
-
-  const setTimeValues = (time: number) => {
-    const secs = time % 60;
-    const mins = (time - secs) / 60;
-    setMinutes(String(mins));
-    setSeconds(toSecondsString(secs, mins));
-  }
+  }, [currentTime, timeUpFunction]);
 
   const toSecondsString = (secs: number, mins: number):string => {
     if (mins > 0 && secs < 10) {
