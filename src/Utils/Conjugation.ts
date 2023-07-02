@@ -1,6 +1,10 @@
 import { VerbInfo, VerbType } from "./VerbDefs";
 import { FormName } from "./VerbFormDefs";
 
+export enum JLPTLevels {
+  N5, N4, N3, N2, N1
+}
+
 export enum PoliteForms {
   Masu, Masen, Mashita, Masendeshita, Mashite, Masende, Mashou
 }
@@ -16,6 +20,8 @@ export const getConjugation = (verbInfo: VerbInfo, form: FormName): string => {
   }
 
   switch (form) {
+    case FormName.Stem:
+      return getStem(verbInfo);
     case FormName.Present:
       return getPresent(verbInfo);
     case FormName.PresentPol:
@@ -91,6 +97,10 @@ export const getConjugation = (verbInfo: VerbInfo, form: FormName): string => {
 
 /* Base conjugation getters */
 
+const getStem = (verbInfo: VerbInfo): string => {
+  return getStems(verbInfo, 1);
+}
+
 const getPresent = (verbInfo: VerbInfo): string => {
   return verbInfo.verb;
 }
@@ -136,7 +146,7 @@ const getNegTe = (verbInfo: VerbInfo): string => {
 }
 
 const getNegReq = (verbInfo: VerbInfo): string => {
-  return getNegativeForm(verbInfo, NegativeForms.Nai) + kudasai;
+  return getNaide(verbInfo) + kudasai;
 }
 
 const getNaide = (verbInfo: VerbInfo): string => {
@@ -149,7 +159,7 @@ const getZu = (verbInfo: VerbInfo): string => {
 
 const getPotentialFull = (verbInfo: VerbInfo): string => {
   if (verbInfo.type === VerbType.Godan) {
-    return getStem(verbInfo, 2) + "る";
+    return getStems(verbInfo, 2) + "る";
   }
   return getRaw(verbInfo) + "られる";
 }
@@ -163,7 +173,7 @@ const getPotentialShort = (verbInfo: VerbInfo): string => {
 
 const getNegPotentialFull = (verbInfo: VerbInfo): string => {
   if (verbInfo.type === VerbType.Godan) {
-    return getStem(verbInfo, 2) + "ない";
+    return getStems(verbInfo, 2) + "ない";
   } 
   return getRaw(verbInfo) + "られない";
 }
@@ -176,32 +186,32 @@ const getNegPotentialShort = (verbInfo: VerbInfo): string => {
 }
 
 const getPassive = (verbInfo: VerbInfo): string => {
-  return getStem(verbInfo, 0) + "れる";
+  return getStems(verbInfo, 0) + "れる";
 }
 
 const getNegPassive = (verbInfo: VerbInfo): string => {
-  return getStem(verbInfo, 0) + "れない";
+  return getStems(verbInfo, 0) + "れない";
 }
 
 const getCausative = (verbInfo: VerbInfo): string => {
-  return getStem(verbInfo, 0) + "せる";
+  return getStems(verbInfo, 0) + "せる";
 }
 
 const getNegCausative = (verbInfo: VerbInfo): string => {
-  return getStem(verbInfo, 0) + "せない";
+  return getStems(verbInfo, 0) + "せない";
 }
 
 const getCausPassive = (verbInfo: VerbInfo): string => {
-  return getStem(verbInfo, 0) + "せられる";
+  return getStems(verbInfo, 0) + "せられる";
 }
 
 const getNegCausPassive = (verbInfo: VerbInfo): string => {
-  return getStem(verbInfo, 0) + "せられない";
+  return getStems(verbInfo, 0) + "せられない";
 }
 
 const getImperative = (verbInfo: VerbInfo): string => {
   if (verbInfo.type === VerbType.Godan) {
-    return getStem(verbInfo, 0);
+    return getStems(verbInfo, 0);
   }
   return getRaw(verbInfo) + "ろ";
 }
@@ -211,12 +221,12 @@ const getNegImperative = (verbInfo: VerbInfo): string => {
 }
 
 const getNasai = (verbInfo: VerbInfo): string => {
-  return getStem(verbInfo, 1) + "なさい";
+  return getStems(verbInfo, 1) + "なさい";
 }
 
 const getVolitional = (verbInfo: VerbInfo): string => {
   if (verbInfo.type === VerbType.Godan) {
-    return getStem(verbInfo, 3) + "う";
+    return getStems(verbInfo, 3) + "う";
   }
   return getRaw(verbInfo) + "よう";
 }
@@ -226,7 +236,7 @@ const getVolitionalPol = (verbInfo: VerbInfo): string => {
 }
 
 const getEbaConditional = (verbInfo: VerbInfo): string => {
-  return getStem(verbInfo, 2) + "ば";
+  return getStems(verbInfo, 2) + "ば";
 }
 
 const getNegEbaConditional = (verbInfo: VerbInfo): string => {
@@ -249,7 +259,7 @@ const getIrregularConjugation = (verb: string, formKey: number): string | false 
 }
 
 const getPoliteForm = (verbInfo: VerbInfo, formType: PoliteForms): string => {
-  const stem = getStem(verbInfo, 1);
+  const stem = getStems(verbInfo, 1);
 
   switch (formType) {
     case PoliteForms.Masu:
@@ -298,12 +308,12 @@ const getNegativeForm = (verbInfo: VerbInfo, formType: NegativeForms): string =>
 
 const getNegativeStem = (verbInfo: VerbInfo): string => {
   if (verbInfo.type === VerbType.Godan) {
-    return getStem(verbInfo, 0) + "な";
+    return getStems(verbInfo, 0) + "な";
   }
   return getRaw(verbInfo) + "な";
 }
 
-const getStem = (verbInfo: VerbInfo, stemIndex: number): string => {
+const getStems = (verbInfo: VerbInfo, stemIndex: number): string => {
   if (verbInfo.type === VerbType.Godan) {
     return getRaw(verbInfo) + stems[getEndingChar(verbInfo)][stemIndex];
   }
