@@ -37,45 +37,45 @@ export const enum FormName {
   NegTaraConditional
 }
 
-export const enum FormType {
+export const enum StemType {
   a, i, u, e, o, t
 }
 
-export type formInfo = {form: FormName, name: string, type: FormType, level: JLPTLevels};
+export type formInfo = {form: FormName, name: string, type: StemType, level: JLPTLevels};
 
-export const allVerbForms: { [index: string]: formInfo } = {
-  stem:               {form: FormName.Stem, name: "Stem",                                      type: FormType.i, level: JLPTLevels.N5},
-  present:            {form: FormName.Present, name: "Dictionary form",                        type: FormType.u, level: JLPTLevels.N5},
-  presentPol:         {form: FormName.PresentPol, name: "Present/future polite",               type: FormType.i, level: JLPTLevels.N5},
-  negative:           {form: FormName.Negative, name: "Negative plain",                        type: FormType.a, level: JLPTLevels.N5},
-  negPol:             {form: FormName.NegPol, name: "Negative polite",                         type: FormType.i, level: JLPTLevels.N5},
-  past:               {form: FormName.Past, name: "Past plain",                                type: FormType.t, level: JLPTLevels.N5},
-  pastPol:            {form: FormName.PastPol, name: "Past polite",                            type: FormType.i, level: JLPTLevels.N5},
-  negPast:            {form: FormName.NegPast, name: "Negative past plain",                    type: FormType.a, level: JLPTLevels.N5},
-  negPastPol:         {form: FormName.NegPastPol, name: "Negative past polite",                type: FormType.i, level: JLPTLevels.N5},
-  te:                 {form: FormName.Te, name: "Te form",                                     type: FormType.t, level: JLPTLevels.N5},
-  teReq:              {form: FormName.TeReq, name: "Request",                                  type: FormType.t, level: JLPTLevels.N5},
-  negTe:              {form: FormName.NegTe, name: "Negative Te form",                         type: FormType.a, level: JLPTLevels.N4},
-  negReq:             {form: FormName.NegReq, name: "Negative request",                        type: FormType.a, level: JLPTLevels.N5},
-  naide:              {form: FormName.Naide, name: "Without ~",                                type: FormType.a, level: JLPTLevels.N5},
-  zu:                 {form: FormName.Zu, name: "Without ~ formal",                            type: FormType.a, level: JLPTLevels.N3},
-  potentialFull:      {form: FormName.PotentialFull, name: "Potential",                        type: FormType.e, level: JLPTLevels.N4},
-  potentialShort:     {form: FormName.PotentialShort, name: "Potential (short)",               type: FormType.e, level: JLPTLevels.N3},
-  negPotentialFull:   {form: FormName.NegPotentialFull, name: "Negative potential",            type: FormType.e, level: JLPTLevels.N4},
-  negPotentialShort:  {form: FormName.NegPotentialShort, name: "Negative potential (short)",   type: FormType.e, level: JLPTLevels.N3},
-  passive:            {form: FormName.Passive, name: "Passive",                                type: FormType.a, level: JLPTLevels.N4},
-  negPassive:         {form: FormName.NegPassive, name: "Negative passive",                    type: FormType.a, level: JLPTLevels.N4},
-  causative:          {form: FormName.Causative, name: "Causative",                            type: FormType.a, level: JLPTLevels.N4},
-  negCausative:       {form: FormName.NegCausative, name: "Negative causative",                type: FormType.a, level: JLPTLevels.N4},
-  causPassive:        {form: FormName.CausPassive, name: "Causative passive",                  type: FormType.a, level: JLPTLevels.N4},
-  negCausPassive:     {form: FormName.NegCausPassive, name: "Negative causative passive",      type: FormType.a, level: JLPTLevels.N4},
-  imperative:         {form: FormName.Imperative, name: "Imperative",                          type: FormType.e, level: JLPTLevels.N4},
-  negImperative:      {form: FormName.NegImperative, name: "Prohibitive",                      type: FormType.u, level: JLPTLevels.N4},
-  nasai:              {form: FormName.Nasai, name: "Imperative (nasai)",                       type: FormType.i, level: JLPTLevels.N5},
-  volitional:         {form: FormName.Volitional, name: "Volitional",                          type: FormType.o, level: JLPTLevels.N4},
-  volitionalPol:      {form: FormName.VolitionalPol, name: "Volitional polite",                type: FormType.i, level: JLPTLevels.N5},
-  baConditional:      {form: FormName.BaConditional, name: "Conditional (eba)",                type: FormType.e, level: JLPTLevels.N4},
-  negBaConditional:   {form: FormName.NegBaConditional, name: "Negative conditional (eba)",    type: FormType.a, level: JLPTLevels.N4},
-  taraConditional:    {form: FormName.TaraConditional, name: "Conditional (tara)",             type: FormType.t, level: JLPTLevels.N4},
-  negTaraConditional: {form: FormName.NegTaraConditional, name: "Negative conditional (tara)", type: FormType.a, level: JLPTLevels.N4},
-}
+export const allVerbForms: formInfo[] = [
+  {form: FormName.Stem,               name: "Stem",                        type: StemType.i, level: JLPTLevels.N5},
+  {form: FormName.Present,            name: "Dictionary form",             type: StemType.u, level: JLPTLevels.N5},
+  {form: FormName.PresentPol,         name: "Present/future polite",       type: StemType.i, level: JLPTLevels.N5},
+  {form: FormName.Negative,           name: "Negative plain",              type: StemType.a, level: JLPTLevels.N5},
+  {form: FormName.NegPol,             name: "Negative polite",             type: StemType.i, level: JLPTLevels.N5},
+  {form: FormName.Past,               name: "Past plain",                  type: StemType.t, level: JLPTLevels.N5},
+  {form: FormName.PastPol,            name: "Past polite",                 type: StemType.i, level: JLPTLevels.N5},
+  {form: FormName.NegPast,            name: "Negative past plain",         type: StemType.a, level: JLPTLevels.N5},
+  {form: FormName.NegPastPol,         name: "Negative past polite",        type: StemType.i, level: JLPTLevels.N5},
+  {form: FormName.Te,                 name: "Te form",                     type: StemType.t, level: JLPTLevels.N5},
+  {form: FormName.TeReq,              name: "Request",                     type: StemType.t, level: JLPTLevels.N5},
+  {form: FormName.NegTe,              name: "Negative Te form",            type: StemType.a, level: JLPTLevels.N4},
+  {form: FormName.NegReq,             name: "Negative request",            type: StemType.a, level: JLPTLevels.N5},
+  {form: FormName.Naide,              name: "Without ~",                   type: StemType.a, level: JLPTLevels.N5},
+  {form: FormName.Zu,                 name: "Without ~ formal",            type: StemType.a, level: JLPTLevels.N3},
+  {form: FormName.PotentialFull,      name: "Potential",                   type: StemType.e, level: JLPTLevels.N4},
+  {form: FormName.PotentialShort,     name: "Potential (short)",           type: StemType.e, level: JLPTLevels.N3},
+  {form: FormName.NegPotentialFull,   name: "Negative potential",          type: StemType.e, level: JLPTLevels.N4},
+  {form: FormName.NegPotentialShort,  name: "Negative potential (short)",  type: StemType.e, level: JLPTLevels.N3},
+  {form: FormName.Passive,            name: "Passive",                     type: StemType.a, level: JLPTLevels.N4},
+  {form: FormName.NegPassive,         name: "Negative passive",            type: StemType.a, level: JLPTLevels.N4},
+  {form: FormName.Causative,          name: "Causative",                   type: StemType.a, level: JLPTLevels.N4},
+  {form: FormName.NegCausative,       name: "Negative causative",          type: StemType.a, level: JLPTLevels.N4},
+  {form: FormName.CausPassive,        name: "Causative passive",           type: StemType.a, level: JLPTLevels.N4},
+  {form: FormName.NegCausPassive,     name: "Negative causative passive",  type: StemType.a, level: JLPTLevels.N4},
+  {form: FormName.Imperative,         name: "Imperative",                  type: StemType.e, level: JLPTLevels.N4},
+  {form: FormName.NegImperative,      name: "Prohibitive",                 type: StemType.u, level: JLPTLevels.N4},
+  {form: FormName.Nasai,              name: "Imperative (nasai)",          type: StemType.i, level: JLPTLevels.N5},
+  {form: FormName.Volitional,         name: "Volitional",                  type: StemType.o, level: JLPTLevels.N4},
+  {form: FormName.VolitionalPol,      name: "Volitional polite",           type: StemType.i, level: JLPTLevels.N5},
+  {form: FormName.BaConditional,      name: "Conditional (eba)",           type: StemType.e, level: JLPTLevels.N4},
+  {form: FormName.NegBaConditional,   name: "Negative conditional (eba)",  type: StemType.a, level: JLPTLevels.N4},
+  {form: FormName.TaraConditional,    name: "Conditional (tara)",          type: StemType.t, level: JLPTLevels.N4},
+  {form: FormName.NegTaraConditional, name: "Negative conditional (tara)", type: StemType.a, level: JLPTLevels.N4},
+]

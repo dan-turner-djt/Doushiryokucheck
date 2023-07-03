@@ -1,4 +1,4 @@
-import { VerbInfo, VerbType } from "./VerbDefs";
+import { IrregularVerbs, VerbInfo, VerbType, checkVerbIsIrregular } from "./VerbDefs";
 import { FormName } from "./VerbFormDefs";
 
 export enum JLPTLevels {
@@ -13,11 +13,13 @@ export enum NegativeForms {
   Nai, Nakute, Nakatta, Naide, Nakereba, Nakattara, Zu
 }
 
-export const getConjugation = (verbInfo: VerbInfo, form: FormName): string => {
-  if (verbInfo.type === VerbType.Irregular) {
+export type ProcessedVerbInfo = {verb: string, type: VerbType, irregular: false | IrregularVerbs};
+
+export const getConjugation = (verbInfo: ProcessedVerbInfo, form: FormName): string => {
+  /*if (checkVerbIsIrregular(verbInfo.verb)) {
     const res = getIrregularConjugation(verbInfo.verb, form)
     if (res !== false) return res;
-  }
+  }*/
 
   switch (form) {
     case FormName.Stem:
@@ -97,168 +99,211 @@ export const getConjugation = (verbInfo: VerbInfo, form: FormName): string => {
 
 /* Base conjugation getters */
 
-const getStem = (verbInfo: VerbInfo): string => {
+const getStem = (verbInfo: ProcessedVerbInfo): string => {
   return getStems(verbInfo, 1);
 }
 
-const getPresent = (verbInfo: VerbInfo): string => {
+const getPresent = (verbInfo: ProcessedVerbInfo): string => {
   return verbInfo.verb;
 }
 
-const getPresentPol = (verbInfo: VerbInfo): string => {
+const getPresentPol = (verbInfo: ProcessedVerbInfo): string => {
   return getPoliteForm(verbInfo, PoliteForms.Masu);
 }
 
-const getNegative = (verbInfo: VerbInfo): string => {
+const getNegative = (verbInfo: ProcessedVerbInfo): string => {
   return getNegativeForm(verbInfo, NegativeForms.Nai);
 }
 
-const getNegPol = (verbInfo: VerbInfo): string => {
+const getNegPol = (verbInfo: ProcessedVerbInfo): string => {
   return getPoliteForm(verbInfo, PoliteForms.Masen);
 }
 
-const getPast = (verbInfo: VerbInfo): string => {
+const getPast = (verbInfo: ProcessedVerbInfo): string => {
   return getTaForm(verbInfo);
 }
 
-const getPastPol = (verbInfo: VerbInfo): string => {
+const getPastPol = (verbInfo: ProcessedVerbInfo): string => {
   return getPoliteForm(verbInfo, PoliteForms.Mashita);
 }
 
-const getNegPast = (verbInfo: VerbInfo): string => {
+const getNegPast = (verbInfo: ProcessedVerbInfo): string => {
   return getNegativeForm(verbInfo, NegativeForms.Nakatta);
 }
 
-const getNegPastPol = (verbInfo: VerbInfo): string => {
+const getNegPastPol = (verbInfo: ProcessedVerbInfo): string => {
   return getPoliteForm(verbInfo, PoliteForms.Masendeshita);
 }
 
-const getTe = (verbInfo: VerbInfo): string => {
+const getTe = (verbInfo: ProcessedVerbInfo): string => {
   return getTeForm(verbInfo);
 }
 
-const getTeReq = (verbInfo: VerbInfo): string => {
+const getTeReq = (verbInfo: ProcessedVerbInfo): string => {
   return getTeForm(verbInfo) + kudasai;
 }
 
-const getNegTe = (verbInfo: VerbInfo): string => {
+const getNegTe = (verbInfo: ProcessedVerbInfo): string => {
   return getNegativeForm(verbInfo, NegativeForms.Nakute);
 }
 
-const getNegReq = (verbInfo: VerbInfo): string => {
+const getNegReq = (verbInfo: ProcessedVerbInfo): string => {
   return getNaide(verbInfo) + kudasai;
 }
 
-const getNaide = (verbInfo: VerbInfo): string => {
+const getNaide = (verbInfo: ProcessedVerbInfo): string => {
   return getNegativeForm(verbInfo, NegativeForms.Naide);
 }
 
-const getZu = (verbInfo: VerbInfo): string => {
+const getZu = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular !== false) {
+    if (verbInfo.irregular === IrregularVerbs.Aru) {
+      return "あらず";
+    }
+    if (verbInfo.irregular === IrregularVerbs.Suru) {
+      return "せず";
+    }
+  }
+  
   return getNegativeForm(verbInfo, NegativeForms.Zu);
 }
 
-const getPotentialFull = (verbInfo: VerbInfo): string => {
+const getPotentialFull = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular === IrregularVerbs.Suru) {
+    return "できる";
+  }
+
   if (verbInfo.type === VerbType.Godan) {
     return getStems(verbInfo, 2) + "る";
   }
   return getRaw(verbInfo) + "られる";
 }
 
-const getPotentialShort = (verbInfo: VerbInfo): string => {
+const getPotentialShort = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular === IrregularVerbs.Suru) {
+    return "できる";
+  }
+
   if (verbInfo.type === VerbType.Godan) {
     return getPotentialFull(verbInfo);
   } 
   return getRaw(verbInfo) + "れる";
 }
 
-const getNegPotentialFull = (verbInfo: VerbInfo): string => {
+const getNegPotentialFull = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular === IrregularVerbs.Suru) {
+    return "できない";
+  }
+
   if (verbInfo.type === VerbType.Godan) {
     return getStems(verbInfo, 2) + "ない";
   } 
   return getRaw(verbInfo) + "られない";
 }
 
-const getNegPotentialShort = (verbInfo: VerbInfo): string => {
+const getNegPotentialShort = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular === IrregularVerbs.Suru) {
+    return "できない";
+  }
+
   if (verbInfo.type === VerbType.Godan) {
     return getPotentialFull(verbInfo);
   } 
   return getRaw(verbInfo) + "れない";
 }
 
-const getPassive = (verbInfo: VerbInfo): string => {
-  return getStems(verbInfo, 0) + "れる";
+const getPassive = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.type === VerbType.Godan) {
+    return getStems(verbInfo, 0) + "れる"
+  } 
+  return getRaw(verbInfo) + "られる";
 }
 
-const getNegPassive = (verbInfo: VerbInfo): string => {
-  return getStems(verbInfo, 0) + "れない";
+const getNegPassive = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.type === VerbType.Godan) {
+    return getStems(verbInfo, 0) + "れない"
+  } 
+  return getRaw(verbInfo) + "られない";
 }
 
-const getCausative = (verbInfo: VerbInfo): string => {
-  return getStems(verbInfo, 0) + "せる";
+const getCausative = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.type === VerbType.Godan) {
+    return getStems(verbInfo, 0) + "せる"
+  } 
+  return getRaw(verbInfo) + "させる";
 }
 
-const getNegCausative = (verbInfo: VerbInfo): string => {
-  return getStems(verbInfo, 0) + "せない";
+const getNegCausative = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.type === VerbType.Godan) {
+    return getStems(verbInfo, 0) + "せない"
+  } 
+  return getRaw(verbInfo) + "させない";
 }
 
-const getCausPassive = (verbInfo: VerbInfo): string => {
-  return getStems(verbInfo, 0) + "せられる";
+const getCausPassive = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.type === VerbType.Godan) {
+    return getStems(verbInfo, 0) + "せられる"
+  } 
+  return getRaw(verbInfo) + "させられる";
 }
 
-const getNegCausPassive = (verbInfo: VerbInfo): string => {
-  return getStems(verbInfo, 0) + "せられない";
+const getNegCausPassive = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.type === VerbType.Godan) {
+    return getStems(verbInfo, 0) + "せられない"
+  } 
+  return getRaw(verbInfo) + "させられない";
 }
 
-const getImperative = (verbInfo: VerbInfo): string => {
+const getImperative = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular === IrregularVerbs.Kureru) {
+    return getRaw(verbInfo);
+  }
+
   if (verbInfo.type === VerbType.Godan) {
     return getStems(verbInfo, 0);
   }
   return getRaw(verbInfo) + "ろ";
 }
 
-const getNegImperative = (verbInfo: VerbInfo): string => {
+const getNegImperative = (verbInfo: ProcessedVerbInfo): string => {
   return verbInfo.verb + "な";
 }
 
-const getNasai = (verbInfo: VerbInfo): string => {
+const getNasai = (verbInfo: ProcessedVerbInfo): string => {
   return getStems(verbInfo, 1) + "なさい";
 }
 
-const getVolitional = (verbInfo: VerbInfo): string => {
+const getVolitional = (verbInfo: ProcessedVerbInfo): string => {
   if (verbInfo.type === VerbType.Godan) {
     return getStems(verbInfo, 3) + "う";
   }
   return getRaw(verbInfo) + "よう";
 }
 
-const getVolitionalPol = (verbInfo: VerbInfo): string => {
+const getVolitionalPol = (verbInfo: ProcessedVerbInfo): string => {
   return getPoliteForm(verbInfo, PoliteForms.Mashou);
 }
 
-const getEbaConditional = (verbInfo: VerbInfo): string => {
+const getEbaConditional = (verbInfo: ProcessedVerbInfo): string => {
   return getStems(verbInfo, 2) + "ば";
 }
 
-const getNegEbaConditional = (verbInfo: VerbInfo): string => {
+const getNegEbaConditional = (verbInfo: ProcessedVerbInfo): string => {
   return getNegativeForm(verbInfo, NegativeForms.Nakereba);
 }
 
-const getTaraConditional = (verbInfo: VerbInfo): string => {
+const getTaraConditional = (verbInfo: ProcessedVerbInfo): string => {
   return getTaForm(verbInfo) + "ら";
 }
 
-const getNegTaraConditional = (verbInfo: VerbInfo): string => {
+const getNegTaraConditional = (verbInfo: ProcessedVerbInfo): string => {
   return getNegativeForm(verbInfo, NegativeForms.Nakattara);
 }
 
 
 /* Conjugation helpers */
 
-const getIrregularConjugation = (verb: string, formKey: number): string | false => {
-  return false;
-}
-
-const getPoliteForm = (verbInfo: VerbInfo, formType: PoliteForms): string => {
+const getPoliteForm = (verbInfo: ProcessedVerbInfo, formType: PoliteForms): string => {
   const stem = getStems(verbInfo, 1);
 
   switch (formType) {
@@ -282,7 +327,7 @@ const getPoliteForm = (verbInfo: VerbInfo, formType: PoliteForms): string => {
   }
 }
 
-const getNegativeForm = (verbInfo: VerbInfo, formType: NegativeForms): string => {
+const getNegativeForm = (verbInfo: ProcessedVerbInfo, formType: NegativeForms): string => {
   const stem = getNegativeStem(verbInfo);
 
   switch (formType) {
@@ -306,21 +351,55 @@ const getNegativeForm = (verbInfo: VerbInfo, formType: NegativeForms): string =>
   }
 }
 
-const getNegativeStem = (verbInfo: VerbInfo): string => {
+const getNegativeStem = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular !== false) {
+    if (verbInfo.irregular === IrregularVerbs.Aru) {
+      return "な";
+    }
+    if (verbInfo.irregular === IrregularVerbs.Kuru) {
+      return "こな";
+    }
+  }
+
   if (verbInfo.type === VerbType.Godan) {
     return getStems(verbInfo, 0) + "な";
   }
   return getRaw(verbInfo) + "な";
 }
 
-const getStems = (verbInfo: VerbInfo, stemIndex: number): string => {
+const getStems = (verbInfo: ProcessedVerbInfo, stemIndex: number): string => {
+  if (verbInfo.irregular !== false) {
+    if (verbInfo.irregular === IrregularVerbs.Irassharu
+    || verbInfo.irregular === IrregularVerbs.Ossharu
+    || verbInfo.irregular === IrregularVerbs.Kudasaru
+    || verbInfo.irregular === IrregularVerbs.Gozaru
+    || verbInfo.irregular === IrregularVerbs.Nasaru) {
+      return getRaw(verbInfo) + "い";
+    }
+  }
+
   if (verbInfo.type === VerbType.Godan) {
     return getRaw(verbInfo) + stems[getEndingChar(verbInfo)][stemIndex];
   }
   return getRaw(verbInfo);
 }
 
-const getTeForm = (verbInfo: VerbInfo): string => {
+const getTeForm = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular !== false) {
+    if (verbInfo.irregular === IrregularVerbs.Iku) {
+      return getRaw(verbInfo) + "って";
+    }
+    if (verbInfo.irregular === IrregularVerbs.Tou) {
+      return getRaw(verbInfo) + "うて";
+    }
+    if (verbInfo.irregular === IrregularVerbs.Suru) {
+      return "して";
+    }
+    if (verbInfo.irregular === IrregularVerbs.Kuru) {
+      return "きて";
+    }
+  }
+
   if (verbInfo.type === VerbType.Godan) {
     const endingChar = getEndingChar(verbInfo);
     return getRaw(verbInfo) + tStems[endingChar] + teEndings[endingChar];
@@ -328,7 +407,22 @@ const getTeForm = (verbInfo: VerbInfo): string => {
   return getRaw(verbInfo) + "て";
 }
 
-const getTaForm = (verbInfo: VerbInfo): string => {
+const getTaForm = (verbInfo: ProcessedVerbInfo): string => {
+  if (verbInfo.irregular !== false) {
+    if (verbInfo.irregular === IrregularVerbs.Iku) {
+      return getRaw(verbInfo) + "った";
+    }
+    if (verbInfo.irregular === IrregularVerbs.Tou) {
+      return getRaw(verbInfo) + "うた";
+    }
+    if (verbInfo.irregular === IrregularVerbs.Suru) {
+      return "した";
+    }
+    if (verbInfo.irregular === IrregularVerbs.Kuru) {
+      return "きた";
+    }
+  }
+  
   if (verbInfo.type === VerbType.Godan) {
     const endingChar = getEndingChar(verbInfo);
       return getRaw(verbInfo) + tStems[endingChar] + taEndings[endingChar];
@@ -336,11 +430,11 @@ const getTaForm = (verbInfo: VerbInfo): string => {
   return getRaw(verbInfo) + "た";
 }
 
-const getRaw = (verbInfo: VerbInfo): string => {
+const getRaw = (verbInfo: ProcessedVerbInfo): string => {
   return verbInfo.verb.slice(0, -1);
 }
 
-const getEndingChar = (verbInfo: VerbInfo): string => {
+const getEndingChar = (verbInfo: ProcessedVerbInfo): string => {
   return verbInfo.verb.slice(-1);
 }
 
