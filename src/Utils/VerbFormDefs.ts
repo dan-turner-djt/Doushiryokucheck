@@ -1,6 +1,4 @@
-import { JLPTLevels } from "./Conjugation";
-
-export const enum FormName {
+export enum FormName {
   Stem,
   Present,
   PresentPol,
@@ -42,6 +40,10 @@ export const enum StemType {
 }
 
 export type formInfo = {form: FormName, name: string, type: StemType, level: JLPTLevels};
+
+enum JLPTLevels {
+  N5, N4, N3, N2, N1
+}
 
 export const allVerbForms: formInfo[] = [
   {form: FormName.Stem,               name: "Stem",                        type: StemType.i, level: JLPTLevels.N5},

@@ -1,10 +1,6 @@
 import { IrregularVerbs, VerbType, dekiruKanjiStem, kuruStems, stems, suruStems, tStems, taEndings, teEndings } from "./VerbDefs";
 import { FormName } from "./VerbFormDefs";
 
-export enum JLPTLevels {
-  N5, N4, N3, N2, N1
-}
-
 export enum PoliteForms {
   Masu, Masen, Mashita, Masendeshita, Mashite, Masende, Mashou
 }
@@ -135,7 +131,7 @@ const getTe = (verbInfo: ProcessedVerbInfo, useKanji: boolean): string => {
 }
 
 const getTeReq = (verbInfo: ProcessedVerbInfo, useKanji: boolean): string => {
-  return getTeForm(verbInfo, useKanji) + (useKanji)? kudasaiKanji : kudasaiPlain;
+  return getTeForm(verbInfo, useKanji) + ((useKanji)? kudasaiKanji : kudasaiPlain);
 }
 
 const getNegTe = (verbInfo: ProcessedVerbInfo, useKanji: boolean): string => {
@@ -143,7 +139,7 @@ const getNegTe = (verbInfo: ProcessedVerbInfo, useKanji: boolean): string => {
 }
 
 const getNegReq = (verbInfo: ProcessedVerbInfo, useKanji: boolean): string => {
-  return getNaide(verbInfo, useKanji) + (useKanji)? kudasaiKanji : kudasaiPlain;
+  return getNaide(verbInfo, useKanji) + ((useKanji)? kudasaiKanji : kudasaiPlain);
 }
 
 const getNaide = (verbInfo: ProcessedVerbInfo, useKanji: boolean): string => {
@@ -240,7 +236,7 @@ const getNegPotentialShort = (verbInfo: ProcessedVerbInfo, useKanji: boolean): s
   }
 
   if (verbInfo.type === VerbType.Godan) {
-    return getPotentialFull(verbInfo, useKanji);
+    return getNegPotentialFull(verbInfo, useKanji);
   } 
   return getRaw(verbInfo) + "れない";
 }
@@ -355,7 +351,7 @@ const getImperative = (verbInfo: ProcessedVerbInfo, useKanji: boolean): string =
   }
 
   if (verbInfo.type === VerbType.Godan) {
-    return getStems(verbInfo, useKanji, 0);
+    return getStems(verbInfo, useKanji, 2);
   }
   return getRaw(verbInfo) + "ろ";
 }
@@ -394,7 +390,11 @@ const getEbaConditional = (verbInfo: ProcessedVerbInfo, useKanji: boolean): stri
       return getRaw(verbInfo) + "れば";
     }
   }
-  return getStems(verbInfo, useKanji, 2) + "ば";
+
+  if (verbInfo.type === VerbType.Godan) {
+    return getStems(verbInfo, useKanji, 2) + "ば";
+  }
+  return getRaw(verbInfo) + "れば";
 }
 
 const getNegEbaConditional = (verbInfo: ProcessedVerbInfo, useKanji: boolean): string => {
@@ -453,7 +453,7 @@ const getNegativeForm = (verbInfo: ProcessedVerbInfo, useKanji: boolean, formTyp
     case NegativeForms.Nakattara:
       return stem + "かったら";
     case NegativeForms.Zu:
-      return stem + "ず";
+      return getStems(verbInfo, useKanji, 0) + "ず";
     default:
       console.log("Unknown negative form");
       return stem;
