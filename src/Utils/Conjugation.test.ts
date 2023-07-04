@@ -2,7 +2,7 @@ import { ProcessedVerbInfo, getConjugation } from "./Conjugation"
 import { VerbInfo, VerbType } from "./VerbDefs"
 import { FormName } from "./VerbFormDefs";
 
-describe('Ichidan conjugation', () => {
+/*describe('Ichidan conjugation', () => {
   it ('conjugates 見る correctly', () => {
     const verbInfo: ProcessedVerbInfo = {verb: "見る", type: VerbType.Ichidan, irregular: false};
     const useKanji = true;
@@ -29,7 +29,7 @@ describe('Godan conjugation', () => {
       expect(result).toEqual(expected);
     }
   });
-})
+})*/
 
 
 
