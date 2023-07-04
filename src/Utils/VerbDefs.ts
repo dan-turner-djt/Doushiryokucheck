@@ -2,15 +2,15 @@ export enum VerbType {
   Ichidan, Godan
 }
 
-export type VerbInfo = {verb: string, type: VerbType};
+export type VerbInfo = {verb: {kanji: string, kana: string}, type: VerbType, irregular: false | IrregularVerbs};
 
 export const verbsList: VerbInfo[] = [
-  {verb: "食べる", type: VerbType.Ichidan},
-  {verb: "書く", type: VerbType.Godan},
-  {verb: "読む", type: VerbType.Godan},
-  {verb: "いる", type: VerbType.Ichidan},
-  {verb: "歩く", type: VerbType.Godan},
-  {verb: "走る", type: VerbType.Godan}
+  {verb: {kanji: "食べる", kana: "たべる"}, type: VerbType.Ichidan, irregular: false},
+  {verb: {kanji: "書く", kana: "かく"}, type: VerbType.Godan, irregular: false},
+  {verb: {kanji: "読む", kana: "よむ"}, type: VerbType.Godan, irregular: false},
+  {verb: {kanji: "いる", kana: "いる"}, type: VerbType.Ichidan, irregular: false},
+  {verb: {kanji: "歩く", kana: "あるく"}, type: VerbType.Godan, irregular: false},
+  {verb: {kanji: "走る", kana: "はしる"}, type: VerbType.Godan, irregular: false}
 ]
 
 export const enum IrregularVerbs {
