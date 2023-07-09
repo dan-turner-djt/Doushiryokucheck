@@ -1,4 +1,4 @@
-import { ConjugationResult, ProcessedVerbInfo, getConjugation, processAndGetConjugation, processConjugationResult, processVerbInfo } from "./Conjugation"
+import { ConjugationResult, ProcessedVerbInfo, processAndGetConjugation, processConjugationResult, processVerbInfo } from "./Conjugation"
 import { IrregularVerbs, VerbInfo, VerbType } from "./VerbDefs"
 import { FormName } from "./VerbFormDefs";
 
@@ -45,7 +45,6 @@ describe('Ichidan conjugation', () => {
       expect(results).toEqual(expected);
     }
   });
-  
 })
 
 describe('Godan conjugation', () => {
@@ -58,6 +57,81 @@ describe('Godan conjugation', () => {
       const expected = auConjugations.find(o => o.form === Number(value))?.expected;
       expect(results).toEqual(expected);
     }
+  });
+})
+
+describe('Irregular conjugation', () => {
+  it ('conjugates する correctly', () => {
+    const verbInfo: VerbInfo = {verb: {kanji: "為る", kana: "する"}, type: VerbType.Ichidan, irregular: IrregularVerbs.Suru};
+
+    for (const value in FormName) {
+      if (isNaN(Number(value))) return;
+      const results: string[] = processAndGetConjugation(verbInfo, Number(value));
+      const expected = suruConjugations.find(o => o.form === Number(value))?.expected;
+      expect(results).toEqual(expected);
+    }
+  });
+  it ('conjugates くる correctly', () => {
+    const verbInfo: VerbInfo = {verb: {kanji: "来る", kana: "くる"}, type: VerbType.Ichidan, irregular: IrregularVerbs.Kuru};
+
+    for (const value in FormName) {
+      if (isNaN(Number(value))) return;
+      const results: string[] = processAndGetConjugation(verbInfo, Number(value));
+      const expected = kuruConjugations.find(o => o.form === Number(value))?.expected;
+      expect(results).toEqual(expected);
+    }
+  });
+  it ('conjugates irregularities of ある correctly', () => {
+    const verbInfo: VerbInfo = {verb: {kanji: "有る", kana: "ある"}, type: VerbType.Godan, irregular: IrregularVerbs.Aru};
+
+    const naiResults = processAndGetConjugation(verbInfo, FormName.Negative);
+    expect(naiResults).toEqual(['ない', 'ない']);
+
+    const zuResults = processAndGetConjugation(verbInfo, FormName.Zu);
+    expect(zuResults).toEqual(['有らず', 'あらず']);
+  });
+  it ('conjugates irregularities of 行く correctly', () => {
+    const verbInfo: VerbInfo = {verb: {kanji: "行く", kana: "いく"}, type: VerbType.Godan, irregular: IrregularVerbs.Iku};
+
+    const teResults = processAndGetConjugation(verbInfo, FormName.Te);
+    expect(teResults).toEqual(['行って', 'いって']);
+
+    const taResults = processAndGetConjugation(verbInfo, FormName.Past);
+    expect(taResults).toEqual(['行った', 'いった']);
+  });
+  it ('conjugates irregularities of 問う correctly', () => {
+    const verbInfo: VerbInfo = {verb: {kanji: "問う", kana: "とう"}, type: VerbType.Godan, irregular: IrregularVerbs.Tou};
+
+    const teResults = processAndGetConjugation(verbInfo, FormName.Te);
+    expect(teResults).toEqual(['問うて', 'とうて']);
+
+    const taResults = processAndGetConjugation(verbInfo, FormName.Past);
+    expect(taResults).toEqual(['問うた', 'とうた']);
+  });
+  it ('conjugates irregularities of kureru correctly', () => {
+    const verbInfo: VerbInfo = {verb: {kanji: "呉れる", kana: "くれる"}, type: VerbType.Ichidan, irregular: IrregularVerbs.Kureru};
+
+    const results = processAndGetConjugation(verbInfo, FormName.Imperative);
+    expect(results).toEqual(['呉れ', 'くれ']);
+  });
+  it ('conjugates irregularities of irregular keigo verbs correctly', () => {
+    const irassharuInfo: VerbInfo = {verb: {kanji: "いらっしゃる", kana: "いらっしゃる"}, type: VerbType.Godan, irregular: IrregularVerbs.Irassharu};
+    const ossharuInfo: VerbInfo = {verb: {kanji: "仰る", kana: "おっしゃる"}, type: VerbType.Godan, irregular: IrregularVerbs.Ossharu};
+    const kudasaruInfo: VerbInfo = {verb: {kanji: "下さる", kana: "くださる"}, type: VerbType.Godan, irregular: IrregularVerbs.Kudasaru};
+    const gozaruInfo: VerbInfo = {verb: {kanji: "御座る", kana: "ござる"}, type: VerbType.Godan, irregular: IrregularVerbs.Gozaru};
+    const nasaruInfo: VerbInfo = {verb: {kanji: "為さる", kana: "なさる"}, type: VerbType.Godan, irregular: IrregularVerbs.Irassharu};
+
+    const irassharuResults = processAndGetConjugation(irassharuInfo, FormName.Stem);
+    const ossharuResults = processAndGetConjugation(ossharuInfo, FormName.Stem);
+    const kudasaruResults = processAndGetConjugation(kudasaruInfo, FormName.Stem);
+    const gozaruResults = processAndGetConjugation(gozaruInfo, FormName.Stem);
+    const nasaruResults = processAndGetConjugation(nasaruInfo, FormName.Stem);
+
+    expect(irassharuResults).toEqual(['いらっしゃい', 'いらっしゃい']);
+    expect(ossharuResults).toEqual(['仰い', 'おっしゃい']);
+    expect(kudasaruResults).toEqual(['下さい', 'ください']);
+    expect(gozaruResults).toEqual(['御座い', 'ござい']);
+    expect(nasaruResults).toEqual(['為さい', 'なさい']);
   });
 })
 
@@ -138,4 +212,78 @@ const auConjugations: {form: FormName, expected: string[]}[] = [
   {form: FormName.NegBaConditional, expected: ["会わなければ", "あわなければ"]},
   {form: FormName.TaraConditional, expected: ["会ったら", "あったら"]},
   {form: FormName.NegTaraConditional, expected: ["会わなかったら", "あわなかったら"]}
+]
+
+const suruConjugations: {form: FormName, expected: string[]}[] = [
+  {form: FormName.Stem, expected: ["為", "し"]},
+  {form: FormName.Present, expected: ["為る", "する"]},
+  {form: FormName.PresentPol, expected: ["為ます", "します"]},
+  {form: FormName.Negative, expected: ["為ない", "しない"]},
+  {form: FormName.NegPol, expected: ["為ません", "しません"]},
+  {form: FormName.Past, expected: ["為た", "した"]},
+  {form: FormName.PastPol, expected: ["為ました", "しました"]},
+  {form: FormName.NegPast, expected: ["為なかった", "しなかった"]},
+  {form: FormName.NegPastPol, expected: ["為ませんでした", "しませんでした"]},
+  {form: FormName.Te, expected: ["為て", "して"]},
+  {form: FormName.TeReq, expected: ["為て下さい", "為てください", "して下さい", "してください"]},
+  {form: FormName.NegTe, expected: ["為なくて", "しなくて"]},
+  {form: FormName.NegReq, expected: ["為ないで下さい", "為ないでください", "しないで下さい", "しないでください"]},
+  {form: FormName.Naide, expected: ["為ないで", "しないで"]},
+  {form: FormName.Zu, expected: ["為ず", "せず"]},
+  {form: FormName.PotentialFull, expected: ["出来る", "できる"]},
+  {form: FormName.PotentialShort, expected: ["出来る", "できる"]},
+  {form: FormName.NegPotentialFull, expected: ["出来ない", "できない"]},
+  {form: FormName.NegPotentialShort, expected: ["出来ない", "できない"]},
+  {form: FormName.Passive, expected: ["為れる", "される"]},
+  {form: FormName.NegPassive, expected: ["為れない", "されない"]},
+  {form: FormName.Causative, expected: ["為せる", "させる"]},
+  {form: FormName.NegCausative, expected: ["為せない", "させない"]},
+  {form: FormName.CausPassive, expected: ["為せられる", "させられる"]},
+  {form: FormName.NegCausPassive, expected: ["為せられない", "させられない"]},
+  {form: FormName.Imperative, expected: ["為ろ", "しろ"]},
+  {form: FormName.NegImperative, expected: ["為るな", "するな"]},
+  {form: FormName.Nasai, expected: ["為なさい", "しなさい"]},
+  {form: FormName.Volitional, expected: ["為よう", "しよう"]},
+  {form: FormName.VolitionalPol, expected: ["為ましょう", "しましょう"]},
+  {form: FormName.BaConditional, expected: ["為れば", "すれば"]},
+  {form: FormName.NegBaConditional, expected: ["為なければ", "しなければ"]},
+  {form: FormName.TaraConditional, expected: ["為たら", "したら"]},
+  {form: FormName.NegTaraConditional, expected: ["為なかったら", "しなかったら"]}
+]
+
+const kuruConjugations: {form: FormName, expected: string[]}[] = [
+  {form: FormName.Stem, expected: ["来", "き"]},
+  {form: FormName.Present, expected: ["来る", "くる"]},
+  {form: FormName.PresentPol, expected: ["来ます", "きます"]},
+  {form: FormName.Negative, expected: ["来ない", "こない"]},
+  {form: FormName.NegPol, expected: ["来ません", "きません"]},
+  {form: FormName.Past, expected: ["来た", "きた"]},
+  {form: FormName.PastPol, expected: ["来ました", "きました"]},
+  {form: FormName.NegPast, expected: ["来なかった", "こなかった"]},
+  {form: FormName.NegPastPol, expected: ["来ませんでした", "きませんでした"]},
+  {form: FormName.Te, expected: ["来て", "きて"]},
+  {form: FormName.TeReq, expected: ["来て下さい", "来てください", "きて下さい", "きてください"]},
+  {form: FormName.NegTe, expected: ["来なくて", "こなくて"]},
+  {form: FormName.NegReq, expected: ["来ないで下さい", "来ないでください", "こないで下さい", "こないでください"]},
+  {form: FormName.Naide, expected: ["来ないで", "こないで"]},
+  {form: FormName.Zu, expected: ["来ず", "こず"]},
+  {form: FormName.PotentialFull, expected: ["来られる", "こられる"]},
+  {form: FormName.PotentialShort, expected: ["来れる", "これる"]},
+  {form: FormName.NegPotentialFull, expected: ["来られない", "こられない"]},
+  {form: FormName.NegPotentialShort, expected: ["来れない", "これない"]},
+  {form: FormName.Passive, expected: ["来られる", "こられる"]},
+  {form: FormName.NegPassive, expected: ["来られない", "こられない"]},
+  {form: FormName.Causative, expected: ["来させる", "こさせる"]},
+  {form: FormName.NegCausative, expected: ["来させない", "こさせない"]},
+  {form: FormName.CausPassive, expected: ["来させられる", "こさせられる"]},
+  {form: FormName.NegCausPassive, expected: ["来させられない", "こさせられない"]},
+  {form: FormName.Imperative, expected: ["来い", "こい"]},
+  {form: FormName.NegImperative, expected: ["来るな", "くるな"]},
+  {form: FormName.Nasai, expected: ["来なさい", "きなさい"]},
+  {form: FormName.Volitional, expected: ["来よう", "こよう"]},
+  {form: FormName.VolitionalPol, expected: ["来ましょう", "きましょう"]},
+  {form: FormName.BaConditional, expected: ["来れば", "くれば"]},
+  {form: FormName.NegBaConditional, expected: ["来なければ", "こなければ"]},
+  {form: FormName.TaraConditional, expected: ["来たら", "きたら"]},
+  {form: FormName.NegTaraConditional, expected: ["来なかったら", "こなかったら"]}
 ]

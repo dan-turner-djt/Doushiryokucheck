@@ -18,8 +18,8 @@ export const processVerbInfo = (verbInfo: VerbInfo): ProcessedVerbInfo => {
 
 export const processConjugationResult = (conjugationResult: ConjugationResult, processedVerbInfo: ProcessedVerbInfo): string[] => {
   const suffixResult = conjugationResult.suffix;
-  const kanjiStem = (conjugationResult.newKanjiRawStem)? conjugationResult.newKanjiRawStem : processedVerbInfo.rawStem.kanji;
-  const kanaStem = (conjugationResult.newKanaRawStem)? conjugationResult.newKanaRawStem : processedVerbInfo.rawStem.kana;
+  const kanjiStem = (conjugationResult.newKanjiRawStem !== undefined)? conjugationResult.newKanjiRawStem : processedVerbInfo.rawStem.kanji;
+  const kanaStem = (conjugationResult.newKanaRawStem !== undefined)? conjugationResult.newKanaRawStem : processedVerbInfo.rawStem.kana;
 
   let results: string[] = [];
 
