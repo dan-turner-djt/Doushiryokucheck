@@ -79,7 +79,8 @@ const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
 				value={value}
 				onChange={handleValueChange}
 				error={!isValid}
-				helperText={!isValid ? errorMessage : ("Enter a number between " + props.staticData.minimum + " and " + props.staticData.maximum + " inclusive")}/>
+				helperText={!isValid ? errorMessage : ("Enter a number between " + props.staticData.minimum + " and " + props.staticData.maximum + " inclusive")}
+				inputRef={inputRef}/>
 		</div>
 	);
 });
