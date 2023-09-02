@@ -75,7 +75,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const setNewWordAmount = (newWordAmount: number, valid: boolean) => {
 		setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, amount: newWordAmount}});
 		setFieldData({...fieldData, wordAmount: {...fieldData.wordAmount, valid: valid}});
-    
 	};
 
 	const setNewTime = (newTime: number, valid: boolean) => {

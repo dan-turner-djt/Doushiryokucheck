@@ -27,7 +27,6 @@ const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	useImperativeHandle(ref, () => ({
-
 		giveFocus() {
 			if (inputRef.current) {
 				inputRef.current.focus();

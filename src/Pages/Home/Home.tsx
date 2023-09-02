@@ -2,6 +2,7 @@ import { useState } from "react";
 import SettingsForm from "../../Components/SettingsForm/SettingsForm";
 import TestForm from "../../Components/TestForm/TestForm";
 import { DefaultSettings, SettingsObject } from "../../SettingsDef";
+import { getVerbList } from "../../api/JishoRequests";
 
 const Home = () => {
 
@@ -10,6 +11,7 @@ const Home = () => {
 
 	const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
 		setCurrentSettings(newSettings);
+		getVerbList(newSettings);
 		startNewTest();
 	};
 
