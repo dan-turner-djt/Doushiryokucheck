@@ -1,7 +1,7 @@
-import { ChangeEvent, ElementRef, FormEvent, RefObject, useRef, useState } from "react";
+import { ElementRef, FormEvent, RefObject, useRef, useState } from "react";
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, StaticFieldData } from "../Field/Field";
-import { Button } from "@mui/material";
+import { Button, FormControl, MenuItem, TextField } from "@mui/material";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -62,7 +62,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 		return result;
 	};
 
-	const handleTestTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+	const handleTestTypeChange = (e: any) => {
 		setCurrentSettings({...currentSettings, testType: Number(e.target.value), testTypeObject: getTestTypeDefaultSettings(Number(e.target.value))});
 
 		// Reset these fields' validity which belong to test type sub settings
@@ -97,34 +97,38 @@ const SettingsForm = (props: SettingsFormProps) => {
 		<form className="form settings-form" onSubmit={ handleSubmit }>
 			<fieldset>
 				<legend>Settings</legend>
-				<label>Choose a test mode</label>
-				<select
-					value={currentSettings.testType}
-					onChange={handleTestTypeChange}>
-					<optgroup>
-						<option value={TestType.Amount}>{ getTestTypeName(TestType.Amount) }</option>
-						<option value={TestType.Endless}>{ getTestTypeName(TestType.Endless) }</option>
-						<option value={TestType.Timed}>{ getTestTypeName(TestType.Timed) }</option>
-					</optgroup>
-				</select>
-				<div className="type-sub-form">
-					{currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
-						<Field
-							ref={ wordAmountRef }
-							staticData={ fieldData.wordAmount.staticData }
-							focus={ fieldData.wordAmount.focus }
-							valueSetter={ setNewWordAmount }></Field>
-					</div>}
-					{currentSettings.testType === TestType.Endless && <div className="endless-sub-form">
-					</div>}
-					{currentSettings.testType === TestType.Timed && <div className="timed-sub-form">
-						<Field
-							ref={ timeLimitRef }
-							staticData={ fieldData.timeLimit.staticData }
-							focus={ fieldData.timeLimit.focus }
-							valueSetter={ setNewTime }></Field>
-					</div>}
-				</div>
+				<FormControl>
+					<div className="field">
+						<TextField select
+							label="Test Mode"
+							variant="outlined"
+							helperText="Select a test mode" 
+							value={currentSettings.testType}
+							onChange={handleTestTypeChange}>
+							<MenuItem key={TestType.Amount} value={TestType.Amount}>{ getTestTypeName(TestType.Amount) }</MenuItem>
+							<MenuItem key={TestType.Endless} value={TestType.Endless}>{ getTestTypeName(TestType.Endless) }</MenuItem>
+							<MenuItem key={TestType.Timed} value={TestType.Timed}>{ getTestTypeName(TestType.Timed) }</MenuItem>
+						</TextField>
+					</div>
+					<div className="type-sub-form">
+						{currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
+							<Field
+								ref={ wordAmountRef }
+								staticData={ fieldData.wordAmount.staticData }
+								focus={ fieldData.wordAmount.focus }
+								valueSetter={ setNewWordAmount }/>
+						</div>}
+						{currentSettings.testType === TestType.Endless && <div className="endless-sub-form">
+						</div>}
+						{currentSettings.testType === TestType.Timed && <div className="timed-sub-form">
+							<Field
+								ref={ timeLimitRef }
+								staticData={ fieldData.timeLimit.staticData }
+								focus={ fieldData.timeLimit.focus }
+								valueSetter={ setNewTime }/>
+						</div>}
+					</div>
+				</FormControl>
 				<div className="form-button-row">
 					<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
 					<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>

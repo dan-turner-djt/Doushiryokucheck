@@ -1,4 +1,5 @@
 import { ChangeEvent, forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { TextField } from "@mui/material";
 
 export type StaticFieldData = {
   label: string,
@@ -20,7 +21,7 @@ export type FieldRef = {
 }
 
 const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
-	const [value, setValue] = useState<number>(props.staticData.startingValue);
+	const [value, setValue] = useState<string>(String(props.staticData.startingValue));
 	const [isValid, setIsValid] = useState<boolean>(true);
 	const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -33,7 +34,7 @@ const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
 			}
 		},
 		resetValue() {
-			setValue(props.staticData.startingValue);
+			setValue(String(props.staticData.startingValue));
 			setIsValid(true);
 		}
 	}));
@@ -43,7 +44,7 @@ const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
 		if (isNaN(newVal)) {
 			return;
 		}
-		setValue(newVal);
+		setValue(e.target.value);
     
 		let valid = true;
 		if (!checkAndSetValueIsValid(newVal)) {
@@ -71,9 +72,14 @@ const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
 
 	return (
 		<div className="field">
-			<label className="field-label">{ props.staticData.label }</label>
-			<input ref={ inputRef } value={ value } onChange={ handleValueChange }></input>
-			{!isValid && <label className="field-error-label">{ errorMessage }</label>}
+			<TextField
+				label={props.staticData.label}
+				type="number"
+				variant="outlined"
+				value={value}
+				onChange={handleValueChange}
+				error={!isValid}
+				helperText={!isValid ? errorMessage : ("Enter a number between " + props.staticData.minimum + " and " + props.staticData.maximum + " inclusive")}/>
 		</div>
 	);
 });
