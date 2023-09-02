@@ -1,7 +1,7 @@
 import { ElementRef, FormEvent, RefObject, useRef, useState } from "react";
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, StaticFieldData } from "../Field/Field";
-import { Button, FormControl, MenuItem, TextField } from "@mui/material";
+import { Box, Button, FormControl, MenuItem, TextField } from "@mui/material";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -94,47 +94,49 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 
 	return (
-		<form className="form settings-form" onSubmit={ handleSubmit }>
-			<fieldset>
-				<legend>Settings</legend>
-				<FormControl>
-					<div className="field">
-						<TextField select
-							label="Test Mode"
-							variant="outlined"
-							helperText="Select a test mode" 
-							value={currentSettings.testType}
-							onChange={handleTestTypeChange}>
-							<MenuItem key={TestType.Amount} value={TestType.Amount}>{ getTestTypeName(TestType.Amount) }</MenuItem>
-							<MenuItem key={TestType.Endless} value={TestType.Endless}>{ getTestTypeName(TestType.Endless) }</MenuItem>
-							<MenuItem key={TestType.Timed} value={TestType.Timed}>{ getTestTypeName(TestType.Timed) }</MenuItem>
-						</TextField>
+		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
+			<form className="form settings-form" onSubmit={ handleSubmit }>
+				<fieldset>
+					<legend>Settings</legend>
+					<FormControl>
+						<div className="field">
+							<TextField select
+								label="Test Mode"
+								variant="outlined"
+								helperText="Select a test mode" 
+								value={currentSettings.testType}
+								onChange={handleTestTypeChange}>
+								<MenuItem key={TestType.Amount} value={TestType.Amount}>{ getTestTypeName(TestType.Amount) }</MenuItem>
+								<MenuItem key={TestType.Endless} value={TestType.Endless}>{ getTestTypeName(TestType.Endless) }</MenuItem>
+								<MenuItem key={TestType.Timed} value={TestType.Timed}>{ getTestTypeName(TestType.Timed) }</MenuItem>
+							</TextField>
+						</div>
+						<div className="type-sub-form">
+							{currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
+								<Field
+									ref={ wordAmountRef }
+									staticData={ fieldData.wordAmount.staticData }
+									focus={ fieldData.wordAmount.focus }
+									valueSetter={ setNewWordAmount }/>
+							</div>}
+							{currentSettings.testType === TestType.Endless && <div className="endless-sub-form">
+							</div>}
+							{currentSettings.testType === TestType.Timed && <div className="timed-sub-form">
+								<Field
+									ref={ timeLimitRef }
+									staticData={ fieldData.timeLimit.staticData }
+									focus={ fieldData.timeLimit.focus }
+									valueSetter={ setNewTime }/>
+							</div>}
+						</div>
+					</FormControl>
+					<div className="form-button-row">
+						<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
+						<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>
 					</div>
-					<div className="type-sub-form">
-						{currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
-							<Field
-								ref={ wordAmountRef }
-								staticData={ fieldData.wordAmount.staticData }
-								focus={ fieldData.wordAmount.focus }
-								valueSetter={ setNewWordAmount }/>
-						</div>}
-						{currentSettings.testType === TestType.Endless && <div className="endless-sub-form">
-						</div>}
-						{currentSettings.testType === TestType.Timed && <div className="timed-sub-form">
-							<Field
-								ref={ timeLimitRef }
-								staticData={ fieldData.timeLimit.staticData }
-								focus={ fieldData.timeLimit.focus }
-								valueSetter={ setNewTime }/>
-						</div>}
-					</div>
-				</FormControl>
-				<div className="form-button-row">
-					<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
-					<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>
-				</div>
-			</fieldset>
-		</form>
+				</fieldset>
+			</form>
+		</Box>
 	);
 };
  
