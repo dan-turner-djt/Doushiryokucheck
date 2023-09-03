@@ -1,7 +1,7 @@
-import { ElementRef, FormEvent, RefObject, useRef, useState } from "react";
+import { ChangeEvent, ElementRef, FormEvent, RefObject, useRef, useState } from "react";
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
-import { Box, Button, FormControl, FormGroup, FormLabel, MenuItem, TextField } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, TextField } from "@mui/material";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -38,11 +38,44 @@ const SettingsForm = (props: SettingsFormProps) => {
 		}
 	});
 
+	const [verbTypeData, setVerbTypeData] = useState({
+		vtIchidan: DefaultSettings.vtIchidan,
+		vtGodan: DefaultSettings.vtGodan,
+		vtIrregular: DefaultSettings.vtIrregular
+	});
+	const verbTypeError = [verbTypeData.vtIchidan, verbTypeData.vtGodan, verbTypeData.vtIrregular].filter((v) => v).length === 0;
+	const vtInputRef = useRef<HTMLInputElement>(null);
+
+	const [verbLevelData, setVerbLevelData] = useState({
+		vlN5: DefaultSettings.vlN5,
+		vlN4: DefaultSettings.vlN4,
+		vlN3: DefaultSettings.vlN3,
+		vlN2: DefaultSettings.vlN2,
+		vlN1: DefaultSettings.vlN1
+	});
+	const verbLevelError = [verbLevelData.vlN5, verbLevelData.vlN4, verbLevelData.vlN3, verbLevelData.vlN2, verbLevelData.vlN1].filter((v) => v).length === 0;
+	const vlInputRef = useRef<HTMLInputElement>(null);
+
+
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		const firstInvalidField: RefObject<FieldRef> | undefined = getFirstInvalidField();
 		if (!firstInvalidField) {
+			if(verbTypeError) {
+				if (vtInputRef.current) {
+					vtInputRef.current.focus();
+					return;
+				}
+			}
+
+			if(verbLevelError) {
+				if (vlInputRef.current) {
+					vlInputRef.current.focus();
+					return;
+				}
+			}
+
 			// Form is valid, submit
 			props.submitHandler(currentSettings);
 		} else {
@@ -93,6 +126,26 @@ const SettingsForm = (props: SettingsFormProps) => {
 			value.valid = true;
 			setFieldData({...fieldData, [key]: value});
 		}
+
+		verbTypeData.vtIchidan = DefaultSettings.vtIchidan;
+		verbTypeData.vtGodan= DefaultSettings.vtGodan;
+		verbTypeData.vtIrregular = DefaultSettings.vtIrregular;
+
+		verbLevelData.vlN5 = DefaultSettings.vlN5;
+		verbLevelData.vlN4 = DefaultSettings.vlN4;
+		verbLevelData.vlN3 = DefaultSettings.vlN3;
+		verbLevelData.vlN2 = DefaultSettings.vlN2;
+		verbLevelData.vlN1 = DefaultSettings.vlN1;
+	};
+
+	const handleVtChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setCurrentSettings({...currentSettings, [e.target.name]: e.target.checked});
+		setVerbTypeData({...verbTypeData, [e.target.name]: e.target.checked});
+	};
+
+	const handleVlChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setCurrentSettings({...currentSettings, [e.target.name]: e.target.checked});
+		setVerbLevelData({...verbLevelData, [e.target.name]: e.target.checked});
 	};
 
 	return (
@@ -136,8 +189,90 @@ const SettingsForm = (props: SettingsFormProps) => {
 					</FormControl>
 				</div>
 				<div>
-					<FormControl component="fieldset" variant="standard">
+					<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError }>
 						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
+						<div className="checkbox-group">
+							<FormLabel>Verb Type</FormLabel>
+							<FormGroup>
+								<span>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbTypeData.vtIchidan}
+												onChange={handleVtChange}
+												name="vtIchidan"
+												inputRef={vtInputRef}/>
+										}
+										label="Ichidan"
+									/>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbTypeData.vtGodan}
+												onChange={handleVtChange}
+												name="vtGodan"/>
+										}
+										label="Godan"
+									/>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbTypeData.vtIrregular}
+												onChange={handleVtChange}
+												name="vtIrregular"/>
+										}
+										label="Irregular"
+									/>
+								</span>
+							</FormGroup>
+							<FormHelperText>{ verbTypeError? "Select at least one" : "" }</FormHelperText>
+						</div>
+						<div className="checkbox-group">
+							<FormLabel>JLPT Level</FormLabel>
+							<FormGroup>
+								<span>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbLevelData.vlN5}
+												onChange={handleVlChange}
+												name="vlN5"
+												inputRef={vlInputRef}/>
+										}
+										label="N5"
+									/>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbLevelData.vlN4}
+												onChange={handleVlChange}
+												name="vlN4"/>
+										}
+										label="N4"
+									/>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbLevelData.vlN3}
+												onChange={handleVlChange}
+												name="vlN3"/>
+										}
+										label="N3"
+									/>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbLevelData.vlN2}
+												onChange={handleVlChange}
+												name="vlN2"/>
+										}
+										label="N2"
+									/>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbLevelData.vlN1}
+												onChange={handleVlChange}
+												name="vlN1"/>
+										}
+										label="N1"
+									/>
+								</span>
+							</FormGroup>
+							<FormHelperText>{ verbLevelError? "Select at least one" : "" }</FormHelperText>
+						</div>
 					</FormControl>
 				</div>
 				<div>

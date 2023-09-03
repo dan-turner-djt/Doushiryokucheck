@@ -41,6 +41,20 @@ body {
     font-size: large;
     color: black;
   }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .checkbox-group {
+    margin-bottom: 20px;
+  }
+
+  .form-button-row button {
+    margin-top: 20px;
+    margin-left: 6px;
+    margin-right: 6px;
+  }
 }
 /*.form input, .form textarea, .form select {
   width: 100%;
@@ -50,13 +64,3 @@ body {
   box-sizing: border-box;
   display: block;
 }*/
-
-.field {
-  margin-bottom: 20px;
-}
-
-.form-button-row button {
-  margin-top: 20px;
-  margin-left: 6px;
-  margin-right: 6px;
-}
