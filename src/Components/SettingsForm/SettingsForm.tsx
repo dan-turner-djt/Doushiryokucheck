@@ -1,6 +1,6 @@
 import { ElementRef, FormEvent, RefObject, useRef, useState } from "react";
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
-import Field, { FieldRef, StaticFieldData } from "../Field/Field";
+import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, FormControl, MenuItem, TextField } from "@mui/material";
 
 export type SettingsFormProps = {
@@ -16,6 +16,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const [fieldData, setFieldData] = useState({
 		wordAmount: {
 			staticData: {
+				required: true,
 				label: "Word Amount",
 				minimum: 1, maximum: 100,
 				startingValue: DefaultAmountSettings.amount
@@ -26,6 +27,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 		},
 		timeLimit: {
 			staticData: {
+				required: true,
 				label: "Time Limit (seconds)",
 				minimum: 1, maximum: 3600,
 				startingValue: DefaultTimedSettings.time
@@ -72,12 +74,12 @@ const SettingsForm = (props: SettingsFormProps) => {
 		});
 	};
 
-	const setNewWordAmount = (newWordAmount: number, valid: boolean) => {
+	const setNewWordAmount = (newWordAmount: string, valid: boolean) => {
 		setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, amount: newWordAmount}});
 		setFieldData({...fieldData, wordAmount: {...fieldData.wordAmount, valid: valid}});
 	};
 
-	const setNewTime = (newTime: number, valid: boolean) => {
+	const setNewTime = (newTime: string, valid: boolean) => {
 		setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, time: newTime}});
 		setFieldData({...fieldData, timeLimit: {...fieldData.timeLimit, valid: valid}});
 	};
@@ -96,9 +98,9 @@ const SettingsForm = (props: SettingsFormProps) => {
 	return (
 		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form settings-form" onSubmit={ handleSubmit }>
-				<fieldset>
-					<legend>Settings</legend>
-					<FormControl>
+				<FormControl>
+					<fieldset>
+						<legend>Test Settings</legend>
 						<div className="field">
 							<TextField select
 								label="Test Mode"
@@ -114,6 +116,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<div className="type-sub-form">
 							{currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
 								<Field
+									type={ FieldType.Number }
 									ref={ wordAmountRef }
 									staticData={ fieldData.wordAmount.staticData }
 									focus={ fieldData.wordAmount.focus }
@@ -123,18 +126,25 @@ const SettingsForm = (props: SettingsFormProps) => {
 							</div>}
 							{currentSettings.testType === TestType.Timed && <div className="timed-sub-form">
 								<Field
+									type={ FieldType.Number }
 									ref={ timeLimitRef }
 									staticData={ fieldData.timeLimit.staticData }
 									focus={ fieldData.timeLimit.focus }
 									valueSetter={ setNewTime }/>
 							</div>}
 						</div>
-					</FormControl>
+					</fieldset>
+					<fieldset>
+						<legend>Verb Settings</legend>
+					</fieldset>
+					<fieldset>
+						<legend>Verb Form Settings</legend>
+					</fieldset>
 					<div className="form-button-row">
 						<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
 						<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>
 					</div>
-				</fieldset>
+				</FormControl>
 			</form>
 		</Box>
 	);

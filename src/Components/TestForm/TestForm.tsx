@@ -1,7 +1,8 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, ElementRef, FormEvent, useRef, useState } from "react";
 import { AmountSettingsObject, SettingsObject, TestType, TimedSettingsObject, getTestTypeName } from "../../SettingsDef";
 import Timer from "../Timer/Timer";
-import { Button } from "@mui/material";
+import { Box, Button, FormControl } from "@mui/material";
+import Field, { FieldType } from "../Field/Field";
 
 export type TestFormProps = {
   testSettings: SettingsObject;
@@ -12,9 +13,23 @@ const TestForm = (props: TestFormProps) => {
 	const [testFinished, setTestFinished] = useState<boolean>(false);
 	const [questionNumber, setQuestionNumber] = useState<number>(0);
 	const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = useState<number>(0);
-	const [answerInput, setAnswerInput] = useState<string>("");
 	const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
 	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
+
+	const answerInputRef = useRef<ElementRef<typeof Field>>(null);
+	const [fieldData, setFieldData] = useState({
+		answerInput: {
+			staticData: {
+				required: true,
+				label: "Answer",
+				startingValue: ""
+			},
+			valid: true,
+			focus: false,
+			ref: answerInputRef
+		}
+	});
+	const [answerInputVal, setAnswerInputVal] = useState<string>(fieldData.answerInput.staticData.startingValue);
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -37,7 +52,7 @@ const TestForm = (props: TestFormProps) => {
 			loadNextQuestion();
 		} else {
 			// Pressed check from answer step
-			if (checkAnswerIsCorrect(answerInput)) {
+			if (checkAnswerIsCorrect(answerInputVal)) {
 				setAnsweredCorrectly(true);
 				setAnsweredCorrectlyTotal(answeredCorrectlyTotal + 1);
 			} else {
@@ -58,7 +73,7 @@ const TestForm = (props: TestFormProps) => {
 
 	const loadNextQuestion = () => {
 		setQuestionNumber(questionNumber + 1);
-		setAnswerInput("");
+		setAnswerInputVal("");
 	};
 
 	const finishTest = () => {
@@ -66,14 +81,14 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const checkAnswerIsCorrect = (answer: string):boolean => {
-		if (answer !== "") {
+		if (answer !== "o") {
 			return false;
 		}
 		return true;
 	};
 
 	const restartTest = () => {
-		setAnswerInput("");
+		setAnswerInputVal("");
 		setQuestionNumber(0);
 		setAnsweredCorrectlyTotal(0);
 		setShowAnswerResult(false);
@@ -84,45 +99,57 @@ const TestForm = (props: TestFormProps) => {
 		props.quitHandler();
 	};
 
-	const handleAnswerInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setAnswerInput(e.target.value);
+	const setAnswerInput = (newAnswerInput: string, valid: boolean) => {
+		setAnswerInputVal(newAnswerInput);
+		setFieldData({...fieldData, answerInput: {...fieldData.answerInput, valid: valid}});
 	};
 
 	return (
-		<form className="form test-form" onSubmit={ handleSubmit }>
-			<fieldset>
-				<legend>{ getTestTypeName(props.testSettings.testType) }</legend>
-				{testFinished && <div>
-					<p>Total Correct: { answeredCorrectlyTotal }</p>
-					<div className="form-button-row">
-						<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
-						<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Restart</Button>
-					</div>
-				</div>}
-				{!testFinished && <div>
-					<span>
-						<p>Correct: { answeredCorrectlyTotal }</p>
-						{props.testSettings.testType === TestType.Timed &&
-              <Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
-						}
-					</span>
-					<p>Question {questionNumber + 1}:</p>
-					{showAnswerResult && <div>
-						{answeredCorrectly && <p>
-              Correct!
-						</p>}
-						{!answeredCorrectly && <p>
-              Incorrect! Correct answer is ...
-						</p>}
-					</div>}
-					<input value={ answerInput } onChange={ handleAnswerInputChange }></input>
-					<div className="form-button-row">
-						<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
-						<Button variant="contained" color="darkBlue" type="submit" className="button-primary">{ showAnswerResult? "Next" : "Check"}</Button>
-					</div>
-				</div>}
-			</fieldset>
-		</form>
+		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
+			<form className="form test-form" onSubmit={ handleSubmit }>
+				<FormControl>
+					<fieldset>
+						<legend>{ getTestTypeName(props.testSettings.testType) }</legend>
+						{testFinished && <div>
+							<p>Total Correct: { answeredCorrectlyTotal }</p>
+							<div className="form-button-row">
+								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
+								<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Restart</Button>
+							</div>
+						</div>}
+						{!testFinished && <div>
+							<span>
+								<p>Correct: { answeredCorrectlyTotal }</p>
+								{props.testSettings.testType === TestType.Timed &&
+									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
+								}
+							</span>
+							<p>Question {questionNumber + 1}:</p>
+							{showAnswerResult && <div>
+								{answeredCorrectly && <p>
+									Correct!
+								</p>}
+								{!answeredCorrectly && <p>
+									Incorrect! Correct answer is ...
+								</p>}
+							</div>}
+							{!showAnswerResult && 
+								<Field type={ FieldType.String }
+									ref={ answerInputRef }
+									staticData={ fieldData.answerInput.staticData }
+									focus={ fieldData.answerInput.focus }
+									valueSetter={ setAnswerInput }
+								/>
+							}
+							<div className="form-button-row">
+								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
+								<Button variant="contained" color="darkBlue" type="submit" className="button-primary">{ showAnswerResult? "Next" : "Check"}</Button>
+							</div>
+						</div>}
+					</fieldset>
+				</FormControl>
+			</form>
+		</Box>
 	);
 };
  

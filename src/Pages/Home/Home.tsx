@@ -11,7 +11,7 @@ const Home = () => {
 
 	const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
 		setCurrentSettings(newSettings);
-		getVerbList(newSettings);
+		//getVerbList(newSettings);
 		startNewTest();
 	};
 
