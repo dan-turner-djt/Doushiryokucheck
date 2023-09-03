@@ -39,22 +39,30 @@ const SettingsForm = (props: SettingsFormProps) => {
 	});
 
 	const [verbTypeData, setVerbTypeData] = useState({
-		vtIchidan: DefaultSettings.vtIchidan,
-		vtGodan: DefaultSettings.vtGodan,
-		vtIrregular: DefaultSettings.vtIrregular
+		vtIchidan: DefaultSettings.verbType.vtIchidan,
+		vtGodan: DefaultSettings.verbType.vtGodan,
+		vtIrregular: DefaultSettings.verbType.vtIrregular
 	});
 	const verbTypeError = [verbTypeData.vtIchidan, verbTypeData.vtGodan, verbTypeData.vtIrregular].filter((v) => v).length === 0;
 	const vtInputRef = useRef<HTMLInputElement>(null);
 
 	const [verbLevelData, setVerbLevelData] = useState({
-		vlN5: DefaultSettings.vlN5,
-		vlN4: DefaultSettings.vlN4,
-		vlN3: DefaultSettings.vlN3,
-		vlN2: DefaultSettings.vlN2,
-		vlN1: DefaultSettings.vlN1
+		vlN5: DefaultSettings.verbLevel.vlN5,
+		vlN4: DefaultSettings.verbLevel.vlN4,
+		vlN3: DefaultSettings.verbLevel.vlN3,
+		vlN2: DefaultSettings.verbLevel.vlN2,
+		vlN1: DefaultSettings.verbLevel.vlN1
 	});
 	const verbLevelError = [verbLevelData.vlN5, verbLevelData.vlN4, verbLevelData.vlN3, verbLevelData.vlN2, verbLevelData.vlN1].filter((v) => v).length === 0;
 	const vlInputRef = useRef<HTMLInputElement>(null);
+
+	const [conjugationLevelData, setConjugationLevelData] = useState({
+		clN5: true,
+		clN4: false,
+		clN3: false,
+		clN2: false,
+		clN1: false
+	});
 
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -77,6 +85,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 			}
 
 			// Form is valid, submit
+			console.log(currentSettings);
 			props.submitHandler(currentSettings);
 		} else {
 			if (firstInvalidField.current) {
@@ -127,25 +136,36 @@ const SettingsForm = (props: SettingsFormProps) => {
 			setFieldData({...fieldData, [key]: value});
 		}
 
-		verbTypeData.vtIchidan = DefaultSettings.vtIchidan;
-		verbTypeData.vtGodan= DefaultSettings.vtGodan;
-		verbTypeData.vtIrregular = DefaultSettings.vtIrregular;
+		verbTypeData.vtIchidan = DefaultSettings.verbType.vtIchidan;
+		verbTypeData.vtGodan= DefaultSettings.verbType.vtGodan;
+		verbTypeData.vtIrregular = DefaultSettings.verbType.vtIrregular;
 
-		verbLevelData.vlN5 = DefaultSettings.vlN5;
-		verbLevelData.vlN4 = DefaultSettings.vlN4;
-		verbLevelData.vlN3 = DefaultSettings.vlN3;
-		verbLevelData.vlN2 = DefaultSettings.vlN2;
-		verbLevelData.vlN1 = DefaultSettings.vlN1;
+		verbLevelData.vlN5 = DefaultSettings.verbLevel.vlN5;
+		verbLevelData.vlN4 = DefaultSettings.verbLevel.vlN4;
+		verbLevelData.vlN3 = DefaultSettings.verbLevel.vlN3;
+		verbLevelData.vlN2 = DefaultSettings.verbLevel.vlN2;
+		verbLevelData.vlN1 = DefaultSettings.verbLevel.vlN1;
+
+		conjugationLevelData.clN5 = true;
+		conjugationLevelData.clN4 = false;
+		conjugationLevelData.clN3 = false;
+		conjugationLevelData.clN2 = false;
+		conjugationLevelData.clN1 = false;
 	};
 
 	const handleVtChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setCurrentSettings({...currentSettings, [e.target.name]: e.target.checked});
+		setCurrentSettings({...currentSettings, verbType: {...currentSettings.verbType, [e.target.name]: e.target.checked}});
 		setVerbTypeData({...verbTypeData, [e.target.name]: e.target.checked});
 	};
 
 	const handleVlChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setCurrentSettings({...currentSettings, [e.target.name]: e.target.checked});
+		setCurrentSettings({...currentSettings, verbLevel: {...currentSettings.verbLevel, [e.target.name]: e.target.checked}});
 		setVerbLevelData({...verbLevelData, [e.target.name]: e.target.checked});
+	};
+
+	const handleClChange = (e: ChangeEvent<HTMLInputElement>) => {
+		//setCurrentSettings({...currentSettings, [e.target.name]: e.target.checked});
+		setConjugationLevelData({...conjugationLevelData, [e.target.name]: e.target.checked});
 	};
 
 	return (
@@ -279,6 +299,54 @@ const SettingsForm = (props: SettingsFormProps) => {
 					<FormControl component="fieldset" variant="standard">
 						<FormLabel component="legend" className="form-title">Conjguation Settings</FormLabel>
 					</FormControl>
+					<div className="checkbox-group">
+						<FormLabel>Filter by JLPT Level</FormLabel>
+						<FormGroup>
+							<span>
+								<FormControlLabel
+									control={
+										<Checkbox checked={conjugationLevelData.clN5}
+											onChange={handleClChange}
+											name="clN5"
+											inputRef={vlInputRef}/>
+									}
+									label="N5"
+								/>
+								<FormControlLabel
+									control={
+										<Checkbox checked={conjugationLevelData.clN4}
+											onChange={handleClChange}
+											name="clN4"/>
+									}
+									label="N4"
+								/>
+								<FormControlLabel
+									control={
+										<Checkbox checked={conjugationLevelData.clN3}
+											onChange={handleClChange}
+											name="clN3"/>
+									}
+									label="N3"
+								/>
+								<FormControlLabel
+									control={
+										<Checkbox checked={conjugationLevelData.clN2}
+											onChange={handleClChange}
+											name="clN2"/>
+									}
+									label="N2"
+								/>
+								<FormControlLabel
+									control={
+										<Checkbox checked={conjugationLevelData.clN1}
+											onChange={handleClChange}
+											name="clN1"/>
+									}
+									label="N1"
+								/>
+							</span>
+						</FormGroup>
+					</div>
 				</div>
 				<div className="form-button-row">
 					<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>

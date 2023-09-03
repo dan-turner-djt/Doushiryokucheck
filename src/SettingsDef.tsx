@@ -17,14 +17,18 @@ export type TimedSettingsObject = {
 export type SettingsObject = {
   testType: TestType
   testTypeObject: AmountSettingsObject | EndlessSettingsObject | TimedSettingsObject,
-	vtIchidan: boolean,
-	vtGodan: boolean,
-	vtIrregular: boolean,
-	vlN5: boolean,
-	vlN4: boolean,
-	vlN3: boolean,
-	vlN2: boolean,
-	vlN1: boolean
+	verbType: {
+		vtIchidan: boolean,
+		vtGodan: boolean,
+		vtIrregular: boolean
+	},
+	verbLevel: {
+		vlN5: boolean,
+		vlN4: boolean,
+		vlN3: boolean,
+		vlN2: boolean,
+		vlN1: boolean
+	}
 }
 
 
@@ -44,14 +48,18 @@ export const DefaultTimedSettings: TimedSettingsObject = {
 export const DefaultSettings: SettingsObject = {
 	testType: TestType.Amount,
 	testTypeObject: DefaultAmountSettings,
-	vtIchidan: true,
-	vtGodan: true,
-	vtIrregular: true,
-	vlN5: true,
-	vlN4: false,
-	vlN3: false,
-	vlN2: false,
-	vlN1: false
+	verbType: {
+		vtIchidan: true,
+		vtGodan: true,
+		vtIrregular: true
+	},
+	verbLevel: {
+		vlN5: true,
+		vlN4: false,
+		vlN3: false,
+		vlN2: false,
+		vlN1: false
+	}
 };
 
 /* Getter utils */
