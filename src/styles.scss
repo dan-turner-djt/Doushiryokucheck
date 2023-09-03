@@ -46,8 +46,32 @@ body {
     margin-bottom: 20px;
   }
 
+  .lineBreak {
+    margin-bottom: 20px;
+  }
+
+  .checkbox-grid {
+    max-width: 800px;
+    margin: auto;
+  }
+
   .checkbox-group {
     margin-bottom: 20px;
+  }
+
+  .checkbox-parent-group {
+    display: flex;
+    align-items: left;
+    justify-content: space-between;
+
+    .parent-checkbox {
+      margin-right: 64px;
+    }
+  
+    .children-checkboxes {
+      min-width: 500px;
+      display: flex;
+    }
   }
 
   .form-button-row button {

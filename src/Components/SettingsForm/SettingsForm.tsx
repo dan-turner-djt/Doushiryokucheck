@@ -64,6 +64,96 @@ const SettingsForm = (props: SettingsFormProps) => {
 		clN1: false
 	});
 
+	type VerbFormData = {
+		stem: {
+			plain: boolean
+		},
+		present: {
+			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
+		},
+		past: {
+			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
+		},
+		te: {
+			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
+		},
+		naide: {
+			plain: boolean, polite: boolean
+		},
+		tai: {
+			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
+		}
+		zu: {
+			plain: boolean
+		},
+		volitional: {
+			plain: boolean, polite: boolean, negativePlain: boolean
+		},
+		imperative: {
+			plain: boolean, polite: boolean, negativePlain: boolean
+		},
+		baConditional: {
+			plain: boolean, polite: boolean
+		},
+		taraConditional: {
+			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
+		}
+	}
+	type WithPlainForms = "stem" | "present" | "past" | "te" | "naide" | "tai" | "zu" | "volitional" | "imperative" | "baConditional" | "taraConditional";
+	type WithPoliteForms = "present" | "past" | "te" | "naide" | "tai" | "volitional" | "imperative" | "baConditional" | "taraConditional";
+	type WithNegativeForms = "present" | "past" | "te" | "tai" | "volitional" | "imperative" | "taraConditional";
+	type WithNegativePoliteForms = "present" | "past" | "te" | "tai" | "taraConditional";
+	type FormNames = WithPlainForms | WithPoliteForms | WithNegativeForms | WithNegativePoliteForms;
+
+	const [verbFormData, setVerbFormData] = useState<VerbFormData>({
+		stem: {
+			plain: false
+		},
+		present: {
+			plain: false, polite: false, negativePlain: false, negativePolite: false
+		},
+		past: {
+			plain: false, polite: false, negativePlain: false, negativePolite: false
+		},
+		te: {
+			plain: false, polite: false, negativePlain: false, negativePolite: false
+		},
+		naide: {
+			plain: false, polite: false
+		},
+		tai: {
+			plain: false, polite: false, negativePlain: false, negativePolite: false
+		},
+		zu: {
+			plain: false
+		},
+		volitional: {
+			plain: false, polite: false, negativePlain: false
+		},
+		imperative: {
+			plain: false, polite: false, negativePlain: false
+		},
+		baConditional: {
+			plain: false, polite: false
+		},
+		taraConditional: {
+			plain: false, polite: false, negativePlain: false, negativePolite: false
+		},
+	});
+	
+	const isVerbFormError = (): boolean => {
+		for(const o of Object.entries(verbFormData)) {
+			const formInfo = o[1];
+			for(const v of Object.entries(formInfo)) {
+				if (v[1]) return false;
+			}
+		}
+
+		return true;
+	};
+	const vfInputRef = useRef<HTMLInputElement>(null);
+
+
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -80,6 +170,13 @@ const SettingsForm = (props: SettingsFormProps) => {
 			if(verbLevelError) {
 				if (vlInputRef.current) {
 					vlInputRef.current.focus();
+					return;
+				}
+			}
+
+			if(isVerbFormError()) {
+				if(vfInputRef.current) {
+					vfInputRef.current.focus();
 					return;
 				}
 			}
@@ -164,15 +261,117 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 
 	const handleClChange = (e: ChangeEvent<HTMLInputElement>) => {
-		//setCurrentSettings({...currentSettings, [e.target.name]: e.target.checked});
 		setConjugationLevelData({...conjugationLevelData, [e.target.name]: e.target.checked});
+	};
+
+	const handleVfChange = (e: ChangeEvent<HTMLInputElement>, form: FormNames) => {
+		//setCurrentSettings({...currentSettings, [e.target.name]: e.target.checked});
+		setVerbFormData({...verbFormData, [form]: {...verbFormData[form], [e.target.name]: e.target.checked}});
+	};
+
+	const handleVfChangeParent = (e: ChangeEvent<HTMLInputElement>, form: FormNames) => {
+		if(e.target.checked) {
+			const obj: Record<string, boolean> = {};
+			for(const v in verbFormData[form]) {
+				obj[v] = true;
+			}
+			setVerbFormData({...verbFormData, [form]: obj});
+
+		} else if (!e.target.indeterminate) {
+			const obj: Record<string, boolean> = {};
+			for(const v in verbFormData[form]) {
+				obj[v] = false;
+			}
+			setVerbFormData({...verbFormData, [form]: obj});
+		}
+	};
+
+	const checkIndeterminate = (form: FormNames): boolean => {
+		const arr: boolean[] = [];
+		for(const v of Object.entries(verbFormData[form])) {
+			arr.push(v[1]);
+		}
+		return !(arr.every(v => v === true) || arr.every(v => v === false));
+	};
+
+	const checkboxParentGroup = (name: FormNames, label: string, first = false) => {
+		return (
+			<div>
+				<FormGroup>
+					<span className="checkbox-parent-group">
+						<span className="parent-checkbox">
+							<FormControlLabel
+								control={
+									<Checkbox checked={verbFormData[name].plain}
+										indeterminate={checkIndeterminate(name)}
+										onChange={(e) => handleVfChangeParent(e, name)}
+										name={name}
+										inputRef={first? vfInputRef : null}/>
+								}
+								label={label}
+							/>
+						</span>
+						<span className="children-checkboxes">
+							{"plain" in verbFormData[name] &&
+								<span>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbFormData[name as  WithPlainForms].plain}
+												onChange={(e) => handleVfChange(e, name)}
+												name="plain"/>
+										}
+										label="Plain"
+									/>
+								</span>
+							}
+							{"polite" in verbFormData[name] &&
+								<span>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbFormData[name as WithPoliteForms].polite}
+												onChange={(e) => handleVfChange(e, name)}
+												name="polite"/>
+										}
+										label="Polite"
+									/>
+								</span>
+							}
+							{"negativePlain" in verbFormData[name] &&
+								<span>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbFormData[name as WithNegativeForms].negativePlain}
+												onChange={(e) => handleVfChange(e, name)}
+												name="negativePlain"/>
+										}
+										label="Negative Plain"
+									/>
+								</span>
+							}
+							{"negativePolite" in verbFormData[name] &&
+								<span>
+									<FormControlLabel
+										control={
+											<Checkbox checked={verbFormData[name as WithNegativePoliteForms].negativePolite}
+												onChange={(e) => handleVfChange(e, name)}
+												name="negativePolite"/>
+										}
+										label="Negative Polite"
+									/>
+								</span>
+							}
+						</span>
+					</span>
+				</FormGroup>
+			</div>
+		);
 	};
 
 	return (
 		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form settings-form" onSubmit={ handleSubmit }>
 				<div>
-					<FormControl component="fieldset" variant="standard">
+					<FormControl component="fieldset" variant="standard" error={ !fieldData.wordAmount.valid || !fieldData.timeLimit.valid }>
 						<FormLabel component="legend" className="form-title">Test Settings</FormLabel>
 						<div className="field">
 							<TextField select
@@ -296,57 +495,77 @@ const SettingsForm = (props: SettingsFormProps) => {
 					</FormControl>
 				</div>
 				<div>
-					<FormControl component="fieldset" variant="standard">
+					<FormControl component="fieldset" variant="standard" error={isVerbFormError()}>
 						<FormLabel component="legend" className="form-title">Conjguation Settings</FormLabel>
+						{false && 
+							<div className="checkbox-group">
+								<FormLabel>Filter by JLPT Level</FormLabel>
+								<FormGroup>
+									<span>
+										<FormControlLabel
+											control={
+												<Checkbox checked={conjugationLevelData.clN5}
+													onChange={handleClChange}
+													name="clN5"
+													inputRef={vlInputRef}/>
+											}
+											label="N5"
+										/>
+										<FormControlLabel
+											control={
+												<Checkbox checked={conjugationLevelData.clN4}
+													onChange={handleClChange}
+													name="clN4"/>
+											}
+											label="N4"
+										/>
+										<FormControlLabel
+											control={
+												<Checkbox checked={conjugationLevelData.clN3}
+													onChange={handleClChange}
+													name="clN3"/>
+											}
+											label="N3"
+										/>
+										<FormControlLabel
+											control={
+												<Checkbox checked={conjugationLevelData.clN2}
+													onChange={handleClChange}
+													name="clN2"/>
+											}
+											label="N2"
+										/>
+										<FormControlLabel
+											control={
+												<Checkbox checked={conjugationLevelData.clN1}
+													onChange={handleClChange}
+													name="clN1"/>
+											}
+											label="N1"
+										/>
+									</span>
+								</FormGroup>
+							</div>
+						}
+						<div className="checkbox-group">
+							<FormLabel>Verb Forms</FormLabel>
+							<div className="lineBreak"></div>
+							<div className="checkbox-grid">
+								{checkboxParentGroup("present", "Present", true)}
+								{checkboxParentGroup("past", "Past")}
+								{checkboxParentGroup("te", "て Form")}
+								{checkboxParentGroup("naide", "ないで Form")}
+								{checkboxParentGroup("tai", "たい Form")}
+								{checkboxParentGroup("zu", "ず Form")}
+								{checkboxParentGroup("volitional", "Volitional")}
+								{checkboxParentGroup("imperative", "Imperative")}
+								{checkboxParentGroup("baConditional", "えば Conditional")}
+								{checkboxParentGroup("taraConditional", "たら Conditional")}
+								{checkboxParentGroup("stem", "Stem")}
+							</div>
+						</div>
+						<FormHelperText>{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
 					</FormControl>
-					<div className="checkbox-group">
-						<FormLabel>Filter by JLPT Level</FormLabel>
-						<FormGroup>
-							<span>
-								<FormControlLabel
-									control={
-										<Checkbox checked={conjugationLevelData.clN5}
-											onChange={handleClChange}
-											name="clN5"
-											inputRef={vlInputRef}/>
-									}
-									label="N5"
-								/>
-								<FormControlLabel
-									control={
-										<Checkbox checked={conjugationLevelData.clN4}
-											onChange={handleClChange}
-											name="clN4"/>
-									}
-									label="N4"
-								/>
-								<FormControlLabel
-									control={
-										<Checkbox checked={conjugationLevelData.clN3}
-											onChange={handleClChange}
-											name="clN3"/>
-									}
-									label="N3"
-								/>
-								<FormControlLabel
-									control={
-										<Checkbox checked={conjugationLevelData.clN2}
-											onChange={handleClChange}
-											name="clN2"/>
-									}
-									label="N2"
-								/>
-								<FormControlLabel
-									control={
-										<Checkbox checked={conjugationLevelData.clN1}
-											onChange={handleClChange}
-											name="clN1"/>
-									}
-									label="N1"
-								/>
-							</span>
-						</FormGroup>
-					</div>
 				</div>
 				<div className="form-button-row">
 					<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
