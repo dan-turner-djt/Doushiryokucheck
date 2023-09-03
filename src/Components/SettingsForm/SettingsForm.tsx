@@ -1,7 +1,7 @@
 import { ElementRef, FormEvent, RefObject, useRef, useState } from "react";
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
-import { Box, Button, FormControl, MenuItem, TextField } from "@mui/material";
+import { Box, Button, FormControl, FormGroup, FormLabel, MenuItem, TextField } from "@mui/material";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -98,9 +98,9 @@ const SettingsForm = (props: SettingsFormProps) => {
 	return (
 		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form settings-form" onSubmit={ handleSubmit }>
-				<FormControl>
-					<fieldset>
-						<legend>Test Settings</legend>
+				<div>
+					<FormControl component="fieldset" variant="standard">
+						<FormLabel component="legend" className="form-title">Test Settings</FormLabel>
 						<div className="field">
 							<TextField select
 								label="Test Mode"
@@ -133,18 +133,22 @@ const SettingsForm = (props: SettingsFormProps) => {
 									valueSetter={ setNewTime }/>
 							</div>}
 						</div>
-					</fieldset>
-					<fieldset>
-						<legend>Verb Settings</legend>
-					</fieldset>
-					<fieldset>
-						<legend>Verb Form Settings</legend>
-					</fieldset>
-					<div className="form-button-row">
-						<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
-						<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>
-					</div>
-				</FormControl>
+					</FormControl>
+				</div>
+				<div>
+					<FormControl component="fieldset" variant="standard">
+						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
+					</FormControl>
+				</div>
+				<div>
+					<FormControl component="fieldset" variant="standard">
+						<FormLabel component="legend" className="form-title">Conjguation Settings</FormLabel>
+					</FormControl>
+				</div>
+				<div className="form-button-row">
+					<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
+					<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>
+				</div>
 			</form>
 		</Box>
 	);
