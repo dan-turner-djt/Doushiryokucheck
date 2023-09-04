@@ -254,6 +254,14 @@ const SettingsForm = (props: SettingsFormProps) => {
 		setVerbFormData(obj);
 	};
 
+	const checkAll = (form: FormNames): boolean => {
+		const arr: boolean[] = [];
+		for(const v of Object.entries(verbFormData[form])) {
+			arr.push(v[1]);
+		}
+		return arr.every(v => v === true);
+	};
+
 	const checkIndeterminate = (form: FormNames): boolean => {
 		const arr: boolean[] = [];
 		for(const v of Object.entries(verbFormData[form])) {
@@ -275,7 +283,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<span className="parent-checkbox">
 							<FormControlLabel
 								control={
-									<Checkbox checked={verbFormData[name].plain}
+									<Checkbox checked={checkAll(name)}
 										indeterminate={checkIndeterminate(name)}
 										onChange={(e) => handleVfChangeParent(e, name)}
 										name={name}
@@ -315,10 +323,10 @@ const SettingsForm = (props: SettingsFormProps) => {
 										control={
 											<Checkbox checked={verbFormData[name as WithNegativeForms].negativePlain}
 												onChange={(e) => handleVfChange(e, name)}
-												name={VerbFormSubTypeNamesInfo.negativePlain}
+												name="negativePlain"
 											/>
 										}
-										label="Negative Plain"
+										label={VerbFormSubTypeNamesInfo.negativePlain}
 									/>
 								</span>
 							}
@@ -381,6 +389,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						</div>
 					</FormControl>
 				</div>
+				<div className="lineBreak"></div>
 				<div>
 					<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError }>
 						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
@@ -468,9 +477,19 @@ const SettingsForm = (props: SettingsFormProps) => {
 						</div>
 					</FormControl>
 				</div>
+				<div className="lineBreak"></div>
 				<div>
 					<FormControl component="fieldset" variant="standard" error={isVerbFormError()}>
-						<FormLabel component="legend" className="form-title">Conjguation Settings</FormLabel>
+						<span className="toggle-row">
+							<span></span>
+							<FormLabel component="legend" className="form-title">Conjguation Settings</FormLabel>
+							<span>
+								<label style={{marginRight: "8px"}}>{showVfSubOptions? "Hide" : "Show"} sub-options</label>
+								<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
+									{showVfSubOptions? "Hide" : "Show"}
+								</Button>
+							</span>
+						</span>
 						{false && 
 							<div className="checkbox-group">
 								<FormLabel>Filter by JLPT Level</FormLabel>
@@ -525,7 +544,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 							<FormLabel>Verb Forms</FormLabel>
 							<div className="lineBreak"></div>
 							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
-								<div className={"checkbox-parent-group " + (showVfSubOptions? "toggle-row-wide" : "toggle-row-slim")}>
+								<div className={"checkbox-parent-group"}>
 									<FormControlLabel
 										control={
 											<Checkbox checked={vfAll}
@@ -534,12 +553,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 										}
 										label="All"
 									/>
-									<span>
-										<label style={{marginRight: "8px"}}>{showVfSubOptions? "Hide" : "Show"} sub-options</label>
-										<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
-											{showVfSubOptions? "Hide" : "Show"}
-										</Button>
-									</span>
 								</div>
 								{showVfSubOptions && 
 									<div>
