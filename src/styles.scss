@@ -50,8 +50,13 @@ body {
     margin-bottom: 20px;
   }
 
-  .checkbox-grid {
+  .checkbox-grid-wide {
     max-width: 800px;
+    margin: auto;
+  }
+
+  .checkbox-grid-slim {
+    max-width: 500px;
     margin: auto;
   }
 
@@ -69,9 +74,17 @@ body {
     }
   
     .children-checkboxes {
-      min-width: 500px;
+      min-width: 480px;
       display: flex;
     }
+  }
+
+  .toggle-row-wide {
+    width: 800px;
+  }
+
+  .toggle-row-slim {
+    width: 500px;
   }
 
   .form-button-row button {

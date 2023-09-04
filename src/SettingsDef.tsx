@@ -1,5 +1,7 @@
 /* Type definitions */
 
+import { VerbFormData } from "./Verb/VerbFormDefs";
+
 export enum TestType {
   Amount, Endless, Timed
 }
@@ -28,7 +30,8 @@ export type SettingsObject = {
 		vlN3: boolean,
 		vlN2: boolean,
 		vlN1: boolean
-	}
+	},
+	verbForms: VerbFormData
 }
 
 
@@ -59,6 +62,41 @@ export const DefaultSettings: SettingsObject = {
 		vlN3: false,
 		vlN2: false,
 		vlN1: false
+	},
+	verbForms: {
+		stem: {
+			plain: false
+		},
+		present: {
+			plain: true, polite: true, negativePlain: true, negativePolite: true
+		},
+		past: {
+			plain: true, polite: true, negativePlain: true, negativePolite: true
+		},
+		te: {
+			plain: true, polite: true, negativePlain: true, negativePolite: true
+		},
+		naide: {
+			plain: false, polite: false
+		},
+		tai: {
+			plain: false, polite: false, negativePlain: false, negativePolite: false
+		},
+		zu: {
+			plain: false
+		},
+		volitional: {
+			plain: false, polite: false, negativePlain: false
+		},
+		imperative: {
+			plain: false, polite: false, negativePlain: false
+		},
+		baConditional: {
+			plain: false, polite: false
+		},
+		taraConditional: {
+			plain: false, polite: false, negativePlain: false, negativePolite: false
+		}
 	}
 };
 

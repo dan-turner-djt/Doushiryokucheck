@@ -1,7 +1,9 @@
-import { ChangeEvent, ElementRef, FormEvent, RefObject, useRef, useState } from "react";
+import { ChangeEvent, ElementRef, FormEvent, RefObject, useEffect, useRef, useState } from "react";
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, TextField } from "@mui/material";
+import { FormNames, VerbFormData, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
+import { Label } from "@mui/icons-material";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -64,82 +66,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 		clN1: false
 	});
 
-	type VerbFormData = {
-		stem: {
-			plain: boolean
-		},
-		present: {
-			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
-		},
-		past: {
-			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
-		},
-		te: {
-			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
-		},
-		naide: {
-			plain: boolean, polite: boolean
-		},
-		tai: {
-			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
-		}
-		zu: {
-			plain: boolean
-		},
-		volitional: {
-			plain: boolean, polite: boolean, negativePlain: boolean
-		},
-		imperative: {
-			plain: boolean, polite: boolean, negativePlain: boolean
-		},
-		baConditional: {
-			plain: boolean, polite: boolean
-		},
-		taraConditional: {
-			plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
-		}
-	}
-	type WithPlainForms = "stem" | "present" | "past" | "te" | "naide" | "tai" | "zu" | "volitional" | "imperative" | "baConditional" | "taraConditional";
-	type WithPoliteForms = "present" | "past" | "te" | "naide" | "tai" | "volitional" | "imperative" | "baConditional" | "taraConditional";
-	type WithNegativeForms = "present" | "past" | "te" | "tai" | "volitional" | "imperative" | "taraConditional";
-	type WithNegativePoliteForms = "present" | "past" | "te" | "tai" | "taraConditional";
-	type FormNames = WithPlainForms | WithPoliteForms | WithNegativeForms | WithNegativePoliteForms;
-
-	const [verbFormData, setVerbFormData] = useState<VerbFormData>({
-		stem: {
-			plain: false
-		},
-		present: {
-			plain: false, polite: false, negativePlain: false, negativePolite: false
-		},
-		past: {
-			plain: false, polite: false, negativePlain: false, negativePolite: false
-		},
-		te: {
-			plain: false, polite: false, negativePlain: false, negativePolite: false
-		},
-		naide: {
-			plain: false, polite: false
-		},
-		tai: {
-			plain: false, polite: false, negativePlain: false, negativePolite: false
-		},
-		zu: {
-			plain: false
-		},
-		volitional: {
-			plain: false, polite: false, negativePlain: false
-		},
-		imperative: {
-			plain: false, polite: false, negativePlain: false
-		},
-		baConditional: {
-			plain: false, polite: false
-		},
-		taraConditional: {
-			plain: false, polite: false, negativePlain: false, negativePolite: false
-		},
-	});
+	const [verbFormData, setVerbFormData] = useState<VerbFormData>(DefaultSettings.verbForms);
 	
 	const isVerbFormError = (): boolean => {
 		for(const o of Object.entries(verbFormData)) {
@@ -153,6 +80,12 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 	const vfInputRef = useRef<HTMLInputElement>(null);
 
+	const [vfAll, setVfAll] = useState<boolean>(false);
+
+	useEffect(() => {
+		console.log(verbFormData);
+		setCurrentSettings({...currentSettings, verbForms: verbFormData});
+	}, [verbFormData]);
 
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -183,6 +116,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 			// Form is valid, submit
 			console.log(currentSettings);
+			console.log(DefaultSettings);
 			props.submitHandler(currentSettings);
 		} else {
 			if (firstInvalidField.current) {
@@ -203,7 +137,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 		return result;
 	};
 
-	const handleTestTypeChange = (e: any) => {
+	const handleTestTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setCurrentSettings({...currentSettings, testType: Number(e.target.value), testTypeObject: getTestTypeDefaultSettings(Number(e.target.value))});
 
 		// Reset these fields' validity which belong to test type sub settings
@@ -248,6 +182,9 @@ const SettingsForm = (props: SettingsFormProps) => {
 		conjugationLevelData.clN3 = false;
 		conjugationLevelData.clN2 = false;
 		conjugationLevelData.clN1 = false;
+
+		console.log(DefaultSettings.verbForms);
+		setVerbFormData(DefaultSettings.verbForms);
 	};
 
 	const handleVtChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -286,6 +223,37 @@ const SettingsForm = (props: SettingsFormProps) => {
 		}
 	};
 
+	const handleVfAllChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setVfAll(e.target.checked);
+
+		let toSet: boolean;
+		if(e.target.checked) {
+			toSet = true;
+		} else if (!e.target.indeterminate) {
+			toSet = false;
+		} else {
+			return;
+		}
+
+		const obj: VerbFormData = JSON.parse(JSON.stringify(DefaultSettings.verbForms));
+		Object.keys(obj).forEach(key => {
+			if (Object.keys(obj[key as keyof VerbFormData]).includes("plain")) {
+				(obj[key as WithPlainForms]).plain = toSet;
+			}
+			if (Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
+				(obj[key as WithPoliteForms]).polite = toSet;
+			}
+			if (Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
+				(obj[key as WithNegativeForms]).negativePlain = toSet;
+			}
+			if (Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
+				(obj[key as WithNegativePoliteForms]).negativePolite = toSet;
+			}
+		});
+
+		setVerbFormData(obj);
+	};
+
 	const checkIndeterminate = (form: FormNames): boolean => {
 		const arr: boolean[] = [];
 		for(const v of Object.entries(verbFormData[form])) {
@@ -294,11 +262,16 @@ const SettingsForm = (props: SettingsFormProps) => {
 		return !(arr.every(v => v === true) || arr.every(v => v === false));
 	};
 
+	const [showVfSubOptions, setShowVfSubOptions] = useState<boolean>(false);
+	const toggleVfSubOptions = () => {
+		setShowVfSubOptions(!showVfSubOptions);
+	};
+
 	const checkboxParentGroup = (name: FormNames, label: string, first = false) => {
 		return (
 			<div>
 				<FormGroup>
-					<span className="checkbox-parent-group">
+					<span className={"checkbox-parent-group"}>
 						<span className="parent-checkbox">
 							<FormControlLabel
 								control={
@@ -311,7 +284,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 								label={label}
 							/>
 						</span>
-						<span className="children-checkboxes">
+						{showVfSubOptions && <span className="children-checkboxes">
 							{"plain" in verbFormData[name] &&
 								<span>
 									<FormControlLabel
@@ -360,7 +333,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 									/>
 								</span>
 							}
-						</span>
+						</span>}
 					</span>
 				</FormGroup>
 			</div>
@@ -550,18 +523,57 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<div className="checkbox-group">
 							<FormLabel>Verb Forms</FormLabel>
 							<div className="lineBreak"></div>
-							<div className="checkbox-grid">
-								{checkboxParentGroup("present", "Present", true)}
-								{checkboxParentGroup("past", "Past")}
-								{checkboxParentGroup("te", "て Form")}
-								{checkboxParentGroup("naide", "ないで Form")}
-								{checkboxParentGroup("tai", "たい Form")}
-								{checkboxParentGroup("zu", "ず Form")}
-								{checkboxParentGroup("volitional", "Volitional")}
-								{checkboxParentGroup("imperative", "Imperative")}
-								{checkboxParentGroup("baConditional", "えば Conditional")}
-								{checkboxParentGroup("taraConditional", "たら Conditional")}
-								{checkboxParentGroup("stem", "Stem")}
+							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
+								<div className={"checkbox-parent-group " + (showVfSubOptions? "toggle-row-wide" : "toggle-row-slim")}>
+									<FormControlLabel
+										control={
+											<Checkbox checked={vfAll}
+												onChange={handleVfAllChange}
+												name="vfAll"/>
+										}
+										label="All"
+									/>
+									<span>
+										<label style={{marginRight: "8px"}}>{showVfSubOptions? "Hide" : "Show"} sub-options</label>
+										<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
+											{showVfSubOptions? "Hide" : "Show"}
+										</Button>
+									</span>
+								</div>
+								{showVfSubOptions && 
+									<div>
+										{checkboxParentGroup("present", "Present", true)}
+										{checkboxParentGroup("past", "Past")}
+										{checkboxParentGroup("te", "て Form")}
+										{checkboxParentGroup("naide", "ないで Form")}
+										{checkboxParentGroup("tai", "たい Form")}
+										{checkboxParentGroup("zu", "ず Form")}
+										{checkboxParentGroup("volitional", "Volitional")}
+										{checkboxParentGroup("imperative", "Imperative")}
+										{checkboxParentGroup("baConditional", "えば Conditional")}
+										{checkboxParentGroup("taraConditional", "たら Conditional")}
+										{checkboxParentGroup("stem", "Stem")}
+									</div>
+								}
+								{!showVfSubOptions && 
+									<div className="checkbox-parent-group">
+										<div>
+											{checkboxParentGroup("present", "Present", true)}
+											{checkboxParentGroup("past", "Past")}
+											{checkboxParentGroup("te", "て Form")}
+											{checkboxParentGroup("naide", "ないで Form")}
+											{checkboxParentGroup("tai", "たい Form")}
+											{checkboxParentGroup("zu", "ず Form")}
+										</div>
+										<div>
+											{checkboxParentGroup("volitional", "Volitional")}
+											{checkboxParentGroup("imperative", "Imperative")}
+											{checkboxParentGroup("baConditional", "えば Conditional")}
+											{checkboxParentGroup("taraConditional", "たら Conditional")}
+											{checkboxParentGroup("stem", "Stem")}
+										</div>
+									</div>
+								}
 							</div>
 						</div>
 						<FormHelperText>{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
