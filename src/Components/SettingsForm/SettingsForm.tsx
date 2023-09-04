@@ -2,7 +2,7 @@ import { ChangeEvent, ElementRef, FormEvent, RefObject, useEffect, useRef, useSt
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, TextField } from "@mui/material";
-import { FormNames, VerbFormData, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
+import { FormNames, VerbFormData, VerbFormNamesInfo, VerbFormSubTypeNamesInfo, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
 import { Label } from "@mui/icons-material";
 
 export type SettingsFormProps = {
@@ -293,7 +293,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 												onChange={(e) => handleVfChange(e, name)}
 												name="plain"/>
 										}
-										label="Plain"
+										label={VerbFormSubTypeNamesInfo.plain}
 									/>
 								</span>
 							}
@@ -305,7 +305,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 												onChange={(e) => handleVfChange(e, name)}
 												name="polite"/>
 										}
-										label="Polite"
+										label={VerbFormSubTypeNamesInfo.polite}
 									/>
 								</span>
 							}
@@ -315,7 +315,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 										control={
 											<Checkbox checked={verbFormData[name as WithNegativeForms].negativePlain}
 												onChange={(e) => handleVfChange(e, name)}
-												name="negativePlain"/>
+												name={VerbFormSubTypeNamesInfo.negativePlain}
+											/>
 										}
 										label="Negative Plain"
 									/>
@@ -329,7 +330,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 												onChange={(e) => handleVfChange(e, name)}
 												name="negativePolite"/>
 										}
-										label="Negative Polite"
+										label={VerbFormSubTypeNamesInfo.negativePolite}
 									/>
 								</span>
 							}
@@ -542,35 +543,35 @@ const SettingsForm = (props: SettingsFormProps) => {
 								</div>
 								{showVfSubOptions && 
 									<div>
-										{checkboxParentGroup("present", "Present", true)}
-										{checkboxParentGroup("past", "Past")}
-										{checkboxParentGroup("te", "て Form")}
-										{checkboxParentGroup("naide", "ないで Form")}
-										{checkboxParentGroup("tai", "たい Form")}
-										{checkboxParentGroup("zu", "ず Form")}
-										{checkboxParentGroup("volitional", "Volitional")}
-										{checkboxParentGroup("imperative", "Imperative")}
-										{checkboxParentGroup("baConditional", "えば Conditional")}
-										{checkboxParentGroup("taraConditional", "たら Conditional")}
-										{checkboxParentGroup("stem", "Stem")}
+										{checkboxParentGroup("present", VerbFormNamesInfo.present, true)}
+										{checkboxParentGroup("past", VerbFormNamesInfo.past)}
+										{checkboxParentGroup("te", VerbFormNamesInfo.te)}
+										{checkboxParentGroup("naide", VerbFormNamesInfo.naide)}
+										{checkboxParentGroup("tai", VerbFormNamesInfo.tai)}
+										{checkboxParentGroup("zu", VerbFormNamesInfo.zu)}
+										{checkboxParentGroup("volitional", VerbFormNamesInfo.volitional)}
+										{checkboxParentGroup("imperative", VerbFormNamesInfo.imperative)}
+										{checkboxParentGroup("baConditional", VerbFormNamesInfo.baConditional)}
+										{checkboxParentGroup("taraConditional", VerbFormNamesInfo.taraConditional)}
+										{checkboxParentGroup("stem", VerbFormNamesInfo.stem)}
 									</div>
 								}
 								{!showVfSubOptions && 
 									<div className="checkbox-parent-group">
 										<div>
-											{checkboxParentGroup("present", "Present", true)}
-											{checkboxParentGroup("past", "Past")}
-											{checkboxParentGroup("te", "て Form")}
-											{checkboxParentGroup("naide", "ないで Form")}
-											{checkboxParentGroup("tai", "たい Form")}
-											{checkboxParentGroup("zu", "ず Form")}
+											{checkboxParentGroup("present", VerbFormNamesInfo.present, true)}
+											{checkboxParentGroup("past", VerbFormNamesInfo.past)}
+											{checkboxParentGroup("te", VerbFormNamesInfo.te)}
+											{checkboxParentGroup("naide", VerbFormNamesInfo.naide)}
+											{checkboxParentGroup("tai", VerbFormNamesInfo.tai)}
+											{checkboxParentGroup("zu", VerbFormNamesInfo.zu)}
 										</div>
 										<div>
-											{checkboxParentGroup("volitional", "Volitional")}
-											{checkboxParentGroup("imperative", "Imperative")}
-											{checkboxParentGroup("baConditional", "えば Conditional")}
-											{checkboxParentGroup("taraConditional", "たら Conditional")}
-											{checkboxParentGroup("stem", "Stem")}
+											{checkboxParentGroup("volitional", VerbFormNamesInfo.volitional)}
+											{checkboxParentGroup("imperative", VerbFormNamesInfo.imperative)}
+											{checkboxParentGroup("baConditional", VerbFormNamesInfo.baConditional)}
+											{checkboxParentGroup("taraConditional", VerbFormNamesInfo.taraConditional)}
+											{checkboxParentGroup("stem", VerbFormNamesInfo.stem)}
 										</div>
 									</div>
 								}

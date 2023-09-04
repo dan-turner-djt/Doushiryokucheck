@@ -1,3 +1,24 @@
+export enum VerbFormNamesInfo {
+  stem = "Stem",
+  present = "Present",
+  past = "Past",
+  te = "て Form",
+  naide = "ないで Form",
+  tai = "たい Form",
+  zu = "ず Form",
+  volitional = "Volitional",
+  imperative = "Imperative",
+  baConditional = "えば Conditional",
+  taraConditional = "たら Conditional"
+}
+
+export enum VerbFormSubTypeNamesInfo {
+  plain = "Plain",
+  polite = "Polite",
+  negativePlain = "Negative Plain",
+  negativePolite = "Negative Polite"
+}
+
 export type VerbFormData = {
   stem: {
     plain: boolean
