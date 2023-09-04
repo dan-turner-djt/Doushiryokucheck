@@ -1,17 +1,23 @@
-import { ChangeEvent, ElementRef, FormEvent, useRef, useState } from "react";
+import { ElementRef, FormEvent, useEffect, useRef, useState } from "react";
 import { AmountSettingsObject, SettingsObject, TestType, TimedSettingsObject, getTestTypeName } from "../../SettingsDef";
 import Timer from "../Timer/Timer";
 import { Box, Button, FormControl, FormLabel } from "@mui/material";
 import Field, { FieldType } from "../Field/Field";
 
 export type TestFormProps = {
-  testSettings: SettingsObject;
-  quitHandler: () => void;
+  testSettings: SettingsObject,
+	inTest: boolean,
+  quitHandler: () => void
+}
+
+type QuestionInfo = {
+	questionNumber: number
 }
 
 const TestForm = (props: TestFormProps) => {
 	const [testFinished, setTestFinished] = useState<boolean>(false);
-	const [questionNumber, setQuestionNumber] = useState<number>(0);
+	const [questionNumber, setQuestionNumber] = useState<number>(1);
+	const [questionInfo, setQuestionInfo] = useState<QuestionInfo>();
 	const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = useState<number>(0);
 	const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
 	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
@@ -30,6 +36,11 @@ const TestForm = (props: TestFormProps) => {
 		}
 	});
 	const [answerInputVal, setAnswerInputVal] = useState<string>(fieldData.answerInput.staticData.startingValue);
+
+	useEffect(() => {
+		// When first loading the test form
+		restartTest();
+	}, [props.inTest]);
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -64,7 +75,7 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const checkIfTestShouldContinue = ():boolean =>  {
-		if (props.testSettings.testType === TestType.Amount && questionNumber + 1 >= (props.testSettings.testTypeObject as AmountSettingsObject).amount) {
+		if (props.testSettings.testType === TestType.Amount && questionNumber >= (props.testSettings.testTypeObject as AmountSettingsObject).amount) {
 			return false;
 		}
 
@@ -74,10 +85,18 @@ const TestForm = (props: TestFormProps) => {
 	const loadNextQuestion = () => {
 		setQuestionNumber(questionNumber + 1);
 		setAnswerInputVal("");
+		getAndSetQuestionData(questionNumber + 1);
 	};
 
 	const finishTest = () => {
 		setTestFinished(true);
+	};
+
+	const getAndSetQuestionData = (number: number) => {
+		console.log("new question");
+		setQuestionInfo({
+			questionNumber: number
+		});
 	};
 
 	const checkAnswerIsCorrect = (answer: string):boolean => {
@@ -89,10 +108,11 @@ const TestForm = (props: TestFormProps) => {
 
 	const restartTest = () => {
 		setAnswerInputVal("");
-		setQuestionNumber(0);
+		setQuestionNumber(1);
 		setAnsweredCorrectlyTotal(0);
 		setShowAnswerResult(false);
 		setTestFinished(false);
+		getAndSetQuestionData(1);
 	};
 
 	const quitTest = () => {
@@ -123,7 +143,7 @@ const TestForm = (props: TestFormProps) => {
 								<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
 							}
 						</span>
-						<p>Question {questionNumber + 1}:</p>
+						<p>Question {questionInfo?.questionNumber}:</p>
 						{showAnswerResult && <div>
 							{answeredCorrectly && <p>
 								Correct!

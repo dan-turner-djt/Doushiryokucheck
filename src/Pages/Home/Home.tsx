@@ -31,7 +31,7 @@ const Home = () => {
 			</div>
 			<div>
 				{inTest && 
-          <TestForm testSettings={ currentSettings } quitHandler={ quitTest }></TestForm>
+          <TestForm testSettings={ currentSettings } inTest={ inTest } quitHandler={ quitTest }></TestForm>
 				}
 				{!inTest && 
           <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
