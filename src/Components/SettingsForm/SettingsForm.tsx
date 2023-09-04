@@ -258,11 +258,17 @@ const SettingsForm = (props: SettingsFormProps) => {
 			return;
 		}
 
+		let setEveryForm = false;
+		if(!(checkAllForms() || checkAllIndeterminate())) {
+			// If no forms are selected, then tell it set the whole column
+			setEveryForm = true;
+		}
+
 		const obj: VerbFormData = JSON.parse(JSON.stringify(verbFormData));
 		Object.keys(obj).forEach(key => {
-			// first check if form is selected at all
-			if(checkIndeterminate(key as FormNames) || checkAllSubOptions(key as FormNames)) {
-				// then set the option of the correct type
+			// First check if form is selected at all
+			if(setEveryForm || checkIndeterminate(key as FormNames) || checkAllSubOptions(key as FormNames)) {
+				// Then set the option of the correct type
 				if (type === "plain" && Object.keys(obj[key as keyof VerbFormData]).includes("plain")) {
 					(obj[key as WithPlainForms]).plain = toSet;
 				}
