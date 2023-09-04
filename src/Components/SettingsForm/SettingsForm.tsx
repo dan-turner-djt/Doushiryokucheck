@@ -3,7 +3,6 @@ import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, 
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, TextField } from "@mui/material";
 import { FormNames, VerbFormData, VerbFormNamesInfo, VerbFormSubTypeNamesInfo, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
-import { Label } from "@mui/icons-material";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -79,8 +78,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 		return true;
 	};
 	const vfInputRef = useRef<HTMLInputElement>(null);
-
-	const [vfAll, setVfAll] = useState<boolean>(false);
 
 	useEffect(() => {
 		console.log(verbFormData);
@@ -224,8 +221,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 
 	const handleVfAllChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setVfAll(e.target.checked);
-
 		let toSet: boolean;
 		if(e.target.checked) {
 			toSet = true;
@@ -254,7 +249,43 @@ const SettingsForm = (props: SettingsFormProps) => {
 		setVerbFormData(obj);
 	};
 
-	const checkAll = (form: FormNames): boolean => {
+	const checkAllForms = (): boolean => {
+		for(const o of Object.entries(verbFormData)) {
+			let allSubs = true; 
+			for(const v of Object.entries(o[1])) {
+				if(v[1] !== true) {
+					allSubs = false;
+					break;
+				}
+			}
+
+			if(!allSubs) return false;
+		}
+
+		return true;
+	};
+
+	const checkAllIndeterminate = (): boolean => {
+		let foundASub = false;
+		for(const o of Object.entries(verbFormData)) {
+			let foundSub = false; 
+			for(const v of Object.entries(o[1])) {
+				if(v[1] === true) {
+					foundSub = true;
+					break;
+				}
+			}
+
+			if(foundSub) {
+				foundASub = true;
+				break;
+			}
+		}
+
+		return foundASub && !checkAllForms();
+	};
+
+	const checkAllSubOptions = (form: FormNames): boolean => {
 		const arr: boolean[] = [];
 		for(const v of Object.entries(verbFormData[form])) {
 			arr.push(v[1]);
@@ -283,7 +314,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<span className="parent-checkbox">
 							<FormControlLabel
 								control={
-									<Checkbox checked={checkAll(name)}
+									<Checkbox checked={checkAllSubOptions(name)}
 										indeterminate={checkIndeterminate(name)}
 										onChange={(e) => handleVfChangeParent(e, name)}
 										name={name}
@@ -547,7 +578,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 								<div className={"checkbox-parent-group"}>
 									<FormControlLabel
 										control={
-											<Checkbox checked={vfAll}
+											<Checkbox checked={checkAllForms()}
+												indeterminate={checkAllIndeterminate()}
 												onChange={handleVfAllChange}
 												name="vfAll"/>
 										}
