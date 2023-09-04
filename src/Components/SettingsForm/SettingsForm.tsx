@@ -80,7 +80,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const vfInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		console.log(verbFormData);
 		setCurrentSettings({...currentSettings, verbForms: verbFormData});
 	}, [verbFormData]);
 
@@ -238,11 +237,44 @@ const SettingsForm = (props: SettingsFormProps) => {
 			if (Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
 				(obj[key as WithPoliteForms]).polite = toSet;
 			}
-			if (Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
+			if (Object.keys(obj[key as keyof VerbFormData]).includes("negativePlain")) {
 				(obj[key as WithNegativeForms]).negativePlain = toSet;
 			}
-			if (Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
+			if (Object.keys(obj[key as keyof VerbFormData]).includes("negativePolite")) {
 				(obj[key as WithNegativePoliteForms]).negativePolite = toSet;
+			}
+		});
+
+		setVerbFormData(obj);
+	};
+
+	const handleVfAllSubOfTypeChange = (e: ChangeEvent<HTMLInputElement>, type: string) => {
+		let toSet: boolean;
+		if(e.target.checked) {
+			toSet = true;
+		} else if (!e.target.indeterminate) {
+			toSet = false;
+		} else {
+			return;
+		}
+
+		const obj: VerbFormData = JSON.parse(JSON.stringify(verbFormData));
+		Object.keys(obj).forEach(key => {
+			// first check if form is selected at all
+			if(checkIndeterminate(key as FormNames) || checkAllSubOptions(key as FormNames)) {
+				// then set the option of the correct type
+				if (type === "plain" && Object.keys(obj[key as keyof VerbFormData]).includes("plain")) {
+					(obj[key as WithPlainForms]).plain = toSet;
+				}
+				else if (type === "polite" && Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
+					(obj[key as WithPoliteForms]).polite = toSet;
+				}
+				else if (type === "negativePlain" && Object.keys(obj[key as keyof VerbFormData]).includes("negativePlain")) {
+					(obj[key as WithNegativeForms]).negativePlain = toSet;
+				}
+				else if (type === "negativePolite" && Object.keys(obj[key as keyof VerbFormData]).includes("negativePolite")) {
+					(obj[key as WithNegativePoliteForms]).negativePolite = toSet;
+				}
 			}
 		});
 
@@ -283,6 +315,91 @@ const SettingsForm = (props: SettingsFormProps) => {
 		}
 
 		return foundASub && !checkAllForms();
+	};
+
+	const checkAllSubsOfType = (type: string): boolean => {
+		const obj = verbFormData;
+		let totalRes = true;
+		let foundASetForm = false;
+		Object.keys(obj).forEach(key => {
+			let res = true;
+			// first check if form is selected at all
+			if(checkIndeterminate(key as FormNames) || checkAllSubOptions(key as FormNames)) {
+				foundASetForm = true;
+				// then check that the specified type is selected
+				if (type === "plain" && Object.keys(obj[key as keyof VerbFormData]).includes("plain")) {
+					if(obj[key as WithPoliteForms].plain !== true) {
+						res = false;
+					}
+				}
+				else if (type === "polite" &&  Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
+					if(obj[key as WithPoliteForms].polite !== true) {
+						res = false;
+					}
+				}
+				else if (type === "negativePlain" &&  Object.keys(obj[key as keyof VerbFormData]).includes("negativePlain")) {
+					if(obj[key as WithNegativeForms].negativePlain !== true) {
+						res = false;
+					}
+				}
+				else if (type === "negativePolite" &&  Object.keys(obj[key as keyof VerbFormData]).includes("negativePolite")) {
+					if(obj[key as WithNegativePoliteForms].negativePolite !== true) {
+						res = false;
+					}
+				}
+			}
+
+			if(!res) {
+				totalRes = false;
+				return;
+			}
+		});
+
+		return foundASetForm && totalRes;
+	};
+
+	const checkAllSubsOfTypeIndeterminate = (type: string): boolean => {
+		const obj = verbFormData;
+
+		if(checkAllSubsOfType(type)) {
+			return false;
+		}
+
+		let totalRes = false;
+		Object.keys(obj).forEach(key => {
+			let res = false;
+			// first check if form is selected at all
+			if(checkIndeterminate(key as FormNames) || checkAllSubOptions(key as FormNames)) {
+				// then check if the specified type is selected
+				if (type === "plain" && Object.keys(obj[key as keyof VerbFormData]).includes("plain")) {
+					if(obj[key as WithPlainForms].plain === true) {
+						res = true;
+					}
+				}
+				else if (type === "polite" &&  Object.keys(obj[key as keyof VerbFormData]).includes("polite")) {
+					if(obj[key as WithPoliteForms].polite === true) {
+						res = true;
+					}
+				}
+				else if (type === "negativePlain" &&  Object.keys(obj[key as keyof VerbFormData]).includes("negativePlain")) {
+					if(obj[key as WithNegativeForms].negativePlain === true) {
+						res = true;
+					}
+				}
+				else if (type === "negativePolite" &&  Object.keys(obj[key as keyof VerbFormData]).includes("negativePolite")) {
+					if(obj[key as WithNegativePoliteForms].negativePolite === true) {
+						res = true;
+					}
+				}
+			}
+
+			if(res) {
+				totalRes = true;
+				return;
+			}
+		});
+
+		return totalRes;
 	};
 
 	const checkAllSubOptions = (form: FormNames): boolean => {
@@ -575,17 +692,68 @@ const SettingsForm = (props: SettingsFormProps) => {
 							<FormLabel>Verb Forms</FormLabel>
 							<div className="lineBreak"></div>
 							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
-								<div className={"checkbox-parent-group"}>
-									<FormControlLabel
-										control={
-											<Checkbox checked={checkAllForms()}
-												indeterminate={checkAllIndeterminate()}
-												onChange={handleVfAllChange}
-												name="vfAll"/>
-										}
-										label="All"
-									/>
-								</div>
+								<FormGroup>
+									<span className={"checkbox-parent-group"}>
+										<span className="parent-checkbox">
+											<FormControlLabel
+												control={
+													<Checkbox checked={checkAllForms()}
+														indeterminate={checkAllIndeterminate()}
+														onChange={handleVfAllChange}
+														name="vfAll"/>
+												}
+												label="All"
+											/>
+										</span>
+										{showVfSubOptions && <span className="children-checkboxes">
+											<span style={{marginRight: "18px"}}>
+												<FormControlLabel
+													control={
+														<Checkbox checked={checkAllSubsOfType("plain")}
+															indeterminate={checkAllSubsOfTypeIndeterminate("plain")}
+															onChange={(e) => handleVfAllSubOfTypeChange(e, "plain")}
+															name="vfPlainAll"/>
+													}
+													label="All"
+												/> 
+											</span>
+											<span style={{marginRight: "22px"}}>
+												<FormControlLabel
+													control={
+														<Checkbox checked={checkAllSubsOfType("polite")}
+															indeterminate={checkAllSubsOfTypeIndeterminate("polite")}
+															onChange={(e) => handleVfAllSubOfTypeChange(e, "polite")}
+															name="vfPoliteAll"/>
+													}
+													label="All"
+												/> 
+											</span>
+											<span style={{marginRight: "87px"}}>
+												<FormControlLabel
+													control={
+														<Checkbox checked={checkAllSubsOfType("negativePlain")}
+															indeterminate={checkAllSubsOfTypeIndeterminate("negativePlain")}
+															onChange={(e) => handleVfAllSubOfTypeChange(e, "negativePlain")}
+															name="vfNegativePlainAll"/>
+													}
+													label="All"
+												/> 
+											</span>
+											<span>
+												<FormControlLabel
+													control={
+														<Checkbox checked={checkAllSubsOfType("negativePolite")}
+															indeterminate={checkAllSubsOfTypeIndeterminate("negativePolite")}
+															onChange={(e) => handleVfAllSubOfTypeChange(e, "negativePolite")}
+															name="vfNegativePoliteAll"/>
+													}
+													label="All"
+												/> 
+											</span>
+										</span>}
+									</span>
+								</FormGroup>
+								<div className="lineBreak"></div>
 								{showVfSubOptions && 
 									<div>
 										{checkboxParentGroup("present", VerbFormNamesInfo.present, true)}
@@ -622,7 +790,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 								}
 							</div>
 						</div>
-						<FormHelperText>{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
+						<FormHelperText style={{marginLeft: showVfSubOptions ? "50px" : "200px"}}>{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
 					</FormControl>
 				</div>
 				<div className="form-button-row">
