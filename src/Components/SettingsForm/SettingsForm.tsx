@@ -423,12 +423,12 @@ const SettingsForm = (props: SettingsFormProps) => {
 		setShowVfSubOptions(!showVfSubOptions);
 	};
 
-	const checkboxParentGroup = (name: FormNames, label: string, first = false) => {
+	const vfCheckboxParentGroup = (name: FormNames, label: string, first = false) => {
 		return (
 			<div>
 				<FormGroup>
 					<span className={"checkbox-parent-group"}>
-						<span className="parent-checkbox">
+						<span className="parent-checkbox vf-parent-column">
 							<FormControlLabel
 								control={
 									<Checkbox checked={checkAllSubOptions(name)}
@@ -441,8 +441,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 							/>
 						</span>
 						{showVfSubOptions && <span className="children-checkboxes">
-							{"plain" in verbFormData[name] &&
-								<span>
+							<span className="vf-first-column">
+								{"plain" in verbFormData[name] &&
 									<FormControlLabel
 										control={
 											<Checkbox checked={verbFormData[name as  WithPlainForms].plain}
@@ -451,10 +451,10 @@ const SettingsForm = (props: SettingsFormProps) => {
 										}
 										label={VerbFormSubTypeNamesInfo.plain}
 									/>
-								</span>
-							}
-							{"polite" in verbFormData[name] &&
-								<span>
+								}
+							</span>
+							<span className="vf-second-column">
+								{"polite" in verbFormData[name] &&
 									<FormControlLabel
 										control={
 											<Checkbox checked={verbFormData[name as WithPoliteForms].polite}
@@ -463,10 +463,10 @@ const SettingsForm = (props: SettingsFormProps) => {
 										}
 										label={VerbFormSubTypeNamesInfo.polite}
 									/>
-								</span>
-							}
-							{"negativePlain" in verbFormData[name] &&
-								<span>
+								}
+							</span>
+							<span className="vf-third-column">
+								{"negativePlain" in verbFormData[name] &&
 									<FormControlLabel
 										control={
 											<Checkbox checked={verbFormData[name as WithNegativeForms].negativePlain}
@@ -476,10 +476,10 @@ const SettingsForm = (props: SettingsFormProps) => {
 										}
 										label={VerbFormSubTypeNamesInfo.negativePlain}
 									/>
-								</span>
-							}
-							{"negativePolite" in verbFormData[name] &&
-								<span>
+								}
+							</span>
+							<span className="vf-fourth-column">
+								{"negativePolite" in verbFormData[name] &&
 									<FormControlLabel
 										control={
 											<Checkbox checked={verbFormData[name as WithNegativePoliteForms].negativePolite}
@@ -488,8 +488,76 @@ const SettingsForm = (props: SettingsFormProps) => {
 										}
 										label={VerbFormSubTypeNamesInfo.negativePolite}
 									/>
-								</span>
-							}
+								}
+							</span>
+						</span>}
+					</span>
+				</FormGroup>
+			</div>
+		);
+	};
+
+	const vfAllCheckboxParentGroup = () => {
+		return (
+			<div>
+				<FormGroup>
+					<span className={"checkbox-parent-group"}>
+						<span className="parent-checkbox vf-parent-column">
+							<FormControlLabel
+								control={
+									<Checkbox checked={checkAllForms()}
+										indeterminate={checkAllIndeterminate()}
+										onChange={handleVfAllChange}
+										name="vfAll"/>
+								}
+								label="All"
+							/>
+						</span>
+						{showVfSubOptions && <span className="children-checkboxes">
+							<span className="vf-first-column">
+								<FormControlLabel
+									control={
+										<Checkbox checked={checkAllSubsOfType("plain")}
+											indeterminate={checkAllSubsOfTypeIndeterminate("plain")}
+											onChange={(e) => handleVfAllSubOfTypeChange(e, "plain")}
+											name="vfPlainAll"/>
+									}
+									label="All"
+								/> 
+							</span>
+							<span className="vf-second-column">
+								<FormControlLabel
+									control={
+										<Checkbox checked={checkAllSubsOfType("polite")}
+											indeterminate={checkAllSubsOfTypeIndeterminate("polite")}
+											onChange={(e) => handleVfAllSubOfTypeChange(e, "polite")}
+											name="vfPoliteAll"/>
+									}
+									label="All"
+								/> 
+							</span>
+							<span className="vf-third-column">
+								<FormControlLabel
+									control={
+										<Checkbox checked={checkAllSubsOfType("negativePlain")}
+											indeterminate={checkAllSubsOfTypeIndeterminate("negativePlain")}
+											onChange={(e) => handleVfAllSubOfTypeChange(e, "negativePlain")}
+											name="vfNegativePlainAll"/>
+									}
+									label="All"
+								/> 
+							</span>
+							<span className="vf-fourth-column">
+								<FormControlLabel
+									control={
+										<Checkbox checked={checkAllSubsOfType("negativePolite")}
+											indeterminate={checkAllSubsOfTypeIndeterminate("negativePolite")}
+											onChange={(e) => handleVfAllSubOfTypeChange(e, "negativePolite")}
+											name="vfNegativePoliteAll"/>
+									}
+									label="All"
+								/> 
+							</span>
 						</span>}
 					</span>
 				</FormGroup>
@@ -692,99 +760,39 @@ const SettingsForm = (props: SettingsFormProps) => {
 							<FormLabel>Verb Forms</FormLabel>
 							<div className="lineBreak"></div>
 							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
-								<FormGroup>
-									<span className={"checkbox-parent-group"}>
-										<span className="parent-checkbox">
-											<FormControlLabel
-												control={
-													<Checkbox checked={checkAllForms()}
-														indeterminate={checkAllIndeterminate()}
-														onChange={handleVfAllChange}
-														name="vfAll"/>
-												}
-												label="All"
-											/>
-										</span>
-										{showVfSubOptions && <span className="children-checkboxes">
-											<span style={{marginRight: "18px"}}>
-												<FormControlLabel
-													control={
-														<Checkbox checked={checkAllSubsOfType("plain")}
-															indeterminate={checkAllSubsOfTypeIndeterminate("plain")}
-															onChange={(e) => handleVfAllSubOfTypeChange(e, "plain")}
-															name="vfPlainAll"/>
-													}
-													label="All"
-												/> 
-											</span>
-											<span style={{marginRight: "22px"}}>
-												<FormControlLabel
-													control={
-														<Checkbox checked={checkAllSubsOfType("polite")}
-															indeterminate={checkAllSubsOfTypeIndeterminate("polite")}
-															onChange={(e) => handleVfAllSubOfTypeChange(e, "polite")}
-															name="vfPoliteAll"/>
-													}
-													label="All"
-												/> 
-											</span>
-											<span style={{marginRight: "87px"}}>
-												<FormControlLabel
-													control={
-														<Checkbox checked={checkAllSubsOfType("negativePlain")}
-															indeterminate={checkAllSubsOfTypeIndeterminate("negativePlain")}
-															onChange={(e) => handleVfAllSubOfTypeChange(e, "negativePlain")}
-															name="vfNegativePlainAll"/>
-													}
-													label="All"
-												/> 
-											</span>
-											<span>
-												<FormControlLabel
-													control={
-														<Checkbox checked={checkAllSubsOfType("negativePolite")}
-															indeterminate={checkAllSubsOfTypeIndeterminate("negativePolite")}
-															onChange={(e) => handleVfAllSubOfTypeChange(e, "negativePolite")}
-															name="vfNegativePoliteAll"/>
-													}
-													label="All"
-												/> 
-											</span>
-										</span>}
-									</span>
-								</FormGroup>
+								{vfAllCheckboxParentGroup()}
 								<div className="lineBreak"></div>
 								{showVfSubOptions && 
 									<div>
-										{checkboxParentGroup("present", VerbFormNamesInfo.present, true)}
-										{checkboxParentGroup("past", VerbFormNamesInfo.past)}
-										{checkboxParentGroup("te", VerbFormNamesInfo.te)}
-										{checkboxParentGroup("naide", VerbFormNamesInfo.naide)}
-										{checkboxParentGroup("tai", VerbFormNamesInfo.tai)}
-										{checkboxParentGroup("zu", VerbFormNamesInfo.zu)}
-										{checkboxParentGroup("volitional", VerbFormNamesInfo.volitional)}
-										{checkboxParentGroup("imperative", VerbFormNamesInfo.imperative)}
-										{checkboxParentGroup("baConditional", VerbFormNamesInfo.baConditional)}
-										{checkboxParentGroup("taraConditional", VerbFormNamesInfo.taraConditional)}
-										{checkboxParentGroup("stem", VerbFormNamesInfo.stem)}
+										{vfCheckboxParentGroup("present", VerbFormNamesInfo.present, true)}
+										{vfCheckboxParentGroup("past", VerbFormNamesInfo.past)}
+										{vfCheckboxParentGroup("te", VerbFormNamesInfo.te)}
+										{vfCheckboxParentGroup("naide", VerbFormNamesInfo.naide)}
+										{vfCheckboxParentGroup("tai", VerbFormNamesInfo.tai)}
+										{vfCheckboxParentGroup("zu", VerbFormNamesInfo.zu)}
+										{vfCheckboxParentGroup("volitional", VerbFormNamesInfo.volitional)}
+										{vfCheckboxParentGroup("imperative", VerbFormNamesInfo.imperative)}
+										{vfCheckboxParentGroup("baConditional", VerbFormNamesInfo.baConditional)}
+										{vfCheckboxParentGroup("taraConditional", VerbFormNamesInfo.taraConditional)}
+										{vfCheckboxParentGroup("stem", VerbFormNamesInfo.stem)}
 									</div>
 								}
 								{!showVfSubOptions && 
 									<div className="checkbox-parent-group">
 										<div>
-											{checkboxParentGroup("present", VerbFormNamesInfo.present, true)}
-											{checkboxParentGroup("past", VerbFormNamesInfo.past)}
-											{checkboxParentGroup("te", VerbFormNamesInfo.te)}
-											{checkboxParentGroup("naide", VerbFormNamesInfo.naide)}
-											{checkboxParentGroup("tai", VerbFormNamesInfo.tai)}
-											{checkboxParentGroup("zu", VerbFormNamesInfo.zu)}
+											{vfCheckboxParentGroup("present", VerbFormNamesInfo.present, true)}
+											{vfCheckboxParentGroup("past", VerbFormNamesInfo.past)}
+											{vfCheckboxParentGroup("te", VerbFormNamesInfo.te)}
+											{vfCheckboxParentGroup("naide", VerbFormNamesInfo.naide)}
+											{vfCheckboxParentGroup("tai", VerbFormNamesInfo.tai)}
+											{vfCheckboxParentGroup("zu", VerbFormNamesInfo.zu)}
 										</div>
 										<div>
-											{checkboxParentGroup("volitional", VerbFormNamesInfo.volitional)}
-											{checkboxParentGroup("imperative", VerbFormNamesInfo.imperative)}
-											{checkboxParentGroup("baConditional", VerbFormNamesInfo.baConditional)}
-											{checkboxParentGroup("taraConditional", VerbFormNamesInfo.taraConditional)}
-											{checkboxParentGroup("stem", VerbFormNamesInfo.stem)}
+											{vfCheckboxParentGroup("volitional", VerbFormNamesInfo.volitional)}
+											{vfCheckboxParentGroup("imperative", VerbFormNamesInfo.imperative)}
+											{vfCheckboxParentGroup("baConditional", VerbFormNamesInfo.baConditional)}
+											{vfCheckboxParentGroup("taraConditional", VerbFormNamesInfo.taraConditional)}
+											{vfCheckboxParentGroup("stem", VerbFormNamesInfo.stem)}
 										</div>
 									</div>
 								}

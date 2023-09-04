@@ -74,8 +74,37 @@ body {
     }
   
     .children-checkboxes {
-      min-width: 480px;
       display: flex;
+    }
+
+    .vf-parent-column {
+      width: 180px;
+      display: flex;
+      justify-content: left;
+    }
+
+    .vf-first-column {
+      width: 100px;
+      display: flex;
+      justify-content: left;
+    }
+
+    .vf-second-column {
+      width: 100px;
+      display: flex;
+      justify-content: left;
+    }
+
+    .vf-third-column {
+      width: 160px;
+      display: flex;
+      justify-content: left;
+    }
+
+    .vf-fourth-column {
+      width: 160px;
+      display: flex;
+      justify-content: left;
     }
   }
 
