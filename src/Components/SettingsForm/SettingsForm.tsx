@@ -2,7 +2,7 @@ import { ChangeEvent, ElementRef, FormEvent, RefObject, useEffect, useRef, useSt
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, TextField } from "@mui/material";
-import { FormNames, VerbFormData, VerbFormNamesInfo, VerbFormSubTypeNamesInfo, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
+import { FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -455,7 +455,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 												onChange={(e) => handleVfChange(e, name)}
 												name="plain"/>
 										}
-										label={VerbFormSubTypeNamesInfo.plain}
+										label={VerbFormSubTypeDisplayNames.plain}
 									/>
 								}
 							</span>
@@ -467,7 +467,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 												onChange={(e) => handleVfChange(e, name)}
 												name="polite"/>
 										}
-										label={VerbFormSubTypeNamesInfo.polite}
+										label={VerbFormSubTypeDisplayNames.polite}
 									/>
 								}
 							</span>
@@ -480,7 +480,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 												name="negativePlain"
 											/>
 										}
-										label={VerbFormSubTypeNamesInfo.negativePlain}
+										label={VerbFormSubTypeDisplayNames.negative + " " + VerbFormSubTypeDisplayNames.plain}
 									/>
 								}
 							</span>
@@ -492,7 +492,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 												onChange={(e) => handleVfChange(e, name)}
 												name="negativePolite"/>
 										}
-										label={VerbFormSubTypeNamesInfo.negativePolite}
+										label={VerbFormSubTypeDisplayNames.negative + " " + VerbFormSubTypeDisplayNames.polite}
 									/>
 								}
 							</span>
@@ -770,35 +770,35 @@ const SettingsForm = (props: SettingsFormProps) => {
 								<div className="lineBreak"></div>
 								{showVfSubOptions && 
 									<div>
-										{vfCheckboxParentGroup("present", VerbFormNamesInfo.present, true)}
-										{vfCheckboxParentGroup("past", VerbFormNamesInfo.past)}
-										{vfCheckboxParentGroup("te", VerbFormNamesInfo.te)}
-										{vfCheckboxParentGroup("naide", VerbFormNamesInfo.naide)}
-										{vfCheckboxParentGroup("tai", VerbFormNamesInfo.tai)}
-										{vfCheckboxParentGroup("zu", VerbFormNamesInfo.zu)}
-										{vfCheckboxParentGroup("volitional", VerbFormNamesInfo.volitional)}
-										{vfCheckboxParentGroup("imperative", VerbFormNamesInfo.imperative)}
-										{vfCheckboxParentGroup("baConditional", VerbFormNamesInfo.baConditional)}
-										{vfCheckboxParentGroup("taraConditional", VerbFormNamesInfo.taraConditional)}
-										{vfCheckboxParentGroup("stem", VerbFormNamesInfo.stem)}
+										{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
+										{vfCheckboxParentGroup("past", VerbFormDisplayNames.past)}
+										{vfCheckboxParentGroup("te", VerbFormDisplayNames.te)}
+										{vfCheckboxParentGroup("naide", VerbFormDisplayNames.naide)}
+										{vfCheckboxParentGroup("tai", VerbFormDisplayNames.tai)}
+										{vfCheckboxParentGroup("zu", VerbFormDisplayNames.zu)}
+										{vfCheckboxParentGroup("volitional", VerbFormDisplayNames.volitional)}
+										{vfCheckboxParentGroup("imperative", VerbFormDisplayNames.imperative)}
+										{vfCheckboxParentGroup("baConditional", VerbFormDisplayNames.baConditional)}
+										{vfCheckboxParentGroup("taraConditional", VerbFormDisplayNames.taraConditional)}
+										{vfCheckboxParentGroup("stem", VerbFormDisplayNames.stem)}
 									</div>
 								}
 								{!showVfSubOptions && 
 									<div className="checkbox-parent-group">
 										<div>
-											{vfCheckboxParentGroup("present", VerbFormNamesInfo.present, true)}
-											{vfCheckboxParentGroup("past", VerbFormNamesInfo.past)}
-											{vfCheckboxParentGroup("te", VerbFormNamesInfo.te)}
-											{vfCheckboxParentGroup("naide", VerbFormNamesInfo.naide)}
-											{vfCheckboxParentGroup("tai", VerbFormNamesInfo.tai)}
-											{vfCheckboxParentGroup("zu", VerbFormNamesInfo.zu)}
+											{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
+											{vfCheckboxParentGroup("past", VerbFormDisplayNames.past)}
+											{vfCheckboxParentGroup("te", VerbFormDisplayNames.te)}
+											{vfCheckboxParentGroup("naide", VerbFormDisplayNames.naide)}
+											{vfCheckboxParentGroup("tai", VerbFormDisplayNames.tai)}
+											{vfCheckboxParentGroup("zu", VerbFormDisplayNames.zu)}
 										</div>
 										<div>
-											{vfCheckboxParentGroup("volitional", VerbFormNamesInfo.volitional)}
-											{vfCheckboxParentGroup("imperative", VerbFormNamesInfo.imperative)}
-											{vfCheckboxParentGroup("baConditional", VerbFormNamesInfo.baConditional)}
-											{vfCheckboxParentGroup("taraConditional", VerbFormNamesInfo.taraConditional)}
-											{vfCheckboxParentGroup("stem", VerbFormNamesInfo.stem)}
+											{vfCheckboxParentGroup("volitional", VerbFormDisplayNames.volitional)}
+											{vfCheckboxParentGroup("imperative", VerbFormDisplayNames.imperative)}
+											{vfCheckboxParentGroup("baConditional", VerbFormDisplayNames.baConditional)}
+											{vfCheckboxParentGroup("taraConditional", VerbFormDisplayNames.taraConditional)}
+											{vfCheckboxParentGroup("stem", VerbFormDisplayNames.stem)}
 										</div>
 									</div>
 								}

@@ -3,15 +3,19 @@ import { AmountSettingsObject, SettingsObject, TestType, TimedSettingsObject, ge
 import Timer from "../Timer/Timer";
 import { Box, Button, FormControl, FormLabel } from "@mui/material";
 import Field, { FieldType } from "../Field/Field";
+import { FormInfo } from "jv-conjugator";
+import { VerbFormsInfo, getQuestionString } from "../../Utils/VerbFormsInfo";
 
 export type TestFormProps = {
   testSettings: SettingsObject,
 	inTest: boolean,
+	verbFormsInfo: VerbFormsInfo,
   quitHandler: () => void
 }
 
 type QuestionInfo = {
-	questionNumber: number
+	questionNumber: number,
+	verbFormInfo: {displayName: string, info: FormInfo}
 }
 
 const TestForm = (props: TestFormProps) => {
@@ -94,8 +98,13 @@ const TestForm = (props: TestFormProps) => {
 
 	const getAndSetQuestionData = (number: number) => {
 		console.log("new question");
+
+		const randomVerbFormInfo = props.verbFormsInfo[Math.floor(Math.random() * props.verbFormsInfo.length)];
+		console.log(randomVerbFormInfo);
+
 		setQuestionInfo({
-			questionNumber: number
+			questionNumber: number,
+			verbFormInfo: randomVerbFormInfo
 		});
 	};
 
@@ -143,7 +152,7 @@ const TestForm = (props: TestFormProps) => {
 								<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
 							}
 						</span>
-						<p>Question {questionInfo?.questionNumber}:</p>
+						<p>Question {questionInfo?.questionNumber + ": " + getQuestionString(questionInfo?.verbFormInfo)}</p>
 						{showAnswerResult && <div>
 							{answeredCorrectly && <p>
 								Correct!

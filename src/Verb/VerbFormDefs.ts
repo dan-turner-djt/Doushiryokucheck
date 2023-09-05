@@ -1,4 +1,4 @@
-export enum VerbFormNamesInfo {
+export enum VerbFormDisplayNames {
   stem = "Stem",
   present = "Present",
   past = "Past",
@@ -12,11 +12,10 @@ export enum VerbFormNamesInfo {
   taraConditional = "たら Conditional"
 }
 
-export enum VerbFormSubTypeNamesInfo {
+export enum VerbFormSubTypeDisplayNames {
   plain = "Plain",
   polite = "Polite",
-  negativePlain = "Negative Plain",
-  negativePolite = "Negative Polite"
+  negative = "Negative",
 }
 
 export type VerbFormData = {

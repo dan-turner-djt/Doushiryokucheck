@@ -1,26 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SettingsForm from "../../Components/SettingsForm/SettingsForm";
 import TestForm from "../../Components/TestForm/TestForm";
 import { DefaultSettings, SettingsObject } from "../../SettingsDef";
 import { getVerbList } from "../../api/JishoRequests";
+import { VerbFormsInfo, converVerbFormsInfo } from "../../Utils/VerbFormsInfo";
+
+const enum InTestState {
+	True, False, Loading
+} 
 
 const Home = () => {
 
-	const [inTest, setInTest] = useState<boolean>(false);
+	const [inTest, setInTest] = useState<InTestState>(InTestState.False);
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
+	const [verbFormsInfo, setVerbFormsInfo] = useState<VerbFormsInfo>([]);
+
+	useEffect(() => {
+		if(inTest === InTestState.False) {
+			return;
+		}
+		setVerbFormsInfo(converVerbFormsInfo(currentSettings.verbForms));
+		console.log(verbFormsInfo);
+
+		setInTest(InTestState.True);
+		
+	}, [currentSettings]);
 
 	const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
+		setInTest(InTestState.Loading);
 		setCurrentSettings(newSettings);
 		//getVerbList(newSettings);
-		startNewTest();
-	};
-
-	const startNewTest = () => {
-		setInTest(true);
 	};
 
 	const quitTest = () => {
-		setInTest(false);
+		setInTest(InTestState.False);
 	};
 
 	return (
@@ -30,10 +43,10 @@ const Home = () => {
 				<p>Welcome!</p>
 			</div>
 			<div>
-				{inTest && 
-          <TestForm testSettings={ currentSettings } inTest={ inTest } quitHandler={ quitTest }></TestForm>
+				{(inTest === InTestState.True) && 
+          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } quitHandler={ quitTest }/>
 				}
-				{!inTest && 
+				{(inTest !== InTestState.True) && 
           <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
 				}
 			</div>
