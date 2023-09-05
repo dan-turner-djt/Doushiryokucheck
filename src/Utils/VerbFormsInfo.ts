@@ -3,7 +3,7 @@ import { FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNa
 
 export type VerbFormsInfo = {displayName: string, info: FormInfo}[];
 
-export function converVerbFormsInfo(verbForms: VerbFormData): VerbFormsInfo {
+export function convertVerbFormsInfo(verbForms: VerbFormData): VerbFormsInfo {
 	const newInfo: VerbFormsInfo = [];
 
 	Object.keys(verbForms).forEach(key => {

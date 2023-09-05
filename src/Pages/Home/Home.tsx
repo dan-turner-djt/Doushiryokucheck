@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import SettingsForm from "../../Components/SettingsForm/SettingsForm";
 import TestForm from "../../Components/TestForm/TestForm";
 import { DefaultSettings, SettingsObject } from "../../SettingsDef";
-import { getVerbList, pullInfo } from "../../api/JishoRequests";
-import { VerbFormsInfo, converVerbFormsInfo } from "../../Utils/VerbFormsInfo";
+import { convertFiles } from "../../VerbFileConversion/Convert";
+import { VerbFormsInfo, convertVerbFormsInfo } from "../../Utils/VerbFormsInfo";
+import { getVerbLevelsArray } from "../../Utils/VerbInfo";
 
 const enum InTestState {
 	True, False, Loading
@@ -14,13 +15,14 @@ const Home = () => {
 	const [inTest, setInTest] = useState<InTestState>(InTestState.False);
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 	const [verbFormsInfo, setVerbFormsInfo] = useState<VerbFormsInfo>([]);
+	const [verbLevelsInfo, setVerbLevelsInfo] = useState<string[]>([]);
 
 	useEffect(() => {
 		if(inTest === InTestState.False) {
 			return;
 		}
-		setVerbFormsInfo(converVerbFormsInfo(currentSettings.verbForms));
-		console.log(verbFormsInfo);
+		setVerbFormsInfo(convertVerbFormsInfo(currentSettings.verbForms));
+		setVerbLevelsInfo(getVerbLevelsArray(currentSettings));
 
 		setInTest(InTestState.True);
 		
@@ -36,8 +38,8 @@ const Home = () => {
 		setInTest(InTestState.False);
 	};
 
-	const handlePullInfo = (e: any) => {
-		pullInfo();
+	const handleConvertFiles = (e: any) => {
+		convertFiles();
 	};
 
 	return (
@@ -45,11 +47,11 @@ const Home = () => {
 			<h2 className="page-title">Japanese Verb Conjugation Tester</h2>
 			<div className="content">
 				<p>Welcome!</p>
-				<button type="button" onClick={handlePullInfo}>Pull Info</button>
+				<button type="button" onClick={handleConvertFiles}>Convert files</button>
 			</div>
 			<div>
 				{(inTest === InTestState.True) && 
-          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } quitHandler={ quitTest }/>
+          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } quitHandler={ quitTest }/>
 				}
 				{(inTest !== InTestState.True) && 
           <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>

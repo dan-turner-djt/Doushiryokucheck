@@ -10,6 +10,7 @@ export type TestFormProps = {
   testSettings: SettingsObject,
 	inTest: boolean,
 	verbFormsInfo: VerbFormsInfo,
+	verbLevelsInfo: string[],
   quitHandler: () => void
 }
 
@@ -97,10 +98,9 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const getAndSetQuestionData = (number: number) => {
-		console.log("new question");
-
 		const randomVerbFormInfo = props.verbFormsInfo[Math.floor(Math.random() * props.verbFormsInfo.length)];
-		console.log(randomVerbFormInfo);
+
+		const randomVerbLevel = props.verbLevelsInfo[Math.floor(Math.random() * props.verbLevelsInfo.length)];
 
 		setQuestionInfo({
 			questionNumber: number,
