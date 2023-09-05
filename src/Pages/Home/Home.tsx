@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import SettingsForm from "../../Components/SettingsForm/SettingsForm";
 import TestForm from "../../Components/TestForm/TestForm";
 import { DefaultSettings, SettingsObject } from "../../SettingsDef";
-import { getVerbList } from "../../api/JishoRequests";
+import { getVerbList, pullInfo } from "../../api/JishoRequests";
 import { VerbFormsInfo, converVerbFormsInfo } from "../../Utils/VerbFormsInfo";
 
 const enum InTestState {
@@ -36,11 +36,16 @@ const Home = () => {
 		setInTest(InTestState.False);
 	};
 
+	const handlePullInfo = (e: any) => {
+		pullInfo();
+	};
+
 	return (
 		<div className="home">
 			<h2 className="page-title">Japanese Verb Conjugation Tester</h2>
 			<div className="content">
 				<p>Welcome!</p>
+				<button type="button" onClick={handlePullInfo}>Pull Info</button>
 			</div>
 			<div>
 				{(inTest === InTestState.True) && 
