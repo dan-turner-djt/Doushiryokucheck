@@ -16,6 +16,7 @@ const Home = () => {
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 	const [verbFormsInfo, setVerbFormsInfo] = useState<VerbFormsInfo>([]);
 	const [verbLevelsInfo, setVerbLevelsInfo] = useState<string[]>([]);
+	const [errorOcurred, setErrorOccurred] = useState<string>("");
 
 	useEffect(() => {
 		if(inTest === InTestState.False) {
@@ -36,6 +37,7 @@ const Home = () => {
 
 	const quitTest = () => {
 		setInTest(InTestState.False);
+		setErrorOccurred("");
 	};
 
 	const handleConvertFiles = (e: any) => {
@@ -51,7 +53,7 @@ const Home = () => {
 			</div>
 			<div>
 				{(inTest === InTestState.True) && 
-          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } quitHandler={ quitTest }/>
+          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } errorOcurred={ errorOcurred } quitHandler={ quitTest }/>
 				}
 				{(inTest !== InTestState.True) && 
           <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>

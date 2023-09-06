@@ -11,6 +11,7 @@ export type TestFormProps = {
 	inTest: boolean,
 	verbFormsInfo: VerbFormsInfo,
 	verbLevelsInfo: string[],
+	errorOcurred: string, // An error may occur when trying to process the settings, so start the test in error state if so
   quitHandler: () => void
 }
 
@@ -26,7 +27,7 @@ const TestForm = (props: TestFormProps) => {
 	const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = useState<number>(0);
 	const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
 	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
-	const [errorOccurred, setErrorOccured] = useState<string>("");
+	const [errorOccurred, setErrorOccured] = useState<string>(props.errorOcurred);
 
 	const answerInputRef = useRef<ElementRef<typeof Field>>(null);
 	const [fieldData, setFieldData] = useState({
