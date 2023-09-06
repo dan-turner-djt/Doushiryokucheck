@@ -1,0 +1,10 @@
+{
+  "data": [
+    {"verb":{"kanji":"呉れる","kana":"くれる"},"type":6},
+    {"verb":{"kana":"いらっしゃる"},"type":8},
+    {"verb":{"kanji":"仰る","kana":"おっしゃる"},"type":9},
+    {"verb":{"kanji":"下さる","kana":"くださる"},"type":10},
+    {"verb":{"kanji":"御座る","kana":"ござる"},"type":11},
+    {"verb":{"kanji":"為さる","kana":"なさる"},"type":12}
+  ]
+}

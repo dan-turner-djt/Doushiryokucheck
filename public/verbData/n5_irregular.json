@@ -1,0 +1,8 @@
+{
+  "data": [
+    {"verb":{"kanji":"為る","kana":"する"},"type":2},
+    {"verb":{"kanji":"来る","kana":"くる"},"type":3},
+    {"verb":{"kanji":"有る","kana":"ある"},"type":4},
+    {"verb":{"kanji":"行く","kana":"いく"},"type":5}
+  ]
+}
