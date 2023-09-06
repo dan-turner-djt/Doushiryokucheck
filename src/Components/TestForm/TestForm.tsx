@@ -3,21 +3,25 @@ import { AmountSettingsObject, SettingsObject, TestType, TimedSettingsObject, ge
 import Timer from "../Timer/Timer";
 import { Box, Button, FormControl, FormLabel } from "@mui/material";
 import Field, { FieldType } from "../Field/Field";
-import { FormInfo } from "jv-conjugator";
+import { FormInfo, VerbInfo } from "jv-conjugator";
 import { VerbFormsInfo, getQuestionString } from "../../Utils/VerbFormsInfo";
+import { FullVerbListInfo } from "../../Verb/VerbInfoDefs";
+import { ErrorCode } from "../../ErrorCodes";
 
 export type TestFormProps = {
   testSettings: SettingsObject,
 	inTest: boolean,
 	verbFormsInfo: VerbFormsInfo,
 	verbLevelsInfo: string[],
+	fullVerbList: FullVerbListInfo,
 	errorOcurred: string, // An error may occur when trying to process the settings, so start the test in error state if so
   quitHandler: () => void
 }
 
 type QuestionInfo = {
 	questionNumber: number,
-	verbFormInfo: {displayName: string, info: FormInfo}
+	verbFormInfo: {displayName: string, info: FormInfo},
+	verbInfo: VerbInfo
 }
 
 const TestForm = (props: TestFormProps) => {
@@ -102,11 +106,20 @@ const TestForm = (props: TestFormProps) => {
 	const getAndSetQuestionData = (number: number) => {
 		const randomVerbFormInfo = props.verbFormsInfo[Math.floor(Math.random() * props.verbFormsInfo.length)];
 
+		type level = "N5" | "N4" | "N3" | "N2" | "N1";
 		const randomVerbLevel = props.verbLevelsInfo[Math.floor(Math.random() * props.verbLevelsInfo.length)];
+		const verbInfoForLevel: VerbInfo[] | undefined = props.fullVerbList[randomVerbLevel as level];
+		if (verbInfoForLevel === undefined) {
+			setErrorOccured(ErrorCode.VerbListUndefined);
+			return;
+		}
+
+		const randomVerbInfo: VerbInfo =  verbInfoForLevel[Math.floor(Math.random() * verbInfoForLevel.length)];
 
 		setQuestionInfo({
 			questionNumber: number,
-			verbFormInfo: randomVerbFormInfo
+			verbFormInfo: randomVerbFormInfo,
+			verbInfo: randomVerbInfo
 		});
 	};
 

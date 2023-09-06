@@ -8,7 +8,7 @@ import { getVerbLevelsArray } from "../../Utils/VerbInfo";
 
 const enum InTestState {
 	True, False, Loading
-} 
+}
 
 const Home = () => {
 
@@ -53,7 +53,7 @@ const Home = () => {
 			</div>
 			<div>
 				{(inTest === InTestState.True) && 
-          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } errorOcurred={ errorOcurred } quitHandler={ quitTest }/>
+          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } fullVerbList={ {} } errorOcurred={ errorOcurred } quitHandler={ quitTest }/>
 				}
 				{(inTest !== InTestState.True) && 
           <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
