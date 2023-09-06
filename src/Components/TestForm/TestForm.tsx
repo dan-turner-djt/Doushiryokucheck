@@ -198,7 +198,7 @@ const TestForm = (props: TestFormProps) => {
 									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
 								}
 							</span>
-							<p>Question {questionInfo?.questionNumber + ": " + getQuestionString(questionInfo?.verbFormInfo)}</p>
+							<p>Question {questionInfo?.questionNumber + ": " + getQuestionString(questionInfo?.verbFormInfo, questionInfo?.verbInfo)}</p>
 							{showAnswerResult && <div>
 								{answeredCorrectly && <p>
 									Correct!

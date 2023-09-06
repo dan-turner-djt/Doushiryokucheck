@@ -1,4 +1,4 @@
-import { FormInfo, FormName } from "jv-conjugator";
+import { FormInfo, FormName, VerbInfo } from "jv-conjugator";
 import { FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../Verb/VerbFormDefs";
 
 export type VerbFormsInfo = {displayName: string, info: FormInfo}[];
@@ -32,10 +32,18 @@ export function convertVerbFormsInfo(verbForms: VerbFormData): VerbFormsInfo {
 	return newInfo;
 }
 
-export function getQuestionString(formInfo: {displayName: string, info: FormInfo} | undefined): string {
-	if (formInfo === undefined) return "";
+export function getQuestionString(formInfo: {displayName: string, info: FormInfo} | undefined, verbInfo: VerbInfo | undefined): string {
+	if (formInfo === undefined || verbInfo === undefined) return "";
 
-	let res = formInfo.displayName;
+	let res = "";
+
+	if (verbInfo.verb.kanji) {
+		res += verbInfo.verb.kanji + " (" + verbInfo.verb.kana + ")";
+	} else {
+		res += verbInfo.verb.kana;
+	}
+	
+	res += " " + formInfo.displayName;
 	if (formInfo.info.negative) {
 		res += (" " + VerbFormSubTypeDisplayNames.negative);
 	}
