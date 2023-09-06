@@ -5,6 +5,7 @@ import { DefaultSettings, SettingsObject } from "../../SettingsDef";
 import { convertFiles } from "../../VerbFileConversion/Convert";
 import { VerbFormsInfo, convertVerbFormsInfo } from "../../Utils/VerbFormsInfo";
 import { getVerbLevelsArray } from "../../Utils/VerbInfo";
+import { FullVerbListInfo } from "../../Verb/VerbInfoDefs";
 
 const enum InTestState {
 	True, False, Loading
@@ -16,6 +17,7 @@ const Home = () => {
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 	const [verbFormsInfo, setVerbFormsInfo] = useState<VerbFormsInfo>([]);
 	const [verbLevelsInfo, setVerbLevelsInfo] = useState<string[]>([]);
+	const [fullVerbList, setFullVerbList] = useState<FullVerbListInfo>({});
 	const [errorOcurred, setErrorOccurred] = useState<string>("");
 
 	useEffect(() => {
@@ -53,7 +55,7 @@ const Home = () => {
 			</div>
 			<div>
 				{(inTest === InTestState.True) && 
-          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } fullVerbList={ {} } errorOcurred={ errorOcurred } quitHandler={ quitTest }/>
+          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } fullVerbList={ fullVerbList } errorOcurred={ errorOcurred } quitHandler={ quitTest }/>
 				}
 				{(inTest !== InTestState.True) && 
           <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
