@@ -26,6 +26,7 @@ const TestForm = (props: TestFormProps) => {
 	const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = useState<number>(0);
 	const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
 	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
+	const [errorOccurred, setErrorOccured] = useState<string>("");
 
 	const answerInputRef = useRef<ElementRef<typeof Field>>(null);
 	const [fieldData, setFieldData] = useState({
@@ -138,41 +139,50 @@ const TestForm = (props: TestFormProps) => {
 			<form className="form test-form" onSubmit={ handleSubmit }>
 				<FormControl component="fieldset" variant="standard">
 					<FormLabel component="legend" className="form-title">{ getTestTypeName(props.testSettings.testType) }</FormLabel>
-					{testFinished && <div>
-						<p>Total Correct: { answeredCorrectlyTotal }</p>
+					{errorOccurred !== "" && <div>
+						<p>Sorry, an error has occurred</p>
+						<p>Error Code: {errorOccurred}</p>
 						<div className="form-button-row">
 							<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
-							<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Restart</Button>
 						</div>
 					</div>}
-					{!testFinished && <div>
-						<span>
-							<p>Correct: { answeredCorrectlyTotal }</p>
-							{props.testSettings.testType === TestType.Timed &&
-								<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
-							}
-						</span>
-						<p>Question {questionInfo?.questionNumber + ": " + getQuestionString(questionInfo?.verbFormInfo)}</p>
-						{showAnswerResult && <div>
-							{answeredCorrectly && <p>
-								Correct!
-							</p>}
-							{!answeredCorrectly && <p>
-								Incorrect! Correct answer is ...
-							</p>}
+					{errorOccurred === "" && <div>
+						{testFinished && <div>
+							<p>Total Correct: { answeredCorrectlyTotal }</p>
+							<div className="form-button-row">
+								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
+								<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Restart</Button>
+							</div>
 						</div>}
-						{!showAnswerResult && 
-							<Field type={ FieldType.String }
-								ref={ answerInputRef }
-								staticData={ fieldData.answerInput.staticData }
-								focus={ fieldData.answerInput.focus }
-								valueSetter={ setAnswerInput }
-							/>
-						}
-						<div className="form-button-row">
-							<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
-							<Button variant="contained" color="darkBlue" type="submit" className="button-primary">{ showAnswerResult? "Next" : "Check"}</Button>
-						</div>
+						{!testFinished && <div>
+							<span>
+								<p>Correct: { answeredCorrectlyTotal }</p>
+								{props.testSettings.testType === TestType.Timed &&
+									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
+								}
+							</span>
+							<p>Question {questionInfo?.questionNumber + ": " + getQuestionString(questionInfo?.verbFormInfo)}</p>
+							{showAnswerResult && <div>
+								{answeredCorrectly && <p>
+									Correct!
+								</p>}
+								{!answeredCorrectly && <p>
+									Incorrect! Correct answer is ...
+								</p>}
+							</div>}
+							{!showAnswerResult && 
+								<Field type={ FieldType.String }
+									ref={ answerInputRef }
+									staticData={ fieldData.answerInput.staticData }
+									focus={ fieldData.answerInput.focus }
+									valueSetter={ setAnswerInput }
+								/>
+							}
+							<div className="form-button-row">
+								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
+								<Button variant="contained" color="darkBlue" type="submit" className="button-primary">{ showAnswerResult? "Next" : "Check"}</Button>
+							</div>
+						</div>}
 					</div>}
 				</FormControl>
 			</form>
