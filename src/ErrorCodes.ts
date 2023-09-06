@@ -1,3 +1,4 @@
 export const enum ErrorCode {
-  VerbListUndefined = "01"
+  VerbListUndefined = "01",
+  FetchVerbListFailed = "02",
 }

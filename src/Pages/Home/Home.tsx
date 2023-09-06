@@ -4,8 +4,9 @@ import TestForm from "../../Components/TestForm/TestForm";
 import { DefaultSettings, SettingsObject } from "../../SettingsDef";
 import { convertFiles } from "../../VerbFileConversion/Convert";
 import { VerbFormsInfo, convertVerbFormsInfo } from "../../Utils/VerbFormsInfo";
-import { getVerbLevelsArray } from "../../Utils/VerbInfo";
+import { getFullVerbList, getVerbLevelsArray } from "../../Utils/VerbInfo";
 import { FullVerbListInfo } from "../../Verb/VerbInfoDefs";
+import { ErrorCode } from "../../ErrorCodes";
 
 const enum InTestState {
 	True, False, Loading
@@ -27,14 +28,22 @@ const Home = () => {
 		setVerbFormsInfo(convertVerbFormsInfo(currentSettings.verbForms));
 		setVerbLevelsInfo(getVerbLevelsArray(currentSettings));
 
-		setInTest(InTestState.True);
-		
+		try {
+			getFullVerbList(currentSettings)
+				.then((res: FullVerbListInfo) => {
+					console.log(res);
+					setFullVerbList(res);
+					setInTest(InTestState.True);
+				});
+		} catch (e: any) {
+			setErrorOccurred(e.message);
+			setInTest(InTestState.True);
+		}
 	}, [currentSettings]);
 
 	const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
 		setInTest(InTestState.Loading);
 		setCurrentSettings(newSettings);
-		//getVerbList(newSettings);
 	};
 
 	const quitTest = () => {

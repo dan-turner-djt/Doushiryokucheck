@@ -133,6 +133,7 @@ const TestForm = (props: TestFormProps) => {
 		}
 
 		const randomVerbInfo: VerbInfo =  verbInfoForLevel[Math.floor(Math.random() * verbInfoForLevel.length)];
+		//const randomVerbInfo: VerbInfo = {verb: {kana: "trtr", kanji: "grg"}, type: 0};
 
 		setQuestionInfo({
 			questionNumber: number,

@@ -43,7 +43,7 @@ export function getQuestionString(formInfo: {displayName: string, info: FormInfo
 		res += verbInfo.verb.kana;
 	}
 	
-	res += " " + formInfo.displayName;
+	res += " - " + formInfo.displayName;
 	if (formInfo.info.negative) {
 		res += (" " + VerbFormSubTypeDisplayNames.negative);
 	}
