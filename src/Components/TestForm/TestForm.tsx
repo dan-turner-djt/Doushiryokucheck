@@ -50,7 +50,11 @@ const TestForm = (props: TestFormProps) => {
 
 	useEffect(() => {
 		// When first loading the test form
-		restartTest();
+		try {
+			restartTest();
+		} catch (e) {
+			return;
+		}
 	}, [props.inTest]);
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -58,7 +62,11 @@ const TestForm = (props: TestFormProps) => {
 
 		if (testFinished) {
 			// Pressed restart button
-			restartTest();
+			try {
+				restartTest();
+			} catch (e) {
+				return;
+			}
 			return;
 		}
 
@@ -71,7 +79,12 @@ const TestForm = (props: TestFormProps) => {
 				return;
 			}
   
-			loadNextQuestion();
+			try {
+				loadNextQuestion();
+			}
+			catch (e) {
+				return;
+			}
 		} else {
 			// Pressed check from answer step
 			if (checkAnswerIsCorrect(answerInputVal)) {
@@ -96,7 +109,12 @@ const TestForm = (props: TestFormProps) => {
 	const loadNextQuestion = () => {
 		setQuestionNumber(questionNumber + 1);
 		setAnswerInputVal("");
-		getAndSetQuestionData(questionNumber + 1);
+
+		try {
+			getAndSetQuestionData(questionNumber + 1);
+		} catch (e) {
+			throw new Error;
+		}
 	};
 
 	const finishTest = () => {
@@ -111,7 +129,7 @@ const TestForm = (props: TestFormProps) => {
 		const verbInfoForLevel: VerbInfo[] | undefined = props.fullVerbList[randomVerbLevel as level];
 		if (verbInfoForLevel === undefined) {
 			setErrorOccured(ErrorCode.VerbListUndefined);
-			return;
+			throw new Error;
 		}
 
 		const randomVerbInfo: VerbInfo =  verbInfoForLevel[Math.floor(Math.random() * verbInfoForLevel.length)];
@@ -136,7 +154,12 @@ const TestForm = (props: TestFormProps) => {
 		setAnsweredCorrectlyTotal(0);
 		setShowAnswerResult(false);
 		setTestFinished(false);
-		getAndSetQuestionData(1);
+
+		try {
+			getAndSetQuestionData(1);
+		} catch (e) {
+			throw new Error;
+		}
 	};
 
 	const quitTest = () => {
