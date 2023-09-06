@@ -23,7 +23,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 				startingValue: DefaultAmountSettings.amount
 			},
 			valid: true,
-			focus: false,
 			ref: wordAmountRef
 		},
 		timeLimit: {
@@ -33,8 +32,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 				minimum: 1, maximum: 3600,
 				startingValue: DefaultTimedSettings.time
 			}, 
-			valid: true, 
-			focus: false,
+			valid: true,
 			ref: timeLimitRef
 		}
 	});
@@ -142,7 +140,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 	const getFirstInvalidField = (): RefObject<FieldRef> | undefined => {
 		let result: RefObject<FieldRef> | undefined;
-		Object.values(fieldData).forEach((o: {staticData: StaticFieldData, valid: boolean, focus: boolean, ref: RefObject<FieldRef>}) => {
+		Object.values(fieldData).forEach((o: {staticData: StaticFieldData, valid: boolean, ref: RefObject<FieldRef>}) => {
 			if (o.valid === false) {
 				result = o.ref;
 				return;
@@ -198,7 +196,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 		conjugationLevelData.clN2 = false;
 		conjugationLevelData.clN1 = false;
 
-		console.log(DefaultSettings.verbForms);
 		setVerbFormData(DefaultSettings.verbForms);
 	};
 
@@ -614,7 +611,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 									type={ FieldType.Number }
 									ref={ wordAmountRef }
 									staticData={ fieldData.wordAmount.staticData }
-									focus={ fieldData.wordAmount.focus }
 									valueSetter={ setNewWordAmount }/>
 							</div>}
 							{currentSettings.testType === TestType.Endless && <div className="endless-sub-form">
@@ -624,7 +620,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 									type={ FieldType.Number }
 									ref={ timeLimitRef }
 									staticData={ fieldData.timeLimit.staticData }
-									focus={ fieldData.timeLimit.focus }
 									valueSetter={ setNewTime }/>
 							</div>}
 						</div>

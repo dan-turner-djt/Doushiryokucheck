@@ -7,6 +7,7 @@ import { FormInfo, VerbInfo } from "jv-conjugator";
 import { VerbFormsInfo, getQuestionString } from "../../Utils/VerbFormsInfo";
 import { FullVerbListInfo } from "../../Verb/VerbInfoDefs";
 import { ErrorCode } from "../../ErrorCodes";
+import { getConjugation } from "../../Utils/GetConjugation";
 
 export type TestFormProps = {
   testSettings: SettingsObject,
@@ -21,7 +22,8 @@ export type TestFormProps = {
 type QuestionInfo = {
 	questionNumber: number,
 	verbFormInfo: {displayName: string, info: FormInfo},
-	verbInfo: VerbInfo
+	verbInfo: VerbInfo,
+	answer: {kana: string, kanji?: string}
 }
 
 const TestForm = (props: TestFormProps) => {
@@ -42,11 +44,13 @@ const TestForm = (props: TestFormProps) => {
 				startingValue: ""
 			},
 			valid: true,
-			focus: false,
 			ref: answerInputRef
 		}
 	});
 	const [answerInputVal, setAnswerInputVal] = useState<string>(fieldData.answerInput.staticData.startingValue);
+
+	const nextButtonRef = useRef<ElementRef<typeof Button>>(null);
+	const restartButtonRef = useRef<ElementRef<typeof Button>>(null);
 
 	useEffect(() => {
 		// When first loading the test form
@@ -95,6 +99,11 @@ const TestForm = (props: TestFormProps) => {
 			}
 
 			setShowAnswerResult(true);
+
+			setTimeout(() => {
+				// Wait slightly as it may not be defined immediately
+				nextButtonRef.current?.focus();
+			}, 10);
 		}
 	};
 
@@ -119,6 +128,11 @@ const TestForm = (props: TestFormProps) => {
 
 	const finishTest = () => {
 		setTestFinished(true);
+
+		setTimeout(() => {
+			// Wait slightly as it may not be defined immediately
+			restartButtonRef.current?.focus();
+		}, 10);
 	};
 
 	const getAndSetQuestionData = (number: number) => {
@@ -133,20 +147,37 @@ const TestForm = (props: TestFormProps) => {
 		}
 
 		const randomVerbInfo: VerbInfo =  verbInfoForLevel[Math.floor(Math.random() * verbInfoForLevel.length)];
-		//const randomVerbInfo: VerbInfo = {verb: {kana: "trtr", kanji: "grg"}, type: 0};
+		
+		let questionAnswer: {kana: string, kanji?: string};
+		try {
+			questionAnswer = getConjugation(randomVerbInfo, randomVerbFormInfo.info);
+		}
+		catch (e) {
+			setErrorOccured(ErrorCode.GetConjugationFailed);
+			throw new Error;
+		}
 
 		setQuestionInfo({
 			questionNumber: number,
 			verbFormInfo: randomVerbFormInfo,
-			verbInfo: randomVerbInfo
+			verbInfo: randomVerbInfo,
+			answer: questionAnswer
 		});
+
+		setTimeout(() => {
+			// Wait slightly as it may not be defined immediately
+			answerInputRef.current?.giveFocus();
+		}, 10);
 	};
 
 	const checkAnswerIsCorrect = (answer: string):boolean => {
-		if (answer !== "o") {
-			return false;
+		if (answer === questionInfo?.answer.kana) {
+			return true;
 		}
-		return true;
+		if (questionInfo?.answer.kanji && answer === questionInfo.answer.kanji) {
+			return true;
+		}
+		return false;
 	};
 
 	const restartTest = () => {
@@ -189,7 +220,7 @@ const TestForm = (props: TestFormProps) => {
 							<p>Total Correct: { answeredCorrectlyTotal }</p>
 							<div className="form-button-row">
 								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
-								<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Restart</Button>
+								<Button variant="contained" color="darkBlue" type="submit" className="button-primary" ref={ restartButtonRef }>Restart</Button>
 							</div>
 						</div>}
 						{!testFinished && <div>
@@ -205,20 +236,19 @@ const TestForm = (props: TestFormProps) => {
 									Correct!
 								</p>}
 								{!answeredCorrectly && <p>
-									Incorrect! Correct answer is ...
+									Incorrect! Correct answer is {(questionInfo?.answer.kanji)? questionInfo.answer.kanji + " (" + questionInfo.answer.kana + ")" : questionInfo?.answer.kana}
 								</p>}
 							</div>}
 							{!showAnswerResult && 
 								<Field type={ FieldType.String }
 									ref={ answerInputRef }
 									staticData={ fieldData.answerInput.staticData }
-									focus={ fieldData.answerInput.focus }
 									valueSetter={ setAnswerInput }
 								/>
 							}
 							<div className="form-button-row">
 								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
-								<Button variant="contained" color="darkBlue" type="submit" className="button-primary">{ showAnswerResult? "Next" : "Check"}</Button>
+								<Button variant="contained" color="darkBlue" type="submit" className="button-primary" ref={ nextButtonRef }>{ showAnswerResult? "Next" : "Check"}</Button>
 							</div>
 						</div>}
 					</div>}

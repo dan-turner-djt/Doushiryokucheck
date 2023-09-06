@@ -16,7 +16,6 @@ export type StaticFieldData = {
 export type FieldProps = {
 	type: FieldType,
   staticData: StaticFieldData,
-  focus: boolean,
   valueSetter: (newVal: string, valid: boolean) => void
 }
 
