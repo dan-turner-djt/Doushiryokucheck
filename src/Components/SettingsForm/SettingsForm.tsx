@@ -39,14 +39,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 		}
 	});
 
-	const [verbTypeData, setVerbTypeData] = useState({
-		vtIchidan: DefaultSettings.verbType.vtIchidan,
-		vtGodan: DefaultSettings.verbType.vtGodan,
-		vtIrregular: DefaultSettings.verbType.vtIrregular
-	});
-	const verbTypeError = [verbTypeData.vtIchidan, verbTypeData.vtGodan, verbTypeData.vtIrregular].filter((v) => v).length === 0;
-	const vtInputRef = useRef<HTMLInputElement>(null);
-
 	const [verbLevelData, setVerbLevelData] = useState({
 		vlN5: DefaultSettings.verbLevel.vlN5,
 		vlN4: DefaultSettings.verbLevel.vlN4,
@@ -56,6 +48,26 @@ const SettingsForm = (props: SettingsFormProps) => {
 	});
 	const verbLevelError = [verbLevelData.vlN5, verbLevelData.vlN4, verbLevelData.vlN3, verbLevelData.vlN2, verbLevelData.vlN1].filter((v) => v).length === 0;
 	const vlInputRef = useRef<HTMLInputElement>(null);
+
+	const checkVerbTypeNoResults = (): boolean => {
+		if (verbTypeData.vtIrregular && !verbTypeData.vtIchidan && !verbTypeData.vtGodan) {
+			if (!(verbLevelData.vlN5 || verbLevelData.vlN4 || verbLevelData.vlN1)) {
+				// No irregular verbs for these levels
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	const [verbTypeData, setVerbTypeData] = useState({
+		vtIchidan: DefaultSettings.verbType.vtIchidan,
+		vtGodan: DefaultSettings.verbType.vtGodan,
+		vtIrregular: DefaultSettings.verbType.vtIrregular
+	});
+	const verbTypeError = [verbTypeData.vtIchidan, verbTypeData.vtGodan, verbTypeData.vtIrregular].filter((v) => v).length === 0;
+	const verbTypeNoResultsError: boolean = checkVerbTypeNoResults();
+	const vtInputRef = useRef<HTMLInputElement>(null);
 
 	const [conjugationLevelData, setConjugationLevelData] = useState({
 		clN5: true,
@@ -97,6 +109,13 @@ const SettingsForm = (props: SettingsFormProps) => {
 			}
 
 			if(verbLevelError) {
+				if (vlInputRef.current) {
+					vlInputRef.current.focus();
+					return;
+				}
+			}
+
+			if(verbTypeNoResultsError) {
 				if (vlInputRef.current) {
 					vlInputRef.current.focus();
 					return;
@@ -613,7 +632,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 				</div>
 				<div className="lineBreak"></div>
 				<div>
-					<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError }>
+					<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError || verbTypeNoResultsError }>
 						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
 						<div className="checkbox-group">
 							<FormLabel>Verb Type</FormLabel>
@@ -697,6 +716,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 							</FormGroup>
 							<FormHelperText>{ verbLevelError? "Select at least one" : "" }</FormHelperText>
 						</div>
+						<FormHelperText>{ (verbTypeNoResultsError && !verbLevelError)? "These settings will give no verbs, select more options" : "" }</FormHelperText>
 					</FormControl>
 				</div>
 				<div className="lineBreak"></div>
