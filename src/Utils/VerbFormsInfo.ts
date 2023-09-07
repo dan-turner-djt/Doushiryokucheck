@@ -38,10 +38,9 @@ export function getQuestionString(formInfo: {displayName: string, info: FormInfo
 	let res = "";
 
 	if (verbInfo.verb.kanji) {
-		res += verbInfo.verb.kanji + " (" + verbInfo.verb.kana + ")";
-	} else {
-		res += verbInfo.verb.kana;
+		res += verbInfo.verb.kanji + " / ";
 	}
+	res += verbInfo.verb.kana;
 	
 	res += " - " + formInfo.displayName;
 	if (formInfo.info.negative) {

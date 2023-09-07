@@ -10,6 +10,10 @@ export function getVerbList(settings: SettingsObject): {kanji: string, kana: str
 
 export function convertFiles() {
 	convertSingleFile(5, "ichidan");
+	convertSingleFile(4, "ichidan");
+	convertSingleFile(3, "ichidan");
+	convertSingleFile(2, "ichidan");
+	convertSingleFile(1, "ichidan");
 }
 
 function convertSingleFile(level: number, type: string): void {
@@ -23,16 +27,20 @@ function convertSingleFile(level: number, type: string): void {
 			return res.json();
 		})
 		.then((res) => {
-			console.log(res.data);
+			console.log(res);
 			const all: {data: any}[] = res.info;
 
 			const newData: VerbInfo[] = [];
 			all.forEach(info => {
-				const data: {slug: string, japanese: {reading: string}[]}[] = info.data;
+				const data: {slug: string, japanese: {reading: string}[], jlpt: string[]}[] = info.data;
 				data.forEach(d => {
+					if (checkContainsLowerLevels(level, d.jlpt)) {
+						return;
+					}
+					const slug = processSlug(d.slug);
 					const newInfo: VerbInfo = {
 						verb: {
-							kanji: d.slug,
+							kanji: slug,
 							kana: d.japanese[0].reading
 						},
 						type: VerbType.Ichidan
@@ -51,6 +59,35 @@ function convertSingleFile(level: number, type: string): void {
 		.catch(err => {
 			console.log(err);
 		});
+}
+
+function processSlug(slug: string): string {
+	return slug.split("-")[0];
+}
+
+function checkContainsLowerLevels(level: number, list: string[]): boolean {
+	if (level < 5) {
+		if (list.includes("jlpt-n5")) {
+			return true;
+		}
+	}
+	if (level < 4) {
+		if (list.includes("jlpt-n4")) {
+			return true;
+		}
+	}
+	if (level < 3) {
+		if (list.includes("jlpt-n3")) {
+			return true;
+		}
+	}
+	if (level < 2) {
+		if (list.includes("jlpt-n2")) {
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 

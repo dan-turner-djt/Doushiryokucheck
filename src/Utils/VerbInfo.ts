@@ -29,7 +29,7 @@ export function getVerbLevelsArray(settingsObj: SettingsObject): string[] {
 export async function getFullVerbList(settings: SettingsObject): Promise<FullVerbListInfo> {
 
 	try {
-		const res = await fetchFromFile(5, "irregular")
+		const res = await fetchFromFile(5, "ichidan")
 			.then(res => {
 				const toReturn: FullVerbListInfo = {N5: res};
 				//console.log(toReturn);
@@ -48,11 +48,10 @@ async function fetchFromFile(level: number, type: string): Promise<VerbInfo[]> {
 	try {
 		return fetch(request)
 			.then(res => {
-				//console.log(res);
 				return res.json();
 			})
 			.then((res) => {
-				//console.log(res.data);
+				console.log(res.data);
 				return res.data;
 			})
 			.catch(err => {

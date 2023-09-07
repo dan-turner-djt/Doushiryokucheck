@@ -150,10 +150,12 @@ const TestForm = (props: TestFormProps) => {
 		
 		let questionAnswer: {kana: string, kanji?: string};
 		try {
+			console.log(randomVerbInfo);
+			console.log(randomVerbFormInfo);
 			questionAnswer = getConjugation(randomVerbInfo, randomVerbFormInfo.info);
 		}
-		catch (e) {
-			setErrorOccured(ErrorCode.GetConjugationFailed);
+		catch (e: any) {
+			setErrorOccured(e.message);
 			throw new Error;
 		}
 
@@ -236,7 +238,7 @@ const TestForm = (props: TestFormProps) => {
 									Correct!
 								</p>}
 								{!answeredCorrectly && <p>
-									Incorrect! Correct answer is {(questionInfo?.answer.kanji)? questionInfo.answer.kanji + " (" + questionInfo.answer.kana + ")" : questionInfo?.answer.kana}
+									Incorrect! Correct answer is {((questionInfo?.answer.kanji)? questionInfo.answer.kanji + " / " : "") + questionInfo?.answer.kana}
 								</p>}
 							</div>}
 							{!showAnswerResult && 

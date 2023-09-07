@@ -74,7 +74,7 @@ export const DefaultSettings: SettingsObject = {
 			plain: true, polite: true, negativePlain: true, negativePolite: true
 		},
 		te: {
-			plain: true, polite: true, negativePlain: true, negativePolite: true
+			plain: true, polite: false, negativePlain: true, negativePolite: false
 		},
 		naide: {
 			plain: false, polite: false
