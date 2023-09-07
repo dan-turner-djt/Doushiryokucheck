@@ -5,8 +5,7 @@ import { DefaultSettings, SettingsObject } from "../../SettingsDef";
 import { convertFiles } from "../../VerbFileConversion/Convert";
 import { VerbFormsInfo, convertVerbFormsInfo } from "../../Utils/VerbFormsInfo";
 import { getFullVerbList, getVerbLevelsArray } from "../../Utils/VerbInfo";
-import { FullVerbListInfo } from "../../Verb/VerbInfoDefs";
-import { ErrorCode } from "../../ErrorCodes";
+import { VerbInfo } from "jv-conjugator";
 
 const enum InTestState {
 	True, False, Loading
@@ -18,7 +17,7 @@ const Home = () => {
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 	const [verbFormsInfo, setVerbFormsInfo] = useState<VerbFormsInfo>([]);
 	const [verbLevelsInfo, setVerbLevelsInfo] = useState<string[]>([]);
-	const [fullVerbList, setFullVerbList] = useState<FullVerbListInfo>({});
+	const [fullVerbList, setFullVerbList] = useState<VerbInfo[]>([]);
 	const [errorOcurred, setErrorOccurred] = useState<string>("");
 
 	useEffect(() => {
@@ -30,7 +29,7 @@ const Home = () => {
 
 		try {
 			getFullVerbList(currentSettings)
-				.then((res: FullVerbListInfo) => {
+				.then((res: VerbInfo[]) => {
 					console.log(res);
 					setFullVerbList(res);
 					setInTest(InTestState.True);
@@ -49,6 +48,7 @@ const Home = () => {
 	const quitTest = () => {
 		setInTest(InTestState.False);
 		setErrorOccurred("");
+		setCurrentSettings(DefaultSettings);
 	};
 
 	const handleConvertFiles = (e: any) => {

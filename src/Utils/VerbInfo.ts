@@ -1,7 +1,6 @@
 import { VerbInfo } from "jv-conjugator";
 import { ErrorCode } from "../ErrorCodes";
 import { SettingsObject } from "../SettingsDef";
-import { FullVerbListInfo } from "../Verb/VerbInfoDefs";
 
 export function getVerbLevelsArray(settingsObj: SettingsObject): string[] {
 	const verbLevels: string[] = [];
@@ -26,16 +25,19 @@ export function getVerbLevelsArray(settingsObj: SettingsObject): string[] {
 	return verbLevels;
 }
 
-export async function getFullVerbList(settings: SettingsObject): Promise<FullVerbListInfo> {
+export async function getFullVerbList(settings: SettingsObject): Promise<VerbInfo[]> {
+
+	const settingsList: {level: number, type: string}[] = convertSettingsIntoList(settings);
 
 	try {
-		const res = await fetchFromFile(5, "ichidan")
-			.then(res => {
-				const toReturn: FullVerbListInfo = {N5: res};
-				//console.log(toReturn);
-				return toReturn;
-			});
-		return res;
+		let fullList: VerbInfo[] = [];
+		for (const setting of settingsList) {
+			const res = await fetchFromFile(setting.level, setting.type);
+
+			fullList = fullList.concat(res);
+		}
+		
+		return fullList;
 	} 
 	catch (e) {
 		throw new Error(ErrorCode.FetchVerbListFailed);
@@ -60,6 +62,31 @@ async function fetchFromFile(level: number, type: string): Promise<VerbInfo[]> {
 	}
 	catch (e) {
 		throw new Error;
-	}
+	}	
+}
+
+function convertSettingsIntoList(settings: SettingsObject): {level: number, type: string}[] {
+	type levelType = "vlN5" | "vlN4" | "vlN3" | "vlN2" | "vlN1";
+
+	const levelsList: number[] = [];
+	Object.keys(settings.verbLevel).forEach((l) => {
+		if(settings.verbLevel[l as levelType] === true) {
+			levelsList.push(Number(l.substring(l.length - 1)));
+		}
+	});
 	
+	const settingsList: {level: number, type: string}[] = [];
+	levelsList.forEach(l => {
+		if (settings.verbType.vtIchidan) {
+			settingsList.push({level: l, type: "ichidan"});
+		}
+		if (settings.verbType.vtGodan) {
+			settingsList.push({level: l, type: "godan"});
+		}
+		if (settings.verbType.vtIrregular) {
+			settingsList.push({level: l, type: "irregular"});
+		}
+	});
+
+	return settingsList;
 }

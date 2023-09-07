@@ -5,7 +5,6 @@ import { Box, Button, FormControl, FormLabel } from "@mui/material";
 import Field, { FieldType } from "../Field/Field";
 import { FormInfo, VerbInfo } from "jv-conjugator";
 import { VerbFormsInfo, getQuestionString } from "../../Utils/VerbFormsInfo";
-import { FullVerbListInfo } from "../../Verb/VerbInfoDefs";
 import { ErrorCode } from "../../ErrorCodes";
 import { getConjugation } from "../../Utils/GetConjugation";
 
@@ -14,7 +13,7 @@ export type TestFormProps = {
 	inTest: boolean,
 	verbFormsInfo: VerbFormsInfo,
 	verbLevelsInfo: string[],
-	fullVerbList: FullVerbListInfo,
+	fullVerbList: VerbInfo[],
 	errorOcurred: string, // An error may occur when trying to process the settings, so start the test in error state if so
   quitHandler: () => void
 }
@@ -138,15 +137,8 @@ const TestForm = (props: TestFormProps) => {
 	const getAndSetQuestionData = (number: number) => {
 		const randomVerbFormInfo = props.verbFormsInfo[Math.floor(Math.random() * props.verbFormsInfo.length)];
 
-		type level = "N5" | "N4" | "N3" | "N2" | "N1";
-		const randomVerbLevel = props.verbLevelsInfo[Math.floor(Math.random() * props.verbLevelsInfo.length)];
-		const verbInfoForLevel: VerbInfo[] | undefined = props.fullVerbList[randomVerbLevel as level];
-		if (verbInfoForLevel === undefined) {
-			setErrorOccured(ErrorCode.VerbListUndefined);
-			throw new Error;
-		}
-
-		const randomVerbInfo: VerbInfo =  verbInfoForLevel[Math.floor(Math.random() * verbInfoForLevel.length)];
+		const fullVerbList: VerbInfo[] = props.fullVerbList;
+		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];
 		
 		let questionAnswer: {kana: string, kanji?: string};
 		try {

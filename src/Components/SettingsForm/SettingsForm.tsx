@@ -172,6 +172,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 	const handleRestoreDefaults = () => {
 		setCurrentSettings(DefaultSettings);
+		console.log("restore");
 
 		// Reset each field's value and validity
 		for (const [key, value] of Object.entries(fieldData)) {
