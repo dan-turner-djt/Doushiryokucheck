@@ -1,20 +1,12 @@
-import { SettingsObject } from "../SettingsDef";
 import { VerbInfo, VerbType } from "jv-conjugator";
 import { saveAs } from "file-saver";
 
-export function getVerbList(settings: SettingsObject): {kanji: string, kana: string}[] | Error {
-
-	//const requestResult: object = processAndMakeRequest();
-	return [];
-}
-
 export function convertFiles() {
-	convertSingleFile(5, "ichidan");
-	convertSingleFile(4, "ichidan");
-	convertSingleFile(3, "ichidan");
-	convertSingleFile(2, "ichidan");
-	convertSingleFile(1, "ichidan");
+	convertSingleFile(5, "godan");
 }
+
+type data = {slug: string, japanese: {reading: string}[], jlpt: string[]};
+type fileInfo = {data: data[]}[];
 
 function convertSingleFile(level: number, type: string): void {
 	const fileName = "n" + level + "_" + type;
@@ -28,29 +20,45 @@ function convertSingleFile(level: number, type: string): void {
 		})
 		.then((res) => {
 			console.log(res);
-			const all: {data: any}[] = res.info;
 
-			const newData: VerbInfo[] = [];
-			all.forEach(info => {
-				const data: {slug: string, japanese: {reading: string}[], jlpt: string[]}[] = info.data;
-				data.forEach(d => {
-					if (checkContainsLowerLevels(level, d.jlpt)) {
-						return;
+			let toWrite;
+
+			if (type === "godan") {
+				const all: {bu: fileInfo, gu: fileInfo, ku: fileInfo, mu: fileInfo, nu: fileInfo, ru: fileInfo, su: fileInfo, tsu: fileInfo, u: fileInfo} = res.info;
+
+				const newDataBu = processData(all.bu, level);
+				const newDataGu = processData(all.gu, level);
+				const newDataKu = processData(all.ku, level);
+				const newDataMu = processData(all.mu, level);
+				const newDataNu = processData(all.nu, level);
+				const newDataRu = processData(all.ru, level);
+				const newDataSu = processData(all.su, level);
+				const newDataTsu = processData(all.tsu, level);
+				const newDataU = processData(all.u, level);
+
+				toWrite = {
+					data: {
+						bu: newDataBu,
+						gu: newDataGu,
+						ku: newDataKu,
+						mu: newDataMu,
+						nu: newDataNu,
+						ru: newDataRu,
+						su: newDataSu,
+						tsu: newDataTsu,
+						u: newDataU
 					}
-					const slug = processSlug(d.slug);
-					const newInfo: VerbInfo = {
-						verb: {
-							kanji: slug,
-							kana: d.japanese[0].reading
-						},
-						type: VerbType.Ichidan
-					};
-					newData.push(newInfo);
-				});
-			});
-			const toWrite = {
-				data: newData
-			};
+				};
+
+			} else {
+				const all: fileInfo = res.info;
+				const newData = processData(all, level);
+
+				toWrite = {
+					data: newData
+				};
+			}
+
 			console.log(toWrite);
 
 			const file = new Blob([JSON.stringify(toWrite)], { type: "text/plain; charset=utf-8"});
@@ -59,6 +67,29 @@ function convertSingleFile(level: number, type: string): void {
 		.catch(err => {
 			console.log(err);
 		});
+}
+
+function processData(all: fileInfo, level: number): VerbInfo[] {
+	const newData: VerbInfo[] = [];
+	all.forEach(info => {
+		const data: data[] = info.data;
+		data.forEach(d => {
+			if (checkContainsLowerLevels(level, d.jlpt)) {
+				return;
+			}
+			const slug = processSlug(d.slug);
+			const newInfo: VerbInfo = {
+				verb: {
+					kanji: slug,
+					kana: d.japanese[0].reading
+				},
+				type: VerbType.Ichidan
+			};
+			newData.push(newInfo);
+		});
+	});
+
+	return newData;
 }
 
 function processSlug(slug: string): string {
@@ -88,13 +119,4 @@ function checkContainsLowerLevels(level: number, list: string[]): boolean {
 	}
 	
 	return false;
-}
-
-
-async function makeRequest(level: string, verbType: string) {
-	const totalInfo: object[] = [];
-
-	const corsPrefix = "https://cors-anywhere.herokuapp.com/";
-	const jishoURL = "https://jisho.org/api/v1/search/words?keyword=";
-	const params = "%23" + level + "%20%23" + verbType;
 }
