@@ -5,7 +5,6 @@ import { Box, Button, FormControl, FormLabel } from "@mui/material";
 import Field, { FieldType } from "../Field/Field";
 import { FormInfo, VerbInfo } from "jv-conjugator";
 import { VerbFormsInfo, getQuestionString } from "../../Utils/VerbFormsInfo";
-import { ErrorCode } from "../../ErrorCodes";
 import { getConjugation } from "../../Utils/GetConjugation";
 
 export type TestFormProps = {
@@ -146,8 +145,8 @@ const TestForm = (props: TestFormProps) => {
 			console.log(randomVerbFormInfo);
 			questionAnswer = getConjugation(randomVerbInfo, randomVerbFormInfo.info);
 		}
-		catch (e: any) {
-			setErrorOccured(e.message);
+		catch (e) {
+			setErrorOccured((e as Error).message);
 			throw new Error;
 		}
 

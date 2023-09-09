@@ -48,7 +48,7 @@ const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
 		setValue(e.target.value);
     
 		let valid = true;
-		if (!checkAndSetStringValueIsValid(newVal)) {
+		if (!checkAndSetStringValueIsValid()) {
 			valid = false;
 		}
 
@@ -70,7 +70,7 @@ const Field = forwardRef<FieldRef, FieldProps>((props, ref) => {
 		props.valueSetter(String(newVal), valid);
 	};
 
-	const checkAndSetStringValueIsValid = (newVal: string): boolean => {
+	const checkAndSetStringValueIsValid = (): boolean => {
 		setIsValid(true);
 		return true;
 	};

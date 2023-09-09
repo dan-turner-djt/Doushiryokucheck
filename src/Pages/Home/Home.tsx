@@ -34,8 +34,8 @@ const Home = () => {
 					setFullVerbList(res);
 					setInTest(InTestState.True);
 				});
-		} catch (e: any) {
-			setErrorOccurred(e.message);
+		} catch (e) {
+			setErrorOccurred((e as Error).message);
 			setInTest(InTestState.True);
 		}
 	}, [currentSettings]);
@@ -51,7 +51,7 @@ const Home = () => {
 		setCurrentSettings(DefaultSettings);
 	};
 
-	const handleConvertFiles = (e: any) => {
+	const handleConvertFiles = () => {
 		convertFiles();
 	};
 
