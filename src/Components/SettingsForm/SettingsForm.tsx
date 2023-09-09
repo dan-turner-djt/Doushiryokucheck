@@ -37,6 +37,20 @@ const SettingsForm = (props: SettingsFormProps) => {
 		}
 	});
 
+	const checkAllVt = (): boolean => {
+		return verbTypeData.vtBu && verbTypeData.vtGu && verbTypeData.vtKu && verbTypeData.vtMu && verbTypeData.vtNu 
+			&& verbTypeData.vtRu && verbTypeData.vtSu && verbTypeData.vtTsu && verbTypeData.vtU;
+	};
+
+	const checkAnyVt = (): boolean => {
+		return verbTypeData.vtBu || verbTypeData.vtGu || verbTypeData.vtKu || verbTypeData.vtMu || verbTypeData.vtNu 
+			|| verbTypeData.vtRu || verbTypeData.vtSu || verbTypeData.vtTsu || verbTypeData.vtU;
+	};
+
+	const checkIndeterminateVt = (): boolean => {
+		return checkAnyVt() && !checkAllVt();
+	};
+
 	const [verbLevelData, setVerbLevelData] = useState({
 		vlN5: DefaultSettings.verbLevel.vlN5,
 		vlN4: DefaultSettings.verbLevel.vlN4,
@@ -48,9 +62,16 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const vlInputRef = useRef<HTMLInputElement>(null);
 
 	const checkVerbTypeNoResults = (): boolean => {
-		if (verbTypeData.vtIrregular && !verbTypeData.vtIchidan && !verbTypeData.vtGodan) {
+		if (verbTypeData.vtIrregular && !(checkAnyVt() || verbTypeData.vtIchidan)) {
 			if (!(verbLevelData.vlN5 || verbLevelData.vlN4 || verbLevelData.vlN1)) {
 				// No irregular verbs for these levels
+				return true;
+			}
+		}
+
+		if (!verbLevelData.vlN5) {
+			if (verbTypeData.vtNu && !(verbTypeData.vtBu || verbTypeData.vtGu || verbTypeData.vtKu || verbTypeData.vtMu || verbTypeData.vtRu
+				|| verbTypeData.vtSu || verbTypeData.vtTsu || verbTypeData.vtU)) {
 				return true;
 			}
 		}
@@ -60,10 +81,19 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 	const [verbTypeData, setVerbTypeData] = useState({
 		vtIchidan: DefaultSettings.verbType.vtIchidan,
-		vtGodan: DefaultSettings.verbType.vtGodan,
-		vtIrregular: DefaultSettings.verbType.vtIrregular
+		vtIrregular: DefaultSettings.verbType.vtIrregular,
+		vtBu: DefaultSettings.verbType.vtBu,
+		vtGu: DefaultSettings.verbType.vtGu,
+		vtKu: DefaultSettings.verbType.vtKu,
+		vtMu: DefaultSettings.verbType.vtMu,
+		vtNu: DefaultSettings.verbType.vtNu,
+		vtRu: DefaultSettings.verbType.vtRu,
+		vtSu: DefaultSettings.verbType.vtSu,
+		vtTsu: DefaultSettings.verbType.vtTsu,
+		vtU: DefaultSettings.verbType.vtU
 	});
-	const verbTypeError = [verbTypeData.vtIchidan, verbTypeData.vtGodan, verbTypeData.vtIrregular].filter((v) => v).length === 0;
+	const verbTypeError = [verbTypeData.vtIchidan, verbTypeData.vtIrregular, verbTypeData.vtBu, verbTypeData.vtGu, verbTypeData.vtKu,
+		verbTypeData.vtMu, verbTypeData.vtNu, verbTypeData.vtRu, verbTypeData.vtSu, verbTypeData.vtTsu, verbTypeData.vtU].filter((v) => v).length === 0;
 	const verbTypeNoResultsError: boolean = checkVerbTypeNoResults();
 	const vtInputRef = useRef<HTMLInputElement>(null);
 
@@ -114,8 +144,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 			}
 
 			if(verbTypeNoResultsError) {
-				if (vlInputRef.current) {
-					vlInputRef.current.focus();
+				if (vtInputRef.current) {
+					vtInputRef.current.focus();
 					return;
 				}
 			}
@@ -182,8 +212,16 @@ const SettingsForm = (props: SettingsFormProps) => {
 		}
 
 		verbTypeData.vtIchidan = DefaultSettings.verbType.vtIchidan;
-		verbTypeData.vtGodan= DefaultSettings.verbType.vtGodan;
 		verbTypeData.vtIrregular = DefaultSettings.verbType.vtIrregular;
+		verbTypeData.vtBu = DefaultSettings.verbType.vtBu;
+		verbTypeData.vtGu = DefaultSettings.verbType.vtGu;
+		verbTypeData.vtKu = DefaultSettings.verbType.vtKu;
+		verbTypeData.vtMu = DefaultSettings.verbType.vtMu;
+		verbTypeData.vtNu = DefaultSettings.verbType.vtNu;
+		verbTypeData.vtRu = DefaultSettings.verbType.vtRu;
+		verbTypeData.vtSu = DefaultSettings.verbType.vtSu;
+		verbTypeData.vtTsu = DefaultSettings.verbType.vtTsu;
+		verbTypeData.vtU = DefaultSettings.verbType.vtU;
 
 		verbLevelData.vlN5 = DefaultSettings.verbLevel.vlN5;
 		verbLevelData.vlN4 = DefaultSettings.verbLevel.vlN4;
@@ -284,7 +322,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 		const obj: VerbFormData = JSON.parse(JSON.stringify(verbFormData));
 		Object.keys(obj).forEach(key => {
 			// First check if form is selected at all
-			if(setEveryForm || checkIndeterminate(key as FormNames) || checkAllSubOptions(key as FormNames)) {
+			if(setEveryForm || checkIndeterminateVf(key as FormNames) || checkAllSubOptions(key as FormNames)) {
 				// Then set the option of the correct type
 				if (type === "plain" && Object.keys(obj[key as keyof VerbFormData]).includes("plain")) {
 					(obj[key as WithPlainForms]).plain = toSet;
@@ -347,7 +385,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 		Object.keys(obj).forEach(key => {
 			let res = true;
 			// first check if form is selected at all
-			if(checkIndeterminate(key as FormNames) || checkAllSubOptions(key as FormNames)) {
+			if(checkIndeterminateVf(key as FormNames) || checkAllSubOptions(key as FormNames)) {
 				foundASetForm = true;
 				// then check that the specified type is selected
 				if (type === "plain" && Object.keys(obj[key as keyof VerbFormData]).includes("plain")) {
@@ -392,7 +430,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 		Object.keys(obj).forEach(key => {
 			let res = false;
 			// first check if form is selected at all
-			if(checkIndeterminate(key as FormNames) || checkAllSubOptions(key as FormNames)) {
+			if(checkIndeterminateVf(key as FormNames) || checkAllSubOptions(key as FormNames)) {
 				// then check if the specified type is selected
 				if (type === "plain" && Object.keys(obj[key as keyof VerbFormData]).includes("plain")) {
 					if(obj[key as WithPlainForms].plain === true) {
@@ -433,7 +471,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 		return arr.every(v => v === true);
 	};
 
-	const checkIndeterminate = (form: FormNames): boolean => {
+	const checkIndeterminateVf = (form: FormNames): boolean => {
 		const arr: boolean[] = [];
 		for(const v of Object.entries(verbFormData[form])) {
 			arr.push(v[1]);
@@ -446,6 +484,163 @@ const SettingsForm = (props: SettingsFormProps) => {
 		setShowVfSubOptions(!showVfSubOptions);
 	};
 
+	const handleGodanChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.target.checked) {
+			setVerbTypeData({...verbTypeData, vtBu: true, vtGu: true, vtKu: true, vtMu: true, vtNu: true, vtRu: true, vtSu: true, vtTsu: true, vtU: true});
+		} else {
+			setVerbTypeData({...verbTypeData, vtBu: false, vtGu: false, vtKu: false, vtMu: false, vtNu: false, vtRu: false, vtSu: false, vtTsu: false, vtU: false});
+		}
+	};
+
+
+	const vtSection = () => {
+		return (
+			<div className="checkbox-group">
+				<FormLabel>Verb Type</FormLabel>
+				<FormGroup>
+					<span>
+						<FormControlLabel
+							control={
+								<Checkbox checked={verbTypeData.vtIrregular}
+									onChange={handleVtChange}
+									name="vtIrregular"
+									inputRef={vtInputRef}/>
+							}
+							label="Irregular"
+						/>
+						<FormControlLabel
+							control={
+								<Checkbox checked={verbTypeData.vtIchidan}
+									onChange={handleVtChange}
+									name="vtIchidan"/>
+							}
+							label="Ichidan"
+						/>
+					</span>
+					<div>
+						<FormControlLabel
+							control={
+								<Checkbox checked={checkAllVt()}
+									indeterminate={checkIndeterminateVt()}
+									onChange={handleGodanChange}
+									name="vtGodan"/>
+							}
+							label="Godan"
+						/>
+					</div>
+					<div className="checkbox-parent-group">
+						<div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtU}
+											onChange={handleVtChange}
+											name="vtU"
+										/>
+									}
+									label="う"
+								/>
+							</div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtKu}
+											onChange={handleVtChange}
+											name="vtKu"
+										/>
+									}
+									label="く"
+								/>
+							</div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtGu}
+											onChange={handleVtChange}
+											name="vtGu"
+										/>
+									}
+									label="ぐ"
+								/>
+							</div>
+						</div>
+						<div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtSu}
+											onChange={handleVtChange}
+											name="vtSu"
+										/>
+									}
+									label="す"
+								/>
+							</div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtTsu}
+											onChange={handleVtChange}
+											name="vtTsu"
+										/>
+									}
+									label="つ"
+								/>
+							</div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtNu}
+											onChange={handleVtChange}
+											name="vtNu"
+										/>
+									}
+									label="ぬ"
+								/>
+							</div>
+						</div>
+						<div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtBu}
+											onChange={handleVtChange}
+											name="vtBu"
+										/>
+									}
+									label="ぶ"
+								/>
+							</div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtMu}
+											onChange={handleVtChange}
+											name="vtMu"
+										/>
+									}
+									label="む"
+								/>
+							</div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={verbTypeData.vtRu}
+											onChange={handleVtChange}
+											name="vtRu"
+										/>
+									}
+									label="る"
+								/>
+							</div>
+						</div>
+					</div>
+				</FormGroup>
+				<FormHelperText>{ verbTypeError? "Select at least one" : ((verbTypeNoResultsError && !verbLevelError)? "These settings will give no verbs, select more options" : "") }</FormHelperText>
+			</div>
+		);
+	};
+
 	const vfCheckboxParentGroup = (name: FormNames, label: string, first = false) => {
 		return (
 			<div>
@@ -455,7 +650,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 							<FormControlLabel
 								control={
 									<Checkbox checked={checkAllSubOptions(name)}
-										indeterminate={checkIndeterminate(name)}
+										indeterminate={checkIndeterminateVf(name)}
 										onChange={(e) => handleVfChangeParent(e, name)}
 										name={name}
 										inputRef={first? vfInputRef : null}/>
@@ -631,39 +826,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 					<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError || verbTypeNoResultsError }>
 						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
 						<div className="checkbox-group">
-							<FormLabel>Verb Type</FormLabel>
-							<FormGroup>
-								<span>
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbTypeData.vtIchidan}
-												onChange={handleVtChange}
-												name="vtIchidan"
-												inputRef={vtInputRef}/>
-										}
-										label="Ichidan"
-									/>
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbTypeData.vtGodan}
-												onChange={handleVtChange}
-												name="vtGodan"/>
-										}
-										label="Godan"
-									/>
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbTypeData.vtIrregular}
-												onChange={handleVtChange}
-												name="vtIrregular"/>
-										}
-										label="Irregular"
-									/>
-								</span>
-							</FormGroup>
-							<FormHelperText>{ verbTypeError? "Select at least one" : "" }</FormHelperText>
-						</div>
-						<div className="checkbox-group">
 							<FormLabel>JLPT Level</FormLabel>
 							<FormGroup>
 								<span>
@@ -712,7 +874,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 							</FormGroup>
 							<FormHelperText>{ verbLevelError? "Select at least one" : "" }</FormHelperText>
 						</div>
-						<FormHelperText>{ (verbTypeNoResultsError && !verbLevelError)? "These settings will give no verbs, select more options" : "" }</FormHelperText>
+						{vtSection()}
 					</FormControl>
 				</div>
 				<div className="lineBreak"></div>
@@ -820,7 +982,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 								}
 							</div>
 						</div>
-						<FormHelperText style={{marginLeft: showVfSubOptions ? "50px" : "200px"}}>{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
+						<FormHelperText style={{margin: "auto"}}>{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
 					</FormControl>
 				</div>
 				<div className="form-button-row">

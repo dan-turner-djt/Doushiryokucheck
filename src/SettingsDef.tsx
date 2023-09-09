@@ -21,8 +21,17 @@ export type SettingsObject = {
   testTypeObject: AmountSettingsObject | EndlessSettingsObject | TimedSettingsObject,
 	verbType: {
 		vtIchidan: boolean,
-		vtGodan: boolean,
-		vtIrregular: boolean
+		vtIrregular: boolean,
+		vtBu: boolean,
+		vtGu: boolean,
+		vtKu: boolean,
+		vtMu: boolean,
+		vtNu: boolean,
+		vtRu: boolean,
+		vtSu: boolean,
+		vtTsu: boolean,
+		vtU: boolean,
+
 	},
 	verbLevel: {
 		vlN5: boolean,
@@ -53,8 +62,16 @@ export const DefaultSettings: SettingsObject = {
 	testTypeObject: DefaultAmountSettings,
 	verbType: {
 		vtIchidan: true,
-		vtGodan: true,
-		vtIrregular: true
+		vtIrregular: true,
+		vtBu: true,
+		vtGu: true,
+		vtKu: true,
+		vtMu: true,
+		vtNu: true,
+		vtRu: true,
+		vtSu: true,
+		vtTsu: true,
+		vtU: true,
 	},
 	verbLevel: {
 		vlN5: true,
