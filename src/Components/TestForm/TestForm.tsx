@@ -19,7 +19,7 @@ export type TestFormProps = {
 
 type QuestionInfo = {
 	questionNumber: number,
-	verbFormInfo: {displayName: string, info: FormInfo},
+	verbFormInfo: {displayName: string, auxDisplayName?: string, info: FormInfo},
 	verbInfo: VerbInfo,
 	answer: {kana: string, kanji?: string}
 }
@@ -199,7 +199,7 @@ const TestForm = (props: TestFormProps) => {
 	return (
 		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form test-form" onSubmit={ handleSubmit }>
-				<FormControl component="fieldset" variant="standard">
+				<FormControl component="fieldset" variant="standard" className="test-form-fieldset">
 					<FormLabel component="legend" className="form-title">{ getTestTypeName(props.testSettings.testType) }</FormLabel>
 					{errorOccurred !== "" && <div>
 						<p>Sorry, an error has occurred</p>
@@ -217,20 +217,37 @@ const TestForm = (props: TestFormProps) => {
 							</div>
 						</div>}
 						{!testFinished && <div>
-							<span>
-								<p>Correct: { answeredCorrectlyTotal }</p>
-								{props.testSettings.testType === TestType.Timed &&
-									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
-								}
+							<span className="question-numbers-line">
+								<span>
+									<p>Question: {questionInfo?.questionNumber}</p>
+								</span>
+								<span className="divider"></span>
+								<span>
+									<p>Total Correct: { answeredCorrectlyTotal }</p>
+									{props.testSettings.testType === TestType.Timed &&
+										<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
+									}
+								</span>
 							</span>
-							<p>Question {questionInfo?.questionNumber + ": " + getQuestionString(questionInfo?.verbFormInfo, questionInfo?.verbInfo)}</p>
+							<div className="line-break"></div>
+							<p>{getQuestionString(questionInfo?.verbFormInfo, questionInfo?.verbInfo)}</p>
+							<div className="line-break"></div>
 							{showAnswerResult && <div>
-								{answeredCorrectly && <p>
-									Correct!
-								</p>}
-								{!answeredCorrectly && <p>
-									Incorrect! Correct answer is {((questionInfo?.answer.kanji)? questionInfo.answer.kanji + " / " : "") + questionInfo?.answer.kana}
-								</p>}
+								{answeredCorrectly && <div>
+									<p>
+										Correct!
+									</p>
+									<div className="line-break"></div>
+								</div>}
+								{!answeredCorrectly && <div>
+									<p>Incorrect!</p>
+									<div className="line-break-large"></div>
+									<p>Correct answer: {((questionInfo?.answer.kanji)? questionInfo.answer.kanji + " / " : "") + questionInfo?.answer.kana}</p>
+									<div className="line-break-small"></div>
+									<div className="your-answer">
+										<p>Your answer: {answerInputVal}</p>
+									</div>
+								</div>}
 							</div>}
 							{!showAnswerResult && 
 								<Field type={ FieldType.String }

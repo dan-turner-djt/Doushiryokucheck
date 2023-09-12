@@ -24,7 +24,7 @@ const Home = () => {
 		if(inTest === InTestState.False) {
 			return;
 		}
-		setVerbFormsInfo(convertVerbFormsInfo(currentSettings.verbForms));
+		setVerbFormsInfo(convertVerbFormsInfo(currentSettings.verbForms, currentSettings.auxForms, currentSettings.exclusiveAux));
 		setVerbLevelsInfo(getVerbLevelsArray(currentSettings));
 
 		try {
@@ -60,7 +60,7 @@ const Home = () => {
 			<h2 className="page-title">Japanese Verb Conjugation Tester</h2>
 			<div className="content">
 				<p>Welcome!</p>
-				<button type="button" onClick={handleConvertFiles}>Convert files</button>
+				{/*<button type="button" onClick={handleConvertFiles}>Convert files</button>*/}
 			</div>
 			<div>
 				{(inTest === InTestState.True) && 

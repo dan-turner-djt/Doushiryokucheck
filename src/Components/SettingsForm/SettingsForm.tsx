@@ -2,7 +2,7 @@ import { ChangeEvent, ElementRef, FormEvent, RefObject, useEffect, useRef, useSt
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, TextField } from "@mui/material";
-import { FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
+import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -119,9 +119,32 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 	const vfInputRef = useRef<HTMLInputElement>(null);
 
+	const [auxFormData, setAuxFormData] = useState<AuxFormData>(DefaultSettings.auxForms);
+
+	const isExclusiveAuxError = (): boolean => {
+		if (!currentSettings.exclusiveAux) {
+			return false;
+		}
+
+		for(const o of Object.entries(auxFormData)) {
+			const formInfo = o[1];
+			if (o[1].standard === true) {
+				return false;
+			}
+		}
+
+		return true;
+	};
+	const vfaInputRef = useRef<HTMLInputElement>(null);
+	const vfaExclusiveInputRef = useRef<HTMLInputElement>(null);
+
 	useEffect(() => {
 		setCurrentSettings({...currentSettings, verbForms: verbFormData});
 	}, [verbFormData]);
+
+	useEffect(() => {
+		setCurrentSettings({...currentSettings, auxForms: auxFormData});
+	}, [auxFormData]);
 
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -132,29 +155,36 @@ const SettingsForm = (props: SettingsFormProps) => {
 			if(verbTypeError) {
 				if (vtInputRef.current) {
 					vtInputRef.current.focus();
-					return;
 				}
+				return;
 			}
 
 			if(verbLevelError) {
 				if (vlInputRef.current) {
 					vlInputRef.current.focus();
-					return;
 				}
+				return;
 			}
 
 			if(verbTypeNoResultsError) {
 				if (vtInputRef.current) {
 					vtInputRef.current.focus();
-					return;
 				}
+				return;
 			}
 
 			if(isVerbFormError()) {
 				if(vfInputRef.current) {
 					vfInputRef.current.focus();
-					return;
 				}
+				return;
+			}
+
+			if(isExclusiveAuxError()) {
+				if(vfaExclusiveInputRef.current) {
+					vfaExclusiveInputRef.current.focus();
+				}
+				return;
 			}
 
 			// Form is valid, submit
@@ -236,6 +266,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 		conjugationLevelData.clN1 = false;
 
 		setVerbFormData(DefaultSettings.verbForms);
+		setAuxFormData(DefaultSettings.auxForms);
+		setCurrentSettings({...currentSettings, exclusiveAux: DefaultSettings.exclusiveAux});
 	};
 
 	const handleVtChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -253,7 +285,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 
 	const handleVfChange = (e: ChangeEvent<HTMLInputElement>, form: FormNames) => {
-		//setCurrentSettings({...currentSettings, [e.target.name]: e.target.checked});
 		setVerbFormData({...verbFormData, [form]: {...verbFormData[form], [e.target.name]: e.target.checked}});
 	};
 
@@ -490,6 +521,53 @@ const SettingsForm = (props: SettingsFormProps) => {
 		} else {
 			setVerbTypeData({...verbTypeData, vtBu: false, vtGu: false, vtKu: false, vtMu: false, vtNu: false, vtRu: false, vtSu: false, vtTsu: false, vtU: false});
 		}
+	};
+
+
+	const handleVfaChange = (e: ChangeEvent<HTMLInputElement>, form: AuxFormNames) => {
+		setAuxFormData({...auxFormData, [form]: {...auxFormData[form], standard: e.target.checked}});
+	};
+
+	const checkAllAuxForms = (): boolean => {
+		for(const o of Object.entries(auxFormData)) {
+			if (o[1].standard === false) {
+				return false;
+			}
+		}
+
+		return true;
+	};
+
+	const checkAllAuxIndeterminate = (): boolean => {
+		for(const o of Object.entries(auxFormData)) {
+			if (o[1].standard === true) {
+				return !checkAllAuxForms();
+			}
+		}
+
+		return false;
+	};
+
+	const handleVfaAllChange = (e: ChangeEvent<HTMLInputElement>) => {
+		let toSet: boolean;
+		if(e.target.checked) {
+			toSet = true;
+		} else if (!e.target.indeterminate) {
+			toSet = false;
+		} else {
+			return;
+		}
+
+		const obj: AuxFormData = JSON.parse(JSON.stringify(DefaultSettings.auxForms));
+		Object.keys(obj).forEach(key => {
+			obj[key as keyof AuxFormData].standard = toSet;
+		});
+
+		setAuxFormData(obj);
+	};
+
+	const handleVfaExclusiveChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setCurrentSettings({...currentSettings, exclusiveAux: e.target.checked});
 	};
 
 
@@ -783,6 +861,50 @@ const SettingsForm = (props: SettingsFormProps) => {
 		);
 	};
 
+	const vfaCheckboxParentGroup = (name: AuxFormNames, label: string, first = false) => {
+		return (
+			<div>
+				<FormGroup>
+					<span className={"checkbox-parent-group"}>
+						<span className="parent-checkbox vfa-column">
+							<FormControlLabel
+								control={
+									<Checkbox checked={auxFormData[name].standard}
+										onChange={(e) => handleVfaChange(e, name)}
+										name={name}
+										inputRef={first? vfaInputRef : null}/>
+								}
+								label={label}
+							/>
+						</span>
+					</span>
+				</FormGroup>
+			</div>
+		);
+	};
+
+	const vfaAllCheckboxParentGroup = () => {
+		return (
+			<div>
+				<FormGroup>
+					<span className={"checkbox-parent-group"}>
+						<span className="parent-checkbox vf-parent-column">
+							<FormControlLabel
+								control={
+									<Checkbox checked={checkAllAuxForms()}
+										indeterminate={checkAllAuxIndeterminate()}
+										onChange={handleVfaAllChange}
+										name="vfaAll"/>
+								}
+								label="All"
+							/>
+						</span>
+					</span>
+				</FormGroup>
+			</div>
+		);
+	};
+
 	return (
 		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form settings-form" onSubmit={ handleSubmit }>
@@ -821,7 +943,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						</div>
 					</FormControl>
 				</div>
-				<div className="lineBreak"></div>
+				<div className="line-break"></div>
 				<div>
 					<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError || verbTypeNoResultsError }>
 						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
@@ -877,19 +999,10 @@ const SettingsForm = (props: SettingsFormProps) => {
 						{vtSection()}
 					</FormControl>
 				</div>
-				<div className="lineBreak"></div>
+				<div className="line-break"></div>
 				<div>
-					<FormControl component="fieldset" variant="standard" error={isVerbFormError()}>
-						<span className="toggle-row">
-							<span></span>
-							<FormLabel component="legend" className="form-title">Conjguation Settings</FormLabel>
-							<span>
-								<label style={{marginRight: "8px"}}>{showVfSubOptions? "Hide" : "Show"} sub-options</label>
-								<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
-									{showVfSubOptions? "Hide" : "Show"}
-								</Button>
-							</span>
-						</span>
+					<FormControl component="fieldset" variant="standard" error={isVerbFormError() || isExclusiveAuxError()}>
+						<FormLabel component="legend" className="form-title">Conjugation Settings</FormLabel>
 						{false && 
 							<div className="checkbox-group">
 								<FormLabel>Filter by JLPT Level</FormLabel>
@@ -941,17 +1054,25 @@ const SettingsForm = (props: SettingsFormProps) => {
 							</div>
 						}
 						<div className="checkbox-group">
-							<FormLabel>Verb Forms</FormLabel>
-							<div className="lineBreak"></div>
+							<span className="toggle-row">
+								<span></span>
+								<FormLabel>Verb Forms</FormLabel>
+								<span>
+									<label style={{marginRight: "8px"}}>Sub-options</label>
+									<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
+										{showVfSubOptions? "Hide" : "Show"}
+									</Button>
+								</span>
+							</span>
+							<div className="line-break"></div>
 							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
 								{vfAllCheckboxParentGroup()}
-								<div className="lineBreak"></div>
+								<div className="line-break"></div>
 								{showVfSubOptions && 
 									<div>
 										{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
 										{vfCheckboxParentGroup("past", VerbFormDisplayNames.past)}
 										{vfCheckboxParentGroup("te", VerbFormDisplayNames.te)}
-										{vfCheckboxParentGroup("naide", VerbFormDisplayNames.naide)}
 										{vfCheckboxParentGroup("tai", VerbFormDisplayNames.tai)}
 										{vfCheckboxParentGroup("zu", VerbFormDisplayNames.zu)}
 										{vfCheckboxParentGroup("volitional", VerbFormDisplayNames.volitional)}
@@ -967,7 +1088,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 											{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
 											{vfCheckboxParentGroup("past", VerbFormDisplayNames.past)}
 											{vfCheckboxParentGroup("te", VerbFormDisplayNames.te)}
-											{vfCheckboxParentGroup("naide", VerbFormDisplayNames.naide)}
 											{vfCheckboxParentGroup("tai", VerbFormDisplayNames.tai)}
 											{vfCheckboxParentGroup("zu", VerbFormDisplayNames.zu)}
 										</div>
@@ -983,6 +1103,39 @@ const SettingsForm = (props: SettingsFormProps) => {
 							</div>
 						</div>
 						<FormHelperText style={{margin: "auto"}}>{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
+						<div className="line-break"></div>
+						<div className="checkbox-group">
+							<FormLabel>Auxiliary Verb Forms</FormLabel>
+							<div className="line-break"></div>
+							<div className="checkbox-grid-slim">
+								{vfaAllCheckboxParentGroup()}
+								<div className="line-break"></div>
+								<div className="checkbox-parent-group">
+									<div>
+										{vfaCheckboxParentGroup("potential", AuxFormDisplayNames.potential, true)}
+										{vfaCheckboxParentGroup("passive", AuxFormDisplayNames.passive)}
+										{vfaCheckboxParentGroup("causative", AuxFormDisplayNames.causative)}
+									</div>
+									<div>
+										{vfaCheckboxParentGroup("causativePassive", AuxFormDisplayNames.causativePassive)}
+										{vfaCheckboxParentGroup("tagaru", AuxFormDisplayNames.tagaru)}
+									</div>
+								</div>
+							</div>
+							<div>
+								<FormControlLabel
+									control={
+										<Checkbox checked={currentSettings.exclusiveAux}
+											onChange={handleVfaExclusiveChange}
+											name="vfaExclusive"
+											inputRef={vfaExclusiveInputRef}/>
+									}
+									label="Auxiliary exclusive"
+								/>
+							</div>
+							<FormHelperText style={{margin: "auto"}}>Check to use auxiliary verb combinations exclusively</FormHelperText>
+							<FormHelperText style={{margin: "auto"}}>{isExclusiveAuxError()? "Select at least one auxiliary form before checking this box" : ""}</FormHelperText>
+						</div>
 					</FormControl>
 				</div>
 				<div className="form-button-row">

@@ -1,6 +1,6 @@
 /* Type definitions */
 
-import { VerbFormData } from "./Verb/VerbFormDefs";
+import { AuxFormData, VerbFormData } from "./Verb/VerbFormDefs";
 
 export enum TestType {
   Amount, Endless, Timed
@@ -40,7 +40,9 @@ export type SettingsObject = {
 		vlN2: boolean,
 		vlN1: boolean
 	},
-	verbForms: VerbFormData
+	verbForms: VerbFormData,
+	auxForms: AuxFormData,
+	exclusiveAux: boolean
 }
 
 
@@ -93,9 +95,6 @@ export const DefaultSettings: SettingsObject = {
 		te: {
 			plain: true, polite: false, negativePlain: true, negativePolite: false
 		},
-		naide: {
-			plain: false, polite: false
-		},
 		tai: {
 			plain: false, polite: false, negativePlain: false, negativePolite: false
 		},
@@ -114,7 +113,25 @@ export const DefaultSettings: SettingsObject = {
 		taraConditional: {
 			plain: false, polite: false, negativePlain: false, negativePolite: false
 		}
-	}
+	},
+	auxForms: {
+		potential: {
+			standard: false
+		},
+		passive: {
+			standard: false
+		},
+		causative: {
+			standard: false
+		},
+		causativePassive: {
+			standard: false
+		},
+		tagaru: {
+			standard: false
+		}
+	},
+	exclusiveAux: false
 };
 
 /* Getter utils */
