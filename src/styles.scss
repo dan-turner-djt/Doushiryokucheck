@@ -1,5 +1,6 @@
 @import "~@fontsource/quicksand/400.css";
 @import "~@fontsource/quicksand/500.css";
+@import "~@fontsource/quicksand/600.css";
 @import "~@fontsource/quicksand/700.css";
 
 /* base styles */
@@ -143,6 +144,8 @@ body {
 
 .test-form-fieldset {
   width: 60%;
+  font-size: 18px;
+  font-weight: 500;
 
   .form-title {
     margin-bottom: 10px;
@@ -151,7 +154,40 @@ body {
   .question-numbers-line {
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
+
+  .fixed-size-area {
+    height: 140px;
+  }
+
+  .question-section {
+    font-size: 22px;
+    font-weight: 500;
+  }
+
+  .correct-answer {
+    margin: auto;
+    border-width: 3px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: green;
+    width: 120px;
+    padding: 4px;
+    font-weight: bold;
+  }
+
+  .incorrect-answer {
+    margin: auto;
+    border-width: 3px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: red;
+    width: 120px;
+    padding: 4px;
+    font-weight: bold;
+  }
+  
 
   .your-answer {
     display: flex;
@@ -161,6 +197,13 @@ body {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+    }
+  }
+
+  .timer {
+    p {
+      font-size: 40px;
+      font-weight: bold;
     }
   }
 }

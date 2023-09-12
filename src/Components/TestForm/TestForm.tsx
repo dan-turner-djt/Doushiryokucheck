@@ -4,7 +4,7 @@ import Timer from "../Timer/Timer";
 import { Box, Button, FormControl, FormLabel } from "@mui/material";
 import Field, { FieldType } from "../Field/Field";
 import { FormInfo, VerbInfo } from "jv-conjugator";
-import { VerbFormsInfo, getQuestionString } from "../../Utils/VerbFormsInfo";
+import { VerbFormsInfo, getQuestionStringForm, getQuestionStringVerb } from "../../Utils/VerbFormsInfo";
 import { getConjugation } from "../../Utils/GetConjugation";
 
 export type TestFormProps = {
@@ -196,6 +196,14 @@ const TestForm = (props: TestFormProps) => {
 		setFieldData({...fieldData, answerInput: {...fieldData.answerInput, valid: valid}});
 	};
 
+	const getTotalQuestions = (): string => {
+		if (props.testSettings.testType === TestType.Amount) {
+			return String((props.testSettings.testTypeObject as AmountSettingsObject).amount);
+		}
+
+		return "∞";
+	};
+
 	return (
 		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form test-form" onSubmit={ handleSubmit }>
@@ -210,7 +218,10 @@ const TestForm = (props: TestFormProps) => {
 					</div>}
 					{errorOccurred === "" && <div>
 						{testFinished && <div>
-							<p>Total Correct: { answeredCorrectlyTotal }</p>
+							<div className="fixed-size-area">
+								<div className="line-break-large"></div>
+								<p>Total Correct: { answeredCorrectlyTotal + ((props.testSettings.testType === TestType.Amount)? (" / " + getTotalQuestions()) : "") }</p>
+							</div>
 							<div className="form-button-row">
 								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
 								<Button variant="contained" color="darkBlue" type="submit" className="button-primary" ref={ restartButtonRef }>Restart</Button>
@@ -219,43 +230,49 @@ const TestForm = (props: TestFormProps) => {
 						{!testFinished && <div>
 							<span className="question-numbers-line">
 								<span>
-									<p>Question: {questionInfo?.questionNumber}</p>
+									<p>Question: {questionInfo?.questionNumber} / {getTotalQuestions()}</p>
 								</span>
-								<span className="divider"></span>
+								{props.testSettings.testType === TestType.Timed &&
+									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
+								}
 								<span>
 									<p>Total Correct: { answeredCorrectlyTotal }</p>
-									{props.testSettings.testType === TestType.Timed &&
-										<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
-									}
 								</span>
 							</span>
+							<div className="line-break-large"></div>
+							<div className="question-section">
+								<p>{ getQuestionStringVerb(questionInfo?.verbInfo) }</p>
+								<p>{ getQuestionStringForm(questionInfo?.verbFormInfo) }</p>
+							</div>
 							<div className="line-break"></div>
-							<p>{getQuestionString(questionInfo?.verbFormInfo, questionInfo?.verbInfo)}</p>
-							<div className="line-break"></div>
-							{showAnswerResult && <div>
-								{answeredCorrectly && <div>
-									<p>
-										Correct!
-									</p>
-									<div className="line-break"></div>
+							<div className="fixed-size-area">
+								{showAnswerResult && <div>
+									{answeredCorrectly && <div>
+										<div className="correct-answer">
+											<p>Correct!</p>
+										</div>
+										<div className="line-break"></div>
+									</div>}
+									{!answeredCorrectly && <div>
+										<div className="incorrect-answer">
+											<p>Incorrect!</p>
+										</div>
+										<div className="line-break-large"></div>
+										<p>Correct answer: {((questionInfo?.answer.kanji)? questionInfo.answer.kanji + " / " : "") + questionInfo?.answer.kana}</p>
+										<div className="line-break-small"></div>
+										<div className="your-answer">
+											<p>Your answer: {answerInputVal}</p>
+										</div>
+									</div>}
 								</div>}
-								{!answeredCorrectly && <div>
-									<p>Incorrect!</p>
-									<div className="line-break-large"></div>
-									<p>Correct answer: {((questionInfo?.answer.kanji)? questionInfo.answer.kanji + " / " : "") + questionInfo?.answer.kana}</p>
-									<div className="line-break-small"></div>
-									<div className="your-answer">
-										<p>Your answer: {answerInputVal}</p>
-									</div>
-								</div>}
-							</div>}
-							{!showAnswerResult && 
-								<Field type={ FieldType.String }
-									ref={ answerInputRef }
-									staticData={ fieldData.answerInput.staticData }
-									valueSetter={ setAnswerInput }
-								/>
-							}
+								{!showAnswerResult && 
+									<Field type={ FieldType.String }
+										ref={ answerInputRef }
+										staticData={ fieldData.answerInput.staticData }
+										valueSetter={ setAnswerInput }
+									/>
+								}
+							</div>
 							<div className="form-button-row">
 								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
 								<Button variant="contained" color="darkBlue" type="submit" className="button-primary" ref={ nextButtonRef }>{ showAnswerResult? "Next" : "Check"}</Button>

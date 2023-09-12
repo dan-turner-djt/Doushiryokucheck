@@ -1130,7 +1130,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 											name="vfaExclusive"
 											inputRef={vfaExclusiveInputRef}/>
 									}
-									label="Auxiliary exclusive"
+									label="Auxiliary Exclusive"
 								/>
 							</div>
 							<FormHelperText style={{margin: "auto"}}>Check to use auxiliary verb combinations exclusively</FormHelperText>

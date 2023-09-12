@@ -90,8 +90,8 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 	return newInfo;
 }
 
-export function getQuestionString(formInfo: {displayName: string, auxDisplayName?: string, info: FormInfo} | undefined, verbInfo: VerbInfo | undefined): string {
-	if (formInfo === undefined || verbInfo === undefined) return "";
+export function getQuestionStringVerb(verbInfo: VerbInfo | undefined): string {
+	if (verbInfo === undefined) return "";
 
 	let res = "";
 
@@ -100,7 +100,13 @@ export function getQuestionString(formInfo: {displayName: string, auxDisplayName
 	}
 	res += verbInfo.verb.kana;
 
-	res += " - ";
+	return res;
+}
+
+export function getQuestionStringForm(formInfo: {displayName: string, auxDisplayName?: string, info: FormInfo} | undefined): string {
+	if (formInfo === undefined) return "";
+
+	let res = "";
 
 	if (formInfo.auxDisplayName !== undefined) {
 		res += formInfo.auxDisplayName + " ";
