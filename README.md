@@ -2,7 +2,7 @@
 
 https://doushiryoku-check.web.app/
 
-Doushiryoku Check is a Japanese verb conjugation testing tool to help Japanese learners test or improve their verb conjugation abilities.
+Doushiryoku Check is a Japanese verb conjugation testing website to help Japanese learners test or improve their verb conjugation abilities.
 Users can choose from three test modes and an array of conjugation options including auxiliary forms, and be tested using verbs from any chosen JLPT level.
 
 More conjugation forms and options are planned to be added in the future.
