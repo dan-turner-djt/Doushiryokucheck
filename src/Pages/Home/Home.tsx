@@ -30,7 +30,6 @@ const Home = () => {
 		try {
 			getFullVerbList(currentSettings)
 				.then((res: VerbInfo[]) => {
-					console.log(res);
 					setFullVerbList(res);
 					setInTest(InTestState.True);
 				});

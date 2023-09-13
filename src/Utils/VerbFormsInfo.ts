@@ -84,9 +84,6 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 		}
 	});
 
-	console.log("here!");
-	console.log(newInfo);
-
 	return newInfo;
 }
 

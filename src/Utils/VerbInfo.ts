@@ -86,8 +86,6 @@ async function fetchFromFile(level: number, type: string, godanTypes: string[] =
 				return res.json();
 			})
 			.then((res) => {
-				console.log(res.data);
-
 				if (type === "godan") {
 					if (godanTypes.length === 0) {
 						throw new Error;
@@ -100,15 +98,13 @@ async function fetchFromFile(level: number, type: string, godanTypes: string[] =
 						}
 					});
 
-					console.log(toReturn);
-
 					return toReturn;
 				}
 
 				return res.data;
 			})
 			.catch(err => {
-				console.log(err);
+				throw new Error;
 			});
 	}
 	catch (e) {

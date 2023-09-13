@@ -188,8 +188,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 			}
 
 			// Form is valid, submit
-			console.log(currentSettings);
-			console.log(DefaultSettings);
 			props.submitHandler(currentSettings);
 		} else {
 			if (firstInvalidField.current) {
@@ -232,7 +230,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 	const handleRestoreDefaults = () => {
 		setCurrentSettings(DefaultSettings);
-		console.log("restore");
 
 		// Reset each field's value and validity
 		for (const [key, value] of Object.entries(fieldData)) {

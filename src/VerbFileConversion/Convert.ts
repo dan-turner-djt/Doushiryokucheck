@@ -10,17 +10,13 @@ type fileInfo = {data: data[]}[];
 
 function convertSingleFile(level: number, type: string): void {
 	const fileName = "n" + level + "_" + type;
-	console.log("convert " + fileName);
 
 	const request: RequestInfo = new Request("./verbData/unprocessed/" + fileName + ".json");
 	fetch(request)
 		.then(res => {
-			console.log(res);
 			return res.json();
 		})
 		.then((res) => {
-			console.log(res);
-
 			let toWrite;
 
 			if (type === "godan") {
@@ -59,13 +55,11 @@ function convertSingleFile(level: number, type: string): void {
 				};
 			}
 
-			console.log(toWrite);
-
 			const file = new Blob([JSON.stringify(toWrite)], { type: "text/plain; charset=utf-8"});
 			saveAs(file, fileName + ".json");
 		})
 		.catch(err => {
-			console.log(err);
+			throw new Error;
 		});
 }
 

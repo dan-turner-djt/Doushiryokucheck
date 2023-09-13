@@ -141,8 +141,6 @@ const TestForm = (props: TestFormProps) => {
 		
 		let questionAnswer: {kana: string, kanji?: string};
 		try {
-			console.log(randomVerbInfo);
-			console.log(randomVerbFormInfo);
 			questionAnswer = getConjugation(randomVerbInfo, randomVerbFormInfo.info);
 		}
 		catch (e) {
