@@ -59,6 +59,14 @@ const Home = () => {
 			<h2 className="page-title">Japanese Verb Conjugation Tester</h2>
 			{(inTest !== InTestState.True) && <div className="content">
 				<p>Welcome!</p>
+				<div className="line-break"></div>
+				<p>動詞力チェック / Doushiryoku Check is a Japanese verb conjugation testing tool to help Japanese learners test or improve their verb conjugation abilities.</p>
+				<div className="line-break"></div>
+				<p>Users can choose from three test modes and an array of conjugation options including auxiliary forms, and be tested using verbs from any chosen JLPT level.</p>
+				<p>Answers in both hiragana and kanji are supported.</p>
+				<div className="line-break"></div>
+				<p>More conjugation forms and options are planned to be added in the future.</p>
+				<p>Note: colloquial shortenings are currently not supported, please answer using the full forms.</p>
 				{/*<button type="button" onClick={handleConvertFiles}>Convert files</button>*/}
 			</div>}
 			<div className="form-container">

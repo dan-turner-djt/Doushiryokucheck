@@ -24,15 +24,26 @@ body {
 
 .content {
   margin: 20px auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
+  padding: 26px 0px;
+  width: 70%;
 }
 
 .form-container {
   margin: 20px auto;
 }
 
+
+.line-break {
+  margin-bottom: 20px;
+}
+
+.line-break-small {
+  margin-bottom: 10px;
+}
+
+.line-break-large {
+  margin-bottom: 30px;
+}
 
 /* Form */
 .form {
@@ -49,18 +60,6 @@ body {
 
   .field {
     margin-bottom: 20px;
-  }
-
-  .line-break {
-    margin-bottom: 20px;
-  }
-
-  .line-break-small {
-    margin-bottom: 10px;
-  }
-
-  .line-break-large {
-    margin-bottom: 30px;
   }
 
   .checkbox-grid-wide {
