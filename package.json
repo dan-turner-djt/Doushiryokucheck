@@ -18,6 +18,7 @@
     "@types/react-dom": "^18.2.4",
     "cors-anywhere": "^0.4.4",
     "file-saver": "^2.0.5",
+    "firebase": "^10.3.1",
     "jv-conjugator": "^2.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
