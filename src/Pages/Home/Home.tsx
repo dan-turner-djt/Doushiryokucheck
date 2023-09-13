@@ -57,11 +57,11 @@ const Home = () => {
 	return (
 		<div className="home">
 			<h2 className="page-title">Japanese Verb Conjugation Tester</h2>
-			<div className="content">
+			{(inTest !== InTestState.True) && <div className="content">
 				<p>Welcome!</p>
 				{/*<button type="button" onClick={handleConvertFiles}>Convert files</button>*/}
-			</div>
-			<div>
+			</div>}
+			<div className="form-container">
 				{(inTest === InTestState.True) && 
           <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } fullVerbList={ fullVerbList } errorOcurred={ errorOcurred } quitHandler={ quitTest }/>
 				}

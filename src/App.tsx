@@ -6,6 +6,7 @@ import Home from "./Pages/Home/Home";
 import NotFound from "./Pages/NotFound/NotFound";
 import Header from "./Components/Header/Header";
 import { PaletteColor, ThemeProvider, createTheme } from "@mui/material";
+import { getWidth } from "./Utils/Screen";
 
 declare module "@mui/material/styles" {
   interface PaletteOptions {
@@ -37,7 +38,7 @@ const theme = createTheme({
 
 const App: FunctionComponent = () => {
 	const { clientHeight, clientWidth } = useContext<WindowContextProps>(WindowContext);
-	const widthToSet: string = clientWidth < 1150 ? "88%" : "1000px";
+	const widthToSet: string = getWidth(clientWidth, 96, 50, 800) + "%";
 	const heightToSet: string = String(clientHeight - 176) + "px";
 
 	return (

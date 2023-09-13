@@ -17,7 +17,7 @@ body {
 
 .main-content {
   margin: 40px auto;
-  padding: 20px;
+  padding: 20px 1%;
   background-color: white;
   border-radius: 10px;
 }
@@ -27,6 +27,10 @@ body {
   padding: 20px;
   background-color: white;
   border-radius: 10px;
+}
+
+.form-container {
+  margin: 20px auto;
 }
 
 
@@ -133,14 +137,7 @@ body {
     margin-right: 6px;
   }
 }
-/*.form input, .form textarea, .form select {
-  width: 100%;
-  padding: 6px 10px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  box-sizing: border-box;
-  display: block;
-}*/
+
 
 .test-form-fieldset {
   width: 60%;
