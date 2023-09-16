@@ -1,4 +1,4 @@
-import { AuxiliaryFormName, FormInfo, FormName, VerbInfo } from "jv-conjugator";
+import { AdditionalFormName, AuxiliaryFormName, FormInfo, FormName, VerbInfo } from "jv-conjugator";
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../Verb/VerbFormDefs";
 
 export type VerbFormsInfo = {displayName: string, auxDisplayName?: string, info: FormInfo}[];
@@ -20,7 +20,7 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 					auxFormsList.forEach(auxForm => {
 						newInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
 							auxDisplayName: AuxFormDisplayNames[auxForm as AuxFormNames],
-							info: {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm)}});
+							info: (auxForm === "chau")? {formName: getJvConjFormName(key), additionalFormName: getJvConjAdditionalFormName(auxForm), shortVer: true} : {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm)}});
 					});
 
 					if (exclusiveAux) {
@@ -37,7 +37,7 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 					auxFormsList.forEach(auxForm => {
 						newInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
 							auxDisplayName: AuxFormDisplayNames[auxForm as AuxFormNames],
-							info: {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), polite: true}});
+							info: (auxForm === "chau")? {formName: getJvConjFormName(key), additionalFormName: getJvConjAdditionalFormName(auxForm), shortVer: true, polite: true} : {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), polite: true}});
 					});
 
 					if (exclusiveAux) {
@@ -54,7 +54,7 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 					auxFormsList.forEach(auxForm => {
 						newInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
 							auxDisplayName: AuxFormDisplayNames[auxForm as AuxFormNames],
-							info: {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), negative: true}});
+							info: (auxForm === "chau")? {formName: getJvConjFormName(key), additionalFormName: getJvConjAdditionalFormName(auxForm), shortVer: true, negative: true} : {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), negative: true}});
 					});
 
 					if (exclusiveAux) {
@@ -71,7 +71,7 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 					auxFormsList.forEach(auxForm => {
 						newInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
 							auxDisplayName: AuxFormDisplayNames[auxForm as AuxFormNames],
-							info: {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), polite: true, negative: true}});
+							info: (auxForm === "chau")? {formName: getJvConjFormName(key), additionalFormName: getJvConjAdditionalFormName(auxForm), shortVer: true, polite: true, negative: true} : {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), polite: true, negative: true}});
 					});
 
 					if (exclusiveAux) {
@@ -163,9 +163,14 @@ function getJvConjAuxFormName(name: string): AuxiliaryFormName {
 		return AuxiliaryFormName.Causative;
 	case "causativePassive":
 		return AuxiliaryFormName.CausativePassive;
-	case "tagaru":
-		return AuxiliaryFormName.Tagaru;
 	default:
 		return AuxiliaryFormName.Potential;
+	}
+}
+
+function getJvConjAdditionalFormName(name: string): AdditionalFormName {
+	switch(name) {
+	default:
+		return AdditionalFormName.TeShimau;
 	}
 }

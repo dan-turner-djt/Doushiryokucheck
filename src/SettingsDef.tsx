@@ -127,7 +127,7 @@ export const DefaultSettings: SettingsObject = {
 		causativePassive: {
 			standard: false
 		},
-		tagaru: {
+		chau: {
 			standard: false
 		}
 	},

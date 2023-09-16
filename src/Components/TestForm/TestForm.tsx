@@ -5,7 +5,7 @@ import { Box, Button, FormControl, FormLabel } from "@mui/material";
 import Field, { FieldType } from "../Field/Field";
 import { FormInfo, VerbInfo } from "jv-conjugator";
 import { VerbFormsInfo, getQuestionStringForm, getQuestionStringVerb } from "../../Utils/VerbFormsInfo";
-import { getConjugation } from "../../Utils/GetConjugation";
+import { getAnswers } from "../../Utils/GetConjugation";
 
 export type TestFormProps = {
   testSettings: SettingsObject,
@@ -21,7 +21,7 @@ type QuestionInfo = {
 	questionNumber: number,
 	verbFormInfo: {displayName: string, auxDisplayName?: string, info: FormInfo},
 	verbInfo: VerbInfo,
-	answer: {kana: string, kanji?: string}
+	answers: {kana: string, kanji?: string}[]
 }
 
 const TestForm = (props: TestFormProps) => {
@@ -139,9 +139,9 @@ const TestForm = (props: TestFormProps) => {
 		const fullVerbList: VerbInfo[] = props.fullVerbList;
 		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];
 		
-		let questionAnswer: {kana: string, kanji?: string};
+		let questionAnswers: {kana: string, kanji?: string}[];
 		try {
-			questionAnswer = getConjugation(randomVerbInfo, randomVerbFormInfo.info);
+			questionAnswers = getAnswers(randomVerbInfo, randomVerbFormInfo.info);
 		}
 		catch (e) {
 			setErrorOccured((e as Error).message);
@@ -152,7 +152,7 @@ const TestForm = (props: TestFormProps) => {
 			questionNumber: number,
 			verbFormInfo: randomVerbFormInfo,
 			verbInfo: randomVerbInfo,
-			answer: questionAnswer
+			answers: questionAnswers
 		});
 
 		setTimeout(() => {
@@ -162,12 +162,19 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const checkAnswerIsCorrect = (answer: string):boolean => {
-		if (answer === questionInfo?.answer.kana) {
-			return true;
+		if (!questionInfo) return false;
+
+		for(let i = 0; i < questionInfo?.answers.length; i++) {
+			const correctAnswer = questionInfo?.answers[i];
+
+			if (answer === correctAnswer.kana) {
+				return true;
+			}
+			if (correctAnswer.kanji && answer === correctAnswer.kanji) {
+				return true;
+			}
 		}
-		if (questionInfo?.answer.kanji && answer === questionInfo.answer.kanji) {
-			return true;
-		}
+		
 		return false;
 	};
 
@@ -256,7 +263,7 @@ const TestForm = (props: TestFormProps) => {
 											<p>Incorrect!</p>
 										</div>
 										<div className="line-break-large"></div>
-										<p>Correct answer: {((questionInfo?.answer.kanji)? questionInfo.answer.kanji + " / " : "") + questionInfo?.answer.kana}</p>
+										<p>Correct answer: {((questionInfo?.answers[0].kanji)? questionInfo.answers[0].kanji + " / " : "") + questionInfo?.answers[0].kana}</p>
 										<div className="line-break-small"></div>
 										<div className="your-answer">
 											<p>Your answer: {answerInputVal}</p>

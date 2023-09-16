@@ -22,7 +22,7 @@ export enum AuxFormDisplayNames {
   passive = "Passive",
   causative = "Causative",
   causativePassive = "Causative Passive",
-  tagaru = "たがる Form"
+  chau = "ちゃう Form"
 }
 
 export type VerbFormData = {
@@ -71,7 +71,7 @@ export type AuxFormData = {
   causativePassive: {
     standard: boolean
   }
-  tagaru: {
+  chau: {
     standard: boolean
   }
 }
@@ -83,4 +83,4 @@ export type WithNegativePoliteForms = "present" | "past" | "te" | "tai" | "taraC
 export type FormNames = WithPlainForms | WithPoliteForms | WithNegativeForms | WithNegativePoliteForms;
 
 
-export type AuxFormNames = "potential" | "passive" | "causative" | "causativePassive" | "tagaru";
+export type AuxFormNames = "potential" | "passive" | "causative" | "causativePassive" | "chau";

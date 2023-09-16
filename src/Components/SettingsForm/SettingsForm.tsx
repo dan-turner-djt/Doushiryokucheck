@@ -1094,7 +1094,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 							<div className="line-break-small"></div>
 							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
 								{vfAllCheckboxParentGroup()}
-								<div className="line-break"></div>
+								<div className="line-break-small"></div>
 								{showVfSubOptions && 
 									<div>
 										{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
@@ -1133,11 +1133,11 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<FormHelperText className="helper-text">{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
 						<div className="line-break-large"></div>
 						<div className="checkbox-group">
-							<FormLabel className="form-subtitle">Auxiliary Verb Forms</FormLabel>
+							<FormLabel className="form-subtitle">Additional Verb Forms</FormLabel>
 							<div className="line-break"></div>
 							<div className="checkbox-grid-slim">
 								{vfaAllCheckboxParentGroup()}
-								<div className="line-break"></div>
+								<div className="line-break-small"></div>
 								<div className="checkbox-parent-group">
 									<div className="first-column">
 										{vfaCheckboxParentGroup("passive", AuxFormDisplayNames.passive)}
@@ -1146,11 +1146,12 @@ const SettingsForm = (props: SettingsFormProps) => {
 									<div style={{width: getColumnSpacingWidth()}}></div>
 									<div className="second-column" style={{marginRight: "27px"}}>
 										{vfaCheckboxParentGroup("potential", AuxFormDisplayNames.potential, true)}
-										{vfaCheckboxParentGroup("tagaru", AuxFormDisplayNames.tagaru)}
+										{vfaCheckboxParentGroup("chau", AuxFormDisplayNames.chau)}
 									</div>
 								</div>
 								{vfaCheckboxParentGroup("causativePassive", AuxFormDisplayNames.causativePassive)}
 							</div>
+							<div className="line-break-small"></div>
 							<div>
 								<FormControlLabel
 									control={
@@ -1159,12 +1160,12 @@ const SettingsForm = (props: SettingsFormProps) => {
 											name="vfaExclusive"
 											inputRef={vfaExclusiveInputRef}/>
 									}
-									label="Auxiliary Exclusive"
+									label="Additional Exclusive"
 								/>
 							</div>
 						</div>
-						<FormHelperText className="helper-text">Check to use auxiliary verb combinations exclusively</FormHelperText>
-						<FormHelperText className="helper-text">{isExclusiveAuxError()? "Select at least one auxiliary form before checking this box" : ""}</FormHelperText>
+						<FormHelperText className="helper-text">Check to use additional verb combinations exclusively</FormHelperText>
+						<FormHelperText className="helper-text">{isExclusiveAuxError()? "Select at least one additional form before checking this box" : ""}</FormHelperText>
 					</FormControl>
 				</div>
 				<div className="line-break"></div>

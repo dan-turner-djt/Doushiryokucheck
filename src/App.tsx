@@ -9,7 +9,7 @@ import { PaletteColor, ThemeProvider, createTheme } from "@mui/material";
 import { getWidth } from "./Utils/Screen";
 import Footer from "./Components/Footer.tsx/Footer";
 
-const darkBlue = "#1122da";
+const darkBlue = "#1122cc";
 const lightBlue = "#8cb3ff";
 
 declare module "@mui/material/styles" {
