@@ -65,7 +65,9 @@ const Home = () => {
 				<p>動詞力チェック / Doushiryoku Check is a Japanese verb conjugation testing tool to help Japanese learners test or improve their verb conjugation abilities.</p>
 				<div className="line-break"></div>
 				<p>Users can choose from three test modes and an array of conjugation options, and can be tested using verbs from any chosen JLPT level.</p>
-				<p>Answers are accepted in both hiragana and the corresponding kanji, as well as common colloquial shortenings for certain forms. Selected additional forms are combined with selected basic forms.</p>
+				<p>Answers are accepted in both hiragana and the corresponding kanji, as well as common colloquial shortenings for certain forms.</p>
+				<div className="line-break"></div>
+				<p>Selected additional forms are combined with selected basic forms. It is possible to create unnatural yet grammatically correct combinations depending on the options selected.</p>
 				{/*<button type="button" onClick={handleConvertFiles}>Convert files</button>*/}
 			</div>}
 			<div className="form-container">
