@@ -18,7 +18,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const [formWidth, setFormWidth] = useState<number>(1920);
 	useEffect(() => {
 		setFormWidth(width);
-		console.log(width);
 	}, [width]);
   
 	const wordAmountRef = useRef<ElementRef<typeof Field>>(null);

@@ -15,7 +15,7 @@ const Home = () => {
 
 	const [inTest, setInTest] = useState<InTestState>(InTestState.False);
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
-	const [verbFormsInfo, setVerbFormsInfo] = useState<VerbFormsInfo>([]);
+	const [verbFormsInfo, setVerbFormsInfo] = useState<VerbFormsInfo>({main: [], extraAux: []});
 	const [verbLevelsInfo, setVerbLevelsInfo] = useState<string[]>([]);
 	const [fullVerbList, setFullVerbList] = useState<VerbInfo[]>([]);
 	const [errorOcurred, setErrorOccurred] = useState<string>("");

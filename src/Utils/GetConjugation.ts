@@ -20,8 +20,6 @@ export function getAnswers(verbInfo: VerbInfo, formInfo: FormInfo): {kana: strin
 			answers.push(res);
 		}
 	}
-
-	console.log(answers);
 	
 	return answers;
 }

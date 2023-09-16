@@ -1,10 +1,12 @@
 import { AdditionalFormName, AuxiliaryFormName, FormInfo, FormName, VerbInfo } from "jv-conjugator";
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../Verb/VerbFormDefs";
 
-export type VerbFormsInfo = {displayName: string, auxDisplayName?: string, info: FormInfo}[];
+export type VerbFormInfo = {displayName: string, auxDisplayName?: string, info: FormInfo};
+export type VerbFormsInfo = {main: VerbFormInfo[], extraAux: VerbFormInfo[]};
 
 export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormData, exclusiveAux: boolean): VerbFormsInfo {
-	const newInfo: VerbFormsInfo = [];
+	const mainInfo: VerbFormInfo[] = [];
+	const extraAuxInfo: VerbFormInfo[] = [];
 
 	const auxFormsList: string[] = [];
 	Object.keys(auxForms).forEach(auxKey => {
@@ -18,7 +20,7 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 			if ((verbForms[key as WithPlainForms]).plain === true) {
 				if (auxFormsList.length > 0) {
 					auxFormsList.forEach(auxForm => {
-						newInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
+						extraAuxInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
 							auxDisplayName: AuxFormDisplayNames[auxForm as AuxFormNames],
 							info: (auxForm === "chau")? {formName: getJvConjFormName(key), additionalFormName: getJvConjAdditionalFormName(auxForm), shortVer: true} : {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm)}});
 					});
@@ -28,14 +30,14 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 					}
 				}
 
-				newInfo.push({displayName: VerbFormDisplayNames[key as FormNames], info: {formName: getJvConjFormName(key)}});
+				mainInfo.push({displayName: VerbFormDisplayNames[key as FormNames], info: {formName: getJvConjFormName(key)}});
 			}
 		}
 		if (Object.keys(verbForms[key as keyof VerbFormData]).includes("polite")) {
 			if ((verbForms[key as WithPoliteForms]).polite === true) {
 				if (auxFormsList.length > 0) {
 					auxFormsList.forEach(auxForm => {
-						newInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
+						extraAuxInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
 							auxDisplayName: AuxFormDisplayNames[auxForm as AuxFormNames],
 							info: (auxForm === "chau")? {formName: getJvConjFormName(key), additionalFormName: getJvConjAdditionalFormName(auxForm), shortVer: true, polite: true} : {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), polite: true}});
 					});
@@ -45,14 +47,14 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 					}
 				}
 
-				newInfo.push({displayName: VerbFormDisplayNames[key as FormNames], info: {formName: getJvConjFormName(key), polite: true}});
+				mainInfo.push({displayName: VerbFormDisplayNames[key as FormNames], info: {formName: getJvConjFormName(key), polite: true}});
 			}
 		}
 		if (Object.keys(verbForms[key as keyof VerbFormData]).includes("negativePlain")) {
 			if ((verbForms[key as WithNegativeForms]).negativePlain === true) {
 				if (auxFormsList.length > 0) {
 					auxFormsList.forEach(auxForm => {
-						newInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
+						extraAuxInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
 							auxDisplayName: AuxFormDisplayNames[auxForm as AuxFormNames],
 							info: (auxForm === "chau")? {formName: getJvConjFormName(key), additionalFormName: getJvConjAdditionalFormName(auxForm), shortVer: true, negative: true} : {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), negative: true}});
 					});
@@ -62,14 +64,14 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 					}
 				}
 
-				newInfo.push({displayName: VerbFormDisplayNames[key as FormNames], info: {formName: getJvConjFormName(key), negative: true}});
+				mainInfo.push({displayName: VerbFormDisplayNames[key as FormNames], info: {formName: getJvConjFormName(key), negative: true}});
 			}
 		}
 		if (Object.keys(verbForms[key as keyof VerbFormData]).includes("negativePolite")) {
 			if ((verbForms[key as WithNegativePoliteForms]).negativePolite === true) {
 				if (auxFormsList.length > 0) {
 					auxFormsList.forEach(auxForm => {
-						newInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
+						extraAuxInfo.push({displayName: VerbFormDisplayNames[key as FormNames],
 							auxDisplayName: AuxFormDisplayNames[auxForm as AuxFormNames],
 							info: (auxForm === "chau")? {formName: getJvConjFormName(key), additionalFormName: getJvConjAdditionalFormName(auxForm), shortVer: true, polite: true, negative: true} : {formName: getJvConjFormName(key), auxFormName: getJvConjAuxFormName(auxForm), polite: true, negative: true}});
 					});
@@ -79,12 +81,16 @@ export function convertVerbFormsInfo(verbForms: VerbFormData, auxForms: AuxFormD
 					}
 				}
 				
-				newInfo.push({displayName: VerbFormDisplayNames[key as FormNames], info: {formName: getJvConjFormName(key), polite: true, negative: true}});
+				mainInfo.push({displayName: VerbFormDisplayNames[key as FormNames], info: {formName: getJvConjFormName(key), polite: true, negative: true}});
 			}
 		}
 	});
 
-	return newInfo;
+	if(extraAuxInfo.length > 0 && !exclusiveAux) {
+		return {main: mainInfo, extraAux: extraAuxInfo};
+	}
+
+	return {main: mainInfo.concat(extraAuxInfo), extraAux: []};
 }
 
 export function getQuestionStringVerb(verbInfo: VerbInfo | undefined): string {

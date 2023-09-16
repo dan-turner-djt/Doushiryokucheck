@@ -134,7 +134,16 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const getAndSetQuestionData = (number: number) => {
-		const randomVerbFormInfo = props.verbFormsInfo[Math.floor(Math.random() * props.verbFormsInfo.length)];
+		let randomVerbFormInfo;
+		if (props.verbFormsInfo.extraAux.length > 0) {
+			if(Math.random() > 0.5) {
+				randomVerbFormInfo = props.verbFormsInfo.extraAux[Math.floor(Math.random() * props.verbFormsInfo.extraAux.length)];
+			} else {
+				randomVerbFormInfo = props.verbFormsInfo.main[Math.floor(Math.random() * props.verbFormsInfo.main.length)];
+			}
+		} else {
+			randomVerbFormInfo = props.verbFormsInfo.main[Math.floor(Math.random() * props.verbFormsInfo.main.length)];
+		}
 
 		const fullVerbList: VerbInfo[] = props.fullVerbList;
 		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];
