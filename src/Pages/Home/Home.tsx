@@ -56,7 +56,9 @@ const Home = () => {
 
 	return (
 		<div className="home">
-			<h2 className="page-title">Japanese Verb Conjugation Tester</h2>
+			{(inTest !== InTestState.True) &&
+				<h2 className="page-title">Japanese Verb Conjugation Tester</h2>
+			}
 			{(inTest !== InTestState.True) && <div className="content">
 				<p>Welcome!</p>
 				<div className="line-break"></div>

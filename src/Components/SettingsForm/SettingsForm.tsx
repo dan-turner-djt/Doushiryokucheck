@@ -1,7 +1,7 @@
 import { ChangeEvent, ElementRef, FormEvent, RefObject, useEffect, useRef, useState } from "react";
 import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, TextField } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, Switch, TextField } from "@mui/material";
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
 import useMeasure from "react-use-measure";
 
@@ -516,8 +516,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 
 	const [showVfSubOptions, setShowVfSubOptions] = useState<boolean>(false);
-	const toggleVfSubOptions = () => {
-		setShowVfSubOptions(!showVfSubOptions);
+	const handleVfSubOptionsChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setShowVfSubOptions(e.target.checked);
 	};
 
 	const handleGodanChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -1085,12 +1085,11 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<div className="checkbox-group">
 							<FormLabel>Verb Forms</FormLabel>
 							<div className="line-break-small"></div>
-							<div>
-								<label style={{marginRight: "8px"}}>Sub-options</label>
-								<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
-									{showVfSubOptions? "Hide" : "Show"}
-								</Button>
-							</div>
+							<FormGroup>
+								<FormControlLabel style={{margin: "auto"}} control={
+									<Switch checked={ showVfSubOptions } onChange={ handleVfSubOptionsChange }/>
+								} label="Show sub-options"/>
+							</FormGroup>
 							<div className="line-break-small"></div>
 							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
 								{vfAllCheckboxParentGroup()}
