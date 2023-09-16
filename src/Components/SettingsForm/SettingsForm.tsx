@@ -4,6 +4,7 @@ import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, Switch, TextField } from "@mui/material";
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
 import useMeasure from "react-use-measure";
+import { pink } from "@mui/material/colors";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -585,7 +586,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const vtSection = () => {
 		return (
 			<div className="checkbox-group">
-				<FormLabel>Verb Type</FormLabel>
+				<FormLabel className="form-subtitle">Verb Type</FormLabel>
 				<FormGroup className="shift-group-right">
 					<span>
 						<FormControlLabel
@@ -989,7 +990,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 					<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError || verbTypeNoResultsError }>
 						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
 						<div className="checkbox-group">
-							<FormLabel>JLPT Level</FormLabel>
+							<FormLabel className="form-subtitle">JLPT Level</FormLabel>
 							<FormGroup className="shift-group-right">
 								<span>
 									<FormControlLabel
@@ -1034,7 +1035,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<FormLabel component="legend" className="form-title">Conjugation Settings</FormLabel>
 						{false && 
 							<div className="checkbox-group">
-								<FormLabel>Filter by JLPT Level</FormLabel>
+								<FormLabel className="form-subtitle">Filter by JLPT Level</FormLabel>
 								<FormGroup>
 									<span>
 										<FormControlLabel
@@ -1083,7 +1084,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 							</div>
 						}
 						<div className="checkbox-group">
-							<FormLabel>Verb Forms</FormLabel>
+							<FormLabel className="form-subtitle">Verb Forms</FormLabel>
 							<div className="line-break-small"></div>
 							<FormGroup>
 								<FormControlLabel style={{margin: "auto"}} control={
@@ -1132,7 +1133,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<FormHelperText className="helper-text">{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
 						<div className="line-break-large"></div>
 						<div className="checkbox-group">
-							<FormLabel>Auxiliary Verb Forms</FormLabel>
+							<FormLabel className="form-subtitle">Auxiliary Verb Forms</FormLabel>
 							<div className="line-break"></div>
 							<div className="checkbox-grid-slim">
 								{vfaAllCheckboxParentGroup()}

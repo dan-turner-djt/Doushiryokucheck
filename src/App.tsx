@@ -9,6 +9,9 @@ import { PaletteColor, ThemeProvider, createTheme } from "@mui/material";
 import { getWidth } from "./Utils/Screen";
 import Footer from "./Components/Footer.tsx/Footer";
 
+const darkBlue = "#1122da";
+const lightBlue = "#8cb3ff";
+
 declare module "@mui/material/styles" {
   interface PaletteOptions {
     darkBlue?: PaletteColor,
@@ -32,9 +35,58 @@ const { augmentColor } = palette;
 const createColor = (mainColor: string) => augmentColor({ color: { main: mainColor } });
 const theme = createTheme({
 	palette: {
-		darkBlue: createColor("#330eda"),
-		appbarBlue: createColor("#8cb3ff")
+		darkBlue: createColor(darkBlue),
+		appbarBlue: createColor(lightBlue)
 	},
+	components: {
+		MuiSwitch: {
+			styleOverrides: {
+				switchBase: {
+					"&.Mui-checked": {
+						opacity: 1,
+						color: darkBlue
+					},
+					"Mui-checked+.MuiSwitch-track": {
+						opacity: 1,
+						backgroundColor: lightBlue
+					}
+				},
+				colorPrimary: {
+					color: lightBlue,
+				},
+				track: {
+					opacity: 0.2,
+					backgroundColor: lightBlue,
+					".Mui-checked.Mui-checked + &": {
+						opacity: 1,
+						backgroundColor: lightBlue
+					}
+				}
+			}
+		},
+		MuiCheckbox: {
+			styleOverrides: {
+				colorPrimary: {
+					"&.Mui-checked": {
+						color: darkBlue
+					},
+					"&.MuiCheckbox-indeterminate": {
+						color: darkBlue
+					}
+				}
+			}
+		},
+		MuiFormLabel: {
+			styleOverrides: {
+				root: {
+					color: "black",
+					"&.Mui-focused": {
+						color: "black"
+					}
+				}
+			}
+		}
+	}
 });
 
 const App: FunctionComponent = () => {
