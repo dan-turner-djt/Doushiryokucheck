@@ -7,6 +7,7 @@ import NotFound from "./Pages/NotFound/NotFound";
 import Header from "./Components/Header/Header";
 import { PaletteColor, ThemeProvider, createTheme } from "@mui/material";
 import { getWidth } from "./Utils/Screen";
+import Footer from "./Components/Footer.tsx/Footer";
 
 declare module "@mui/material/styles" {
   interface PaletteOptions {
@@ -45,13 +46,14 @@ const App: FunctionComponent = () => {
 		<ThemeProvider theme={ theme }>
 			<BrowserRouter>
 				<div className="App">
-					<Header />
+					<Header/>
 					<div className="main-content" style={{width: widthToSet, minHeight: heightToSet}}>
 						<Routes>
 							<Route path={ links.Home } element={ <Home/> }/>
 							<Route path='*' element={ <NotFound/> }/>
 						</Routes>
 					</div>
+					<Footer/>
 				</div>
 			</BrowserRouter>
 		</ThemeProvider>
