@@ -592,7 +592,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 							label="Ichidan"
 						/>
 					</span>
-					<div>
+					<div className="godan-checkbox">
 						<FormControlLabel
 							control={
 								<Checkbox checked={checkAllVt()}
@@ -711,7 +711,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 						</div>
 					</div>
 				</FormGroup>
-				<FormHelperText>{ verbTypeError? "Select at least one" : ((verbTypeNoResultsError && !verbLevelError)? "These settings will give no verbs, select more options" : "") }</FormHelperText>
 			</div>
 		);
 	};
@@ -903,7 +902,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 
 	return (
-		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
+		<Box sx={{ p: 1, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form settings-form" onSubmit={ handleSubmit }>
 				<div>
 					<FormControl component="fieldset" variant="standard" error={ !fieldData.wordAmount.valid || !fieldData.timeLimit.valid }>
@@ -991,12 +990,14 @@ const SettingsForm = (props: SettingsFormProps) => {
 									/>
 								</span>
 							</FormGroup>
-							<FormHelperText>{ verbLevelError? "Select at least one" : "" }</FormHelperText>
 						</div>
+						<FormHelperText className="helper-text">{ verbLevelError? "Select at least one" : "" }</FormHelperText>
+						<div className="line-break-large"></div>
 						{vtSection()}
+						<FormHelperText className="helper-text">{ verbTypeError? "Select at least one" : ((verbTypeNoResultsError && !verbLevelError)? "These settings will give no verbs, select more options" : "") }</FormHelperText>
 					</FormControl>
 				</div>
-				<div className="line-break"></div>
+				<div className="line-break-large"></div>
 				<div>
 					<FormControl component="fieldset" variant="standard" error={isVerbFormError() || isExclusiveAuxError()}>
 						<FormLabel component="legend" className="form-title">Conjugation Settings</FormLabel>
@@ -1052,14 +1053,14 @@ const SettingsForm = (props: SettingsFormProps) => {
 						}
 						<div className="checkbox-group">
 							<span className="toggle-row">
-								<span></span>
+								{/*<span></span>*/}
 								<FormLabel>Verb Forms</FormLabel>
-								<span>
+								{/*<span>
 									<label style={{marginRight: "8px"}}>Sub-options</label>
 									<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
 										{showVfSubOptions? "Hide" : "Show"}
-									</Button>
-								</span>
+									</Button>*
+								</span>*/}
 							</span>
 							<div className="line-break"></div>
 							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
@@ -1099,8 +1100,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 								}
 							</div>
 						</div>
-						<FormHelperText style={{margin: "auto"}}>{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
-						<div className="line-break"></div>
+						<FormHelperText className="helper-text">{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
+						<div className="line-break-large"></div>
 						<div className="checkbox-group">
 							<FormLabel>Auxiliary Verb Forms</FormLabel>
 							<div className="line-break"></div>
@@ -1109,15 +1110,15 @@ const SettingsForm = (props: SettingsFormProps) => {
 								<div className="line-break"></div>
 								<div className="checkbox-parent-group">
 									<div>
-										{vfaCheckboxParentGroup("potential", AuxFormDisplayNames.potential, true)}
 										{vfaCheckboxParentGroup("passive", AuxFormDisplayNames.passive)}
 										{vfaCheckboxParentGroup("causative", AuxFormDisplayNames.causative)}
 									</div>
 									<div>
-										{vfaCheckboxParentGroup("causativePassive", AuxFormDisplayNames.causativePassive)}
+										{vfaCheckboxParentGroup("potential", AuxFormDisplayNames.potential, true)}
 										{vfaCheckboxParentGroup("tagaru", AuxFormDisplayNames.tagaru)}
 									</div>
 								</div>
+								{vfaCheckboxParentGroup("causativePassive", AuxFormDisplayNames.causativePassive)}
 							</div>
 							<div>
 								<FormControlLabel
@@ -1130,11 +1131,12 @@ const SettingsForm = (props: SettingsFormProps) => {
 									label="Auxiliary Exclusive"
 								/>
 							</div>
-							<FormHelperText style={{margin: "auto"}}>Check to use auxiliary verb combinations exclusively</FormHelperText>
-							<FormHelperText style={{margin: "auto"}}>{isExclusiveAuxError()? "Select at least one auxiliary form before checking this box" : ""}</FormHelperText>
 						</div>
+						<FormHelperText className="helper-text">Check to use auxiliary verb combinations exclusively</FormHelperText>
+						<FormHelperText className="helper-text">{isExclusiveAuxError()? "Select at least one auxiliary form before checking this box" : ""}</FormHelperText>
 					</FormControl>
 				</div>
+				<div className="line-break"></div>
 				<div className="form-button-row">
 					<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
 					<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>

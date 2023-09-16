@@ -60,20 +60,52 @@ body {
 
   .field {
     margin-bottom: 20px;
+
+    p {
+      text-align: center;
+    }
   }
 
   .checkbox-grid-wide {
-    max-width: 800px;
     margin: auto;
+
+    .vf-parent-column {
+      min-width: 180px;
+      display: flex;
+      justify-content: left;
+    }
+
+    .vf-first-column {
+      min-width: 100px;
+      display: flex;
+      justify-content: left;
+    }
+
+    .vf-second-column {
+      min-width: 100px;
+      display: flex;
+      justify-content: left;
+    }
+
+    .vf-third-column {
+      min-width: 160px;
+      display: flex;
+      justify-content: left;
+    }
+
+    .vf-fourth-column {
+      min-width: 160px;
+      display: flex;
+      justify-content: left;
+    }
   }
 
   .checkbox-grid-slim {
-    max-width: 500px;
     margin: auto;
   }
 
   .checkbox-group {
-    margin-bottom: 20px;
+    //margin-bottom: 20px;
   }
 
   .checkbox-parent-group {
@@ -81,59 +113,38 @@ body {
     justify-content: space-between;
 
     .parent-checkbox {
-      margin-right: 64px;
+      //margin-right: 64px;
     }
   
     .children-checkboxes {
       display: flex;
     }
-
-    .vf-parent-column {
-      width: 180px;
-      display: flex;
-      justify-content: left;
-    }
-
-    .vf-first-column {
-      width: 100px;
-      display: flex;
-      justify-content: left;
-    }
-
-    .vf-second-column {
-      width: 100px;
-      display: flex;
-      justify-content: left;
-    }
-
-    .vf-third-column {
-      width: 160px;
-      display: flex;
-      justify-content: left;
-    }
-
-    .vf-fourth-column {
-      width: 160px;
-      display: flex;
-      justify-content: left;
-    }
   }
 
-  .toggle-row {
+  /*.toggle-row {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    min-width: 900px;
+    margin: auto;
     
     span {
-      width: 250px;
+      width: 190px;
     }
-  }
+  }*/
 
   .form-button-row button {
     margin-top: 20px;
     margin-left: 6px;
     margin-right: 6px;
+  }
+
+  .helper-text {
+    margin: auto;
+    text-align: center;
+  }
+
+  .godan-checkbox {
+    margin-left: 32px;
   }
 }
 
