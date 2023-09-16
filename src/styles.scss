@@ -51,11 +51,11 @@ body {
   text-align: center;
 
   .form-title {
-    margin-bottom: 30px;
     font-family: "Quicksand", sans-serif;
     font-weight: bold;
     font-size: large;
     color: black;
+    margin-bottom: 30px;
   }
 
   .field {
@@ -121,16 +121,19 @@ body {
     }
   }
 
-  /*.toggle-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin: auto;
-    
-    span {
-      width: 190px;
+  .first-column {
+    width: 123px;
+  }
+
+  .second-column {
+    label {
+      margin-right: 0px;
     }
-  }*/
+  }
+
+  .shift-group-right {
+    margin-left: 20px;
+  }
 
   .form-button-row button {
     margin-top: 20px;

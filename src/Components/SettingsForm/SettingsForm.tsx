@@ -3,6 +3,7 @@ import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, 
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, TextField } from "@mui/material";
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
+import useMeasure from "react-use-measure";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -11,6 +12,13 @@ export type SettingsFormProps = {
 
 const SettingsForm = (props: SettingsFormProps) => {
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(props.initialSettings);
+
+	const [formRef, { width }] = useMeasure();
+	const [formWidth, setFormWidth] = useState<number>(1920);
+	useEffect(() => {
+		setFormWidth(width);
+		console.log(width);
+	}, [width]);
   
 	const wordAmountRef = useRef<ElementRef<typeof Field>>(null);
 	const timeLimitRef = useRef<ElementRef<typeof Field>>(null);
@@ -567,12 +575,18 @@ const SettingsForm = (props: SettingsFormProps) => {
 		setCurrentSettings({...currentSettings, exclusiveAux: e.target.checked});
 	};
 
+	const getColumnSpacingWidth = (): string => {
+		if (width <= 320) return "0px";
+
+		return (width - 320)/4 + "px";
+	};
+
 
 	const vtSection = () => {
 		return (
 			<div className="checkbox-group">
 				<FormLabel>Verb Type</FormLabel>
-				<FormGroup>
+				<FormGroup className="shift-group-right">
 					<span>
 						<FormControlLabel
 							control={
@@ -901,9 +915,40 @@ const SettingsForm = (props: SettingsFormProps) => {
 		);
 	};
 
+	const jlptVerbsN3N1 = () => {
+		return (
+			<span>
+				<FormControlLabel
+					control={
+						<Checkbox checked={verbLevelData.vlN3}
+							onChange={handleVlChange}
+							name="vlN3"/>
+					}
+					label="N3"
+				/>
+				<FormControlLabel
+					control={
+						<Checkbox checked={verbLevelData.vlN2}
+							onChange={handleVlChange}
+							name="vlN2"/>
+					}
+					label="N2"
+				/>
+				<FormControlLabel
+					control={
+						<Checkbox checked={verbLevelData.vlN1}
+							onChange={handleVlChange}
+							name="vlN1"/>
+					}
+					label="N1"
+				/>
+			</span>
+		);
+	};
+
 	return (
-		<Box sx={{ p: 1, border: "1px solid black", borderRadius: 2 }}>
-			<form className="form settings-form" onSubmit={ handleSubmit }>
+		<Box sx={{ p: 1.5, border: "1px solid black", borderRadius: 2 }}>
+			<form className="form settings-form" onSubmit={ handleSubmit } ref={formRef}>
 				<div>
 					<FormControl component="fieldset" variant="standard" error={ !fieldData.wordAmount.valid || !fieldData.timeLimit.valid }>
 						<FormLabel component="legend" className="form-title">Test Settings</FormLabel>
@@ -945,7 +990,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
 						<div className="checkbox-group">
 							<FormLabel>JLPT Level</FormLabel>
-							<FormGroup>
+							<FormGroup className="shift-group-right">
 								<span>
 									<FormControlLabel
 										control={
@@ -964,30 +1009,16 @@ const SettingsForm = (props: SettingsFormProps) => {
 										}
 										label="N4"
 									/>
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbLevelData.vlN3}
-												onChange={handleVlChange}
-												name="vlN3"/>
-										}
-										label="N3"
-									/>
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbLevelData.vlN2}
-												onChange={handleVlChange}
-												name="vlN2"/>
-										}
-										label="N2"
-									/>
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbLevelData.vlN1}
-												onChange={handleVlChange}
-												name="vlN1"/>
-										}
-										label="N1"
-									/>
+									{formWidth >= 340 && 
+										<span>
+											{jlptVerbsN3N1()}
+										</span>
+									}
+									{formWidth < 340 && 
+										<div>
+											{jlptVerbsN3N1()}
+										</div>
+									}
 								</span>
 							</FormGroup>
 						</div>
@@ -1052,17 +1083,15 @@ const SettingsForm = (props: SettingsFormProps) => {
 							</div>
 						}
 						<div className="checkbox-group">
-							<span className="toggle-row">
-								{/*<span></span>*/}
-								<FormLabel>Verb Forms</FormLabel>
-								{/*<span>
-									<label style={{marginRight: "8px"}}>Sub-options</label>
-									<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
-										{showVfSubOptions? "Hide" : "Show"}
-									</Button>*
-								</span>*/}
-							</span>
-							<div className="line-break"></div>
+							<FormLabel>Verb Forms</FormLabel>
+							<div className="line-break-small"></div>
+							<div>
+								<label style={{marginRight: "8px"}}>Sub-options</label>
+								<Button sx={{marginRight: "16px"}}variant="outlined" color="darkBlue" type="button" onClick={ toggleVfSubOptions }>
+									{showVfSubOptions? "Hide" : "Show"}
+								</Button>
+							</div>
+							<div className="line-break-small"></div>
 							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
 								{vfAllCheckboxParentGroup()}
 								<div className="line-break"></div>
@@ -1082,14 +1111,15 @@ const SettingsForm = (props: SettingsFormProps) => {
 								}
 								{!showVfSubOptions && 
 									<div className="checkbox-parent-group">
-										<div>
+										<div className="first-column">
 											{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
 											{vfCheckboxParentGroup("past", VerbFormDisplayNames.past)}
 											{vfCheckboxParentGroup("te", VerbFormDisplayNames.te)}
 											{vfCheckboxParentGroup("tai", VerbFormDisplayNames.tai)}
 											{vfCheckboxParentGroup("zu", VerbFormDisplayNames.zu)}
 										</div>
-										<div>
+										<div style={{width: getColumnSpacingWidth()}}></div>
+										<div className="second-column">
 											{vfCheckboxParentGroup("volitional", VerbFormDisplayNames.volitional)}
 											{vfCheckboxParentGroup("imperative", VerbFormDisplayNames.imperative)}
 											{vfCheckboxParentGroup("baConditional", VerbFormDisplayNames.baConditional)}
@@ -1109,11 +1139,12 @@ const SettingsForm = (props: SettingsFormProps) => {
 								{vfaAllCheckboxParentGroup()}
 								<div className="line-break"></div>
 								<div className="checkbox-parent-group">
-									<div>
+									<div className="first-column">
 										{vfaCheckboxParentGroup("passive", AuxFormDisplayNames.passive)}
 										{vfaCheckboxParentGroup("causative", AuxFormDisplayNames.causative)}
 									</div>
-									<div>
+									<div style={{width: getColumnSpacingWidth()}}></div>
+									<div className="second-column" style={{marginRight: "27px"}}>
 										{vfaCheckboxParentGroup("potential", AuxFormDisplayNames.potential, true)}
 										{vfaCheckboxParentGroup("tagaru", AuxFormDisplayNames.tagaru)}
 									</div>
