@@ -177,9 +177,9 @@ body {
 
 
 .test-form-fieldset {
-  width: 60%;
   font-size: 18px;
   font-weight: 500;
+  width: 100%;
 
   .form-title {
     margin-bottom: 10px;
@@ -189,10 +189,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: auto;
   }
 
   .fixed-size-area {
-    height: 140px;
+    //height: 140px;
   }
 
   .question-section {
@@ -235,6 +236,7 @@ body {
   }
 
   .timer {
+    width: 110px;
     p {
       font-size: 40px;
       font-weight: bold;

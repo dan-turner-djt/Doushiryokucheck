@@ -92,7 +92,7 @@ const theme = createTheme({
 const App: FunctionComponent = () => {
 	const { clientHeight, clientWidth } = useContext<WindowContextProps>(WindowContext);
 	const widthToSet: string = getWidth(clientWidth, 96, 50, 800) + "%";
-	const heightToSet: string = String(clientHeight - 176) + "px";
+	const heightToSet: string = String(clientHeight - 224) + "px";
 
 	return (
 		<ThemeProvider theme={ theme }>

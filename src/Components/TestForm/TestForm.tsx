@@ -6,6 +6,7 @@ import Field, { FieldType } from "../Field/Field";
 import { FormInfo, VerbInfo } from "jv-conjugator";
 import { VerbFormsInfo, getQuestionStringForm, getQuestionStringVerb } from "../../Utils/VerbFormsInfo";
 import { getAnswers } from "../../Utils/GetConjugation";
+import useMeasure from "react-use-measure";
 
 export type TestFormProps = {
   testSettings: SettingsObject,
@@ -32,6 +33,20 @@ const TestForm = (props: TestFormProps) => {
 	const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
 	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
 	const [errorOccurred, setErrorOccured] = useState<string>(props.errorOcurred);
+
+	const [formRef, { width }] = useMeasure();
+	const [formWidth, setFormWidth] = useState<number>(1920);
+	useEffect(() => {
+		setFormWidth(width);
+	}, [width]);
+
+	const shouldCondenseQuestionNumbers = () => {
+		if (props.testSettings.testType === TestType.Timed) {
+			return width < 400;
+		}
+		
+		return false;
+	};
 
 	const answerInputRef = useRef<ElementRef<typeof Field>>(null);
 	const [fieldData, setFieldData] = useState({
@@ -218,9 +233,15 @@ const TestForm = (props: TestFormProps) => {
 		return "∞";
 	};
 
+	const getQuestionLineSpacing = (): string => {
+		if (width < 460) return "0px";
+
+		return (460-width)/4 + "px";
+	};
+
 	return (
-		<Box sx={{ p: 2, border: "1px solid black", borderRadius: 2 }}>
-			<form className="form test-form" onSubmit={ handleSubmit }>
+		<Box sx={{ p: 1, border: "1px solid black", borderRadius: 2 }}>
+			<form className="form test-form" onSubmit={ handleSubmit } ref={ formRef }>
 				<FormControl component="fieldset" variant="standard" className="test-form-fieldset">
 					<FormLabel component="legend" className="form-title">{ getTestTypeName(props.testSettings.testType) }</FormLabel>
 					{errorOccurred !== "" && <div>
@@ -234,7 +255,7 @@ const TestForm = (props: TestFormProps) => {
 						{testFinished && <div>
 							<div className="fixed-size-area">
 								<div className="line-break-large"></div>
-								<p>Total Correct: { answeredCorrectlyTotal + ((props.testSettings.testType === TestType.Amount)? (" / " + getTotalQuestions()) : "") }</p>
+								<p>Total Correct: { answeredCorrectlyTotal + ((props.testSettings.testType === TestType.Amount)? ("/" + getTotalQuestions()) : "") }</p>
 							</div>
 							<div className="form-button-row">
 								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
@@ -243,15 +264,25 @@ const TestForm = (props: TestFormProps) => {
 						</div>}
 						{!testFinished && <div>
 							<span className="question-numbers-line">
-								<span>
-									<p>Question: {questionInfo?.questionNumber} / {getTotalQuestions()}</p>
-								</span>
+								<span style={{width: getQuestionLineSpacing()}}></span>
+								{shouldCondenseQuestionNumbers() && <span>
+									<p>Question:</p>
+									<p>{questionInfo?.questionNumber}/{getTotalQuestions()}</p>
+								</span>}
+								{!shouldCondenseQuestionNumbers() && <span>
+									<p>Question: {questionInfo?.questionNumber}/{getTotalQuestions()}</p>
+								</span>}
 								{props.testSettings.testType === TestType.Timed &&
 									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
 								}
-								<span>
-									<p>Total Correct: { answeredCorrectlyTotal }</p>
-								</span>
+								{shouldCondenseQuestionNumbers() && <span>
+									<p>Correct:</p>
+									<p>{ answeredCorrectlyTotal }</p>
+								</span>}
+								{!shouldCondenseQuestionNumbers() && <span>
+									<p>Correct: { answeredCorrectlyTotal }</p>
+								</span>}
+								<span style={{width: getQuestionLineSpacing()}}></span>
 							</span>
 							<div className="line-break-large"></div>
 							<div className="question-section">

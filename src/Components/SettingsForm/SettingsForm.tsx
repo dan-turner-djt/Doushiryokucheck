@@ -16,7 +16,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const [formRef, { width }] = useMeasure();
 	const [formWidth, setFormWidth] = useState<number>(1920);
 	useEffect(() => {
-		console.log(width);
 		setFormWidth(width);
 	}, [width]);
   
