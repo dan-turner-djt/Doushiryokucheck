@@ -109,17 +109,9 @@ body {
     margin: auto;
   }
 
-  .checkbox-group {
-    //margin-bottom: 20px;
-  }
-
   .checkbox-parent-group {
     display: flex;
     justify-content: space-between;
-
-    .parent-checkbox {
-      //margin-right: 64px;
-    }
   
     .children-checkboxes {
       display: flex;
@@ -131,6 +123,7 @@ body {
   }
 
   .second-column {
+    width: 160px;
     label {
       margin-right: 0px;
     }
@@ -153,6 +146,32 @@ body {
 
   .godan-checkbox {
     margin-left: 32px;
+  }
+
+  .slim-mode-container {
+    max-width: 350px;
+    margin: auto;
+    .slim-mode-parent {
+      max-width: 400px;
+      margin: auto;
+  
+      .vf-parent-column {
+        display: flex;
+        justify-content: left;
+      }
+  
+      .vf-first-column {
+        width: 123px;
+        display: flex;
+        justify-content: left;
+      }
+  
+      .vf-second-column {
+        width: 160px;
+        display: flex;
+        justify-content: left;
+      }
+    }
   }
 }
 

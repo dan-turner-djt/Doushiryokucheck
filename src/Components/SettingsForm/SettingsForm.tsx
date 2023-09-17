@@ -4,7 +4,6 @@ import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, Switch, TextField } from "@mui/material";
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
 import useMeasure from "react-use-measure";
-import { pink } from "@mui/material/colors";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
@@ -17,6 +16,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const [formRef, { width }] = useMeasure();
 	const [formWidth, setFormWidth] = useState<number>(1920);
 	useEffect(() => {
+		console.log(width);
 		setFormWidth(width);
 	}, [width]);
   
@@ -581,6 +581,14 @@ const SettingsForm = (props: SettingsFormProps) => {
 		return (width - 320)/4 + "px";
 	};
 
+	const getColumnSpacingWidthFullMode = (): string => {
+		return "30px";
+	};
+
+	const shouldSwitchGridToSlim = (): boolean => {
+		return width < 710;
+	};
+
 
 	const vtSection = () => {
 		return (
@@ -731,9 +739,9 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 	const vfCheckboxParentGroup = (name: FormNames, label: string, first = false) => {
 		return (
-			<div>
+			<div className={ showVfSubOptions && shouldSwitchGridToSlim()? "slim-mode-parent" : "" }>
 				<FormGroup>
-					<span className={"checkbox-parent-group"}>
+					<span className={showVfSubOptions && shouldSwitchGridToSlim()? "" : "checkbox-parent-group"}>
 						<span className="parent-checkbox vf-parent-column">
 							<FormControlLabel
 								control={
@@ -746,57 +754,117 @@ const SettingsForm = (props: SettingsFormProps) => {
 								label={label}
 							/>
 						</span>
-						{showVfSubOptions && <span className="children-checkboxes">
-							<span className="vf-first-column">
-								{"plain" in verbFormData[name] &&
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbFormData[name as  WithPlainForms].plain}
-												onChange={(e) => handleVfChange(e, name)}
-												name="plain"/>
-										}
-										label={VerbFormSubTypeDisplayNames.plain}
-									/>
-								}
+						{showVfSubOptions && shouldSwitchGridToSlim() && <div style={{display: "flex"}}>
+							<span>
+								<div className="vf-first-column">
+									{"plain" in verbFormData[name] &&
+										<FormControlLabel
+											control={
+												<Checkbox checked={verbFormData[name as  WithPlainForms].plain}
+													onChange={(e) => handleVfChange(e, name)}
+													name="plain"/>
+											}
+											label={VerbFormSubTypeDisplayNames.plain}
+										/>
+									}
+								</div>
+								<div className="vf-first-column">
+									{"polite" in verbFormData[name] &&
+										<FormControlLabel
+											control={
+												<Checkbox checked={verbFormData[name as WithPoliteForms].polite}
+													onChange={(e) => handleVfChange(e, name)}
+													name="polite"/>
+											}
+											label={VerbFormSubTypeDisplayNames.polite}
+										/>
+									}
+								</div>
 							</span>
-							<span className="vf-second-column">
-								{"polite" in verbFormData[name] &&
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbFormData[name as WithPoliteForms].polite}
-												onChange={(e) => handleVfChange(e, name)}
-												name="polite"/>
-										}
-										label={VerbFormSubTypeDisplayNames.polite}
-									/>
-								}
+							<span style={{width: getColumnSpacingWidth()}}></span>
+							<span>
+								<div className="vf-second-column">
+									{"negativePlain" in verbFormData[name] &&
+										<FormControlLabel
+											control={
+												<Checkbox checked={verbFormData[name as WithNegativeForms].negativePlain}
+													onChange={(e) => handleVfChange(e, name)}
+													name="negativePlain"
+												/>
+											}
+											label={VerbFormSubTypeDisplayNames.negative + " " + VerbFormSubTypeDisplayNames.plain}
+										/>
+									}
+								</div>
+								<div className="vf-second-column">
+									{"negativePolite" in verbFormData[name] &&
+										<FormControlLabel
+											control={
+												<Checkbox checked={verbFormData[name as WithNegativePoliteForms].negativePolite}
+													onChange={(e) => handleVfChange(e, name)}
+													name="negativePolite"/>
+											}
+											label={VerbFormSubTypeDisplayNames.negative + " " + VerbFormSubTypeDisplayNames.polite}
+										/>
+									}
+								</div>
 							</span>
-							<span className="vf-third-column">
-								{"negativePlain" in verbFormData[name] &&
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbFormData[name as WithNegativeForms].negativePlain}
-												onChange={(e) => handleVfChange(e, name)}
-												name="negativePlain"
-											/>
-										}
-										label={VerbFormSubTypeDisplayNames.negative + " " + VerbFormSubTypeDisplayNames.plain}
-									/>
-								}
+						</div>}
+						{showVfSubOptions && shouldSwitchGridToSlim() && <div className="line-break-small"></div>}
+						{showVfSubOptions && !shouldSwitchGridToSlim() && <div>
+							<span style={{width: getColumnSpacingWidthFullMode()}}></span>
+							<span className="children-checkboxes">
+								<span className="vf-first-column">
+									{"plain" in verbFormData[name] &&
+										<FormControlLabel
+											control={
+												<Checkbox checked={verbFormData[name as  WithPlainForms].plain}
+													onChange={(e) => handleVfChange(e, name)}
+													name="plain"/>
+											}
+											label={VerbFormSubTypeDisplayNames.plain}
+										/>
+									}
+								</span>
+								<span className="vf-second-column">
+									{"polite" in verbFormData[name] &&
+										<FormControlLabel
+											control={
+												<Checkbox checked={verbFormData[name as WithPoliteForms].polite}
+													onChange={(e) => handleVfChange(e, name)}
+													name="polite"/>
+											}
+											label={VerbFormSubTypeDisplayNames.polite}
+										/>
+									}
+								</span>
+								<span className="vf-third-column">
+									{"negativePlain" in verbFormData[name] &&
+										<FormControlLabel
+											control={
+												<Checkbox checked={verbFormData[name as WithNegativeForms].negativePlain}
+													onChange={(e) => handleVfChange(e, name)}
+													name="negativePlain"
+												/>
+											}
+											label={VerbFormSubTypeDisplayNames.negative + " " + VerbFormSubTypeDisplayNames.plain}
+										/>
+									}
+								</span>
+								<span className="vf-fourth-column">
+									{"negativePolite" in verbFormData[name] &&
+										<FormControlLabel
+											control={
+												<Checkbox checked={verbFormData[name as WithNegativePoliteForms].negativePolite}
+													onChange={(e) => handleVfChange(e, name)}
+													name="negativePolite"/>
+											}
+											label={VerbFormSubTypeDisplayNames.negative + " " + VerbFormSubTypeDisplayNames.polite}
+										/>
+									}
+								</span>
 							</span>
-							<span className="vf-fourth-column">
-								{"negativePolite" in verbFormData[name] &&
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbFormData[name as WithNegativePoliteForms].negativePolite}
-												onChange={(e) => handleVfChange(e, name)}
-												name="negativePolite"/>
-										}
-										label={VerbFormSubTypeDisplayNames.negative + " " + VerbFormSubTypeDisplayNames.polite}
-									/>
-								}
-							</span>
-						</span>}
+						</div>}
 					</span>
 				</FormGroup>
 			</div>
@@ -805,9 +873,9 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 	const vfAllCheckboxParentGroup = () => {
 		return (
-			<div>
+			<div className={ showVfSubOptions && shouldSwitchGridToSlim()? "slim-mode-parent" : "" }>
 				<FormGroup>
-					<span className={"checkbox-parent-group"}>
+					<span className={showVfSubOptions && shouldSwitchGridToSlim()? "" : "checkbox-parent-group"}>
 						<span className="parent-checkbox vf-parent-column">
 							<FormControlLabel
 								control={
@@ -819,7 +887,58 @@ const SettingsForm = (props: SettingsFormProps) => {
 								label="All"
 							/>
 						</span>
-						{showVfSubOptions && <span className="children-checkboxes">
+						{showVfSubOptions && shouldSwitchGridToSlim() && <div style={{display: "flex"}}>
+							<span>
+								<div className="vf-first-column">
+									<FormControlLabel
+										control={
+											<Checkbox checked={checkAllSubsOfType("plain")}
+												indeterminate={checkAllSubsOfTypeIndeterminate("plain")}
+												onChange={(e) => handleVfAllSubOfTypeChange(e, "plain")}
+												name="vfPlainAll"/>
+										}
+										label="Plain"
+									/> 
+								</div>
+								<div className="vf-first-column">
+									<FormControlLabel
+										control={
+											<Checkbox checked={checkAllSubsOfType("polite")}
+												indeterminate={checkAllSubsOfTypeIndeterminate("polite")}
+												onChange={(e) => handleVfAllSubOfTypeChange(e, "polite")}
+												name="vfPoliteAll"/>
+										}
+										label="Polite"
+									/> 
+								</div>
+							</span>
+							<span style={{width: getColumnSpacingWidth()}}></span>
+							<span>
+								<div className="vf-second-column">
+									<FormControlLabel
+										control={
+											<Checkbox checked={checkAllSubsOfType("negativePlain")}
+												indeterminate={checkAllSubsOfTypeIndeterminate("negativePlain")}
+												onChange={(e) => handleVfAllSubOfTypeChange(e, "negativePlain")}
+												name="vfNegativePlainAll"/>
+										}
+										label="Negative Plain"
+									/> 
+								</div>
+								<div className="vf-second-column">
+									<FormControlLabel
+										control={
+											<Checkbox checked={checkAllSubsOfType("negativePolite")}
+												indeterminate={checkAllSubsOfTypeIndeterminate("negativePolite")}
+												onChange={(e) => handleVfAllSubOfTypeChange(e, "negativePolite")}
+												name="vfNegativePoliteAll"/>
+										}
+										label="Negative Polite"
+									/> 
+								</div>
+							</span>
+						</div>}
+						{showVfSubOptions && !shouldSwitchGridToSlim() && <span className="children-checkboxes">
 							<span className="vf-first-column">
 								<FormControlLabel
 									control={
@@ -1091,7 +1210,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 								} label="Show sub-options"/>
 							</FormGroup>
 							<div className="line-break-small"></div>
-							<div className={showVfSubOptions? "checkbox-grid-wide" : "checkbox-grid-slim"}>
+							<div className={showVfSubOptions? (shouldSwitchGridToSlim()? "slim-mode-container" : "checkbox-grid-wide") : "checkbox-grid-slim"}>
 								{vfAllCheckboxParentGroup()}
 								<div className="line-break-small"></div>
 								{showVfSubOptions && 
@@ -1131,7 +1250,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 						</div>
 						<FormHelperText className="helper-text">{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
 						<div className="line-break-large"></div>
-						<div className="checkbox-group">
+						<div className="checkbox-group" style={{margin: "auto"}}>
 							<FormLabel className="form-subtitle">Additional Verb Forms</FormLabel>
 							<div className="line-break"></div>
 							<div className="checkbox-grid-slim">
@@ -1143,7 +1262,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 										{vfaCheckboxParentGroup("causative", AuxFormDisplayNames.causative)}
 									</div>
 									<div style={{width: getColumnSpacingWidth()}}></div>
-									<div className="second-column" style={{marginRight: "27px"}}>
+									<div className="second-column">
 										{vfaCheckboxParentGroup("potential", AuxFormDisplayNames.potential, true)}
 										{vfaCheckboxParentGroup("chau", AuxFormDisplayNames.chau)}
 									</div>
