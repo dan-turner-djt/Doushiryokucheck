@@ -4,13 +4,42 @@ import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, Switch, TextField } from "@mui/material";
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
 import useMeasure from "react-use-measure";
+import { ROOT_ENDPOINT } from "../../Connection/settings";
 
 export type SettingsFormProps = {
   initialSettings: SettingsObject;
   submitHandler: (newSettings: SettingsObject) => void;
 }
 
+const enum LoadState {
+	Loading, Loaded, Error
+}
+
 const SettingsForm = (props: SettingsFormProps) => {
+	const [loadState, setLoadState] = useState<LoadState>(LoadState.Loading);
+
+	useEffect(() => {
+		const endpoint = ROOT_ENDPOINT + "/checkLive";
+		fetch(endpoint)
+			.then((response: Response) => {
+				if (response.status === 200) {
+					return response.json();
+				}
+				throw new Error(response.status.toString());
+			})
+			.then((data) => {
+				if (data.isLive === true) {
+					setLoadState(LoadState.Loaded);
+					return;
+				}
+				setLoadState(LoadState.Error);
+			})
+			.catch((err) => {
+				console.log(err);
+				setLoadState(LoadState.Error);
+			});
+	}, []);
+
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(props.initialSettings);
 
 	const [formRef, { width }] = useMeasure();
@@ -1064,234 +1093,245 @@ const SettingsForm = (props: SettingsFormProps) => {
 		);
 	};
 
-	return (
-		<Box sx={{ p: 1.5, border: "1px solid black", borderRadius: 2 }}>
-			<form className="form settings-form" onSubmit={ handleSubmit } ref={formRef}>
-				<div>
-					<FormControl component="fieldset" variant="standard" error={ !fieldData.wordAmount.valid || !fieldData.timeLimit.valid }>
-						<FormLabel component="legend" className="form-title">Test Settings</FormLabel>
-						<div className="field">
-							<TextField select
-								label="Test Mode"
-								variant="outlined"
-								helperText="Select a test mode" 
-								value={currentSettings.testType}
-								onChange={handleTestTypeChange}>
-								<MenuItem key={TestType.Amount} value={TestType.Amount}>{ getTestTypeName(TestType.Amount) }</MenuItem>
-								<MenuItem key={TestType.Endless} value={TestType.Endless}>{ getTestTypeName(TestType.Endless) }</MenuItem>
-								<MenuItem key={TestType.Timed} value={TestType.Timed}>{ getTestTypeName(TestType.Timed) }</MenuItem>
-							</TextField>
-						</div>
-						<div className="type-sub-form">
-							{currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
-								<Field
-									type={ FieldType.Number }
-									ref={ wordAmountRef }
-									staticData={ fieldData.wordAmount.staticData }
-									valueSetter={ setNewWordAmount }/>
-							</div>}
-							{currentSettings.testType === TestType.Endless && <div className="endless-sub-form">
-							</div>}
-							{currentSettings.testType === TestType.Timed && <div className="timed-sub-form">
-								<Field
-									type={ FieldType.Number }
-									ref={ timeLimitRef }
-									staticData={ fieldData.timeLimit.staticData }
-									valueSetter={ setNewTime }/>
-							</div>}
-						</div>
-					</FormControl>
-				</div>
-				<div className="line-break"></div>
-				<div>
-					<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError || verbTypeNoResultsError }>
-						<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
-						<div className="checkbox-group">
-							<FormLabel className="form-subtitle">JLPT Level</FormLabel>
-							<FormGroup className="shift-group-right">
-								<span>
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbLevelData.vlN5}
-												onChange={handleVlChange}
-												name="vlN5"
-												inputRef={vlInputRef}/>
-										}
-										label="N5"
-									/>
-									<FormControlLabel
-										control={
-											<Checkbox checked={verbLevelData.vlN4}
-												onChange={handleVlChange}
-												name="vlN4"/>
-										}
-										label="N4"
-									/>
-									{formWidth >= 340 && 
-										<span>
-											{jlptVerbsN3N1()}
-										</span>
-									}
-									{formWidth < 340 && 
-										<div>
-											{jlptVerbsN3N1()}
-										</div>
-									}
-								</span>
-							</FormGroup>
-						</div>
-						<FormHelperText className="helper-text">{ verbLevelError? "Select at least one" : "" }</FormHelperText>
-						<div className="line-break-large"></div>
-						{vtSection()}
-						<FormHelperText className="helper-text">{ verbTypeError? "Select at least one" : ((verbTypeNoResultsError && !verbLevelError)? "These settings will give no verbs, select more options" : "") }</FormHelperText>
-					</FormControl>
-				</div>
-				<div className="line-break-large"></div>
-				<div>
-					<FormControl component="fieldset" variant="standard" error={isVerbFormError() || isExclusiveAuxError()}>
-						<FormLabel component="legend" className="form-title">Conjugation Settings</FormLabel>
-						{false && 
+
+	const renderSettingsForm = () => {
+		return (
+			<Box sx={{ p: 1.5, border: "1px solid black", borderRadius: 2 }}>
+				<form className="form settings-form" onSubmit={ handleSubmit } ref={formRef}>
+					<div>
+						<FormControl component="fieldset" variant="standard" error={ !fieldData.wordAmount.valid || !fieldData.timeLimit.valid }>
+							<FormLabel component="legend" className="form-title">Test Settings</FormLabel>
+							<div className="field">
+								<TextField select
+									label="Test Mode"
+									variant="outlined"
+									helperText="Select a test mode" 
+									value={currentSettings.testType}
+									onChange={handleTestTypeChange}>
+									<MenuItem key={TestType.Amount} value={TestType.Amount}>{ getTestTypeName(TestType.Amount) }</MenuItem>
+									<MenuItem key={TestType.Endless} value={TestType.Endless}>{ getTestTypeName(TestType.Endless) }</MenuItem>
+									<MenuItem key={TestType.Timed} value={TestType.Timed}>{ getTestTypeName(TestType.Timed) }</MenuItem>
+								</TextField>
+							</div>
+							<div className="type-sub-form">
+								{currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
+									<Field
+										type={ FieldType.Number }
+										ref={ wordAmountRef }
+										staticData={ fieldData.wordAmount.staticData }
+										valueSetter={ setNewWordAmount }/>
+								</div>}
+								{currentSettings.testType === TestType.Endless && <div className="endless-sub-form">
+								</div>}
+								{currentSettings.testType === TestType.Timed && <div className="timed-sub-form">
+									<Field
+										type={ FieldType.Number }
+										ref={ timeLimitRef }
+										staticData={ fieldData.timeLimit.staticData }
+										valueSetter={ setNewTime }/>
+								</div>}
+							</div>
+						</FormControl>
+					</div>
+					<div className="line-break"></div>
+					<div>
+						<FormControl component="fieldset" variant="standard" error={ verbTypeError || verbLevelError || verbTypeNoResultsError }>
+							<FormLabel component="legend" className="form-title">Verb Settings</FormLabel>
 							<div className="checkbox-group">
-								<FormLabel className="form-subtitle">Filter by JLPT Level</FormLabel>
-								<FormGroup>
+								<FormLabel className="form-subtitle">JLPT Level</FormLabel>
+								<FormGroup className="shift-group-right">
 									<span>
 										<FormControlLabel
 											control={
-												<Checkbox checked={conjugationLevelData.clN5}
-													onChange={handleClChange}
-													name="clN5"
+												<Checkbox checked={verbLevelData.vlN5}
+													onChange={handleVlChange}
+													name="vlN5"
 													inputRef={vlInputRef}/>
 											}
 											label="N5"
 										/>
 										<FormControlLabel
 											control={
-												<Checkbox checked={conjugationLevelData.clN4}
-													onChange={handleClChange}
-													name="clN4"/>
+												<Checkbox checked={verbLevelData.vlN4}
+													onChange={handleVlChange}
+													name="vlN4"/>
 											}
 											label="N4"
 										/>
-										<FormControlLabel
-											control={
-												<Checkbox checked={conjugationLevelData.clN3}
-													onChange={handleClChange}
-													name="clN3"/>
-											}
-											label="N3"
-										/>
-										<FormControlLabel
-											control={
-												<Checkbox checked={conjugationLevelData.clN2}
-													onChange={handleClChange}
-													name="clN2"/>
-											}
-											label="N2"
-										/>
-										<FormControlLabel
-											control={
-												<Checkbox checked={conjugationLevelData.clN1}
-													onChange={handleClChange}
-													name="clN1"/>
-											}
-											label="N1"
-										/>
+										{formWidth >= 340 && 
+											<span>
+												{jlptVerbsN3N1()}
+											</span>
+										}
+										{formWidth < 340 && 
+											<div>
+												{jlptVerbsN3N1()}
+											</div>
+										}
 									</span>
 								</FormGroup>
 							</div>
-						}
-						<div className="checkbox-group">
-							<FormLabel className="form-subtitle">Verb Forms</FormLabel>
-							<div className="line-break-small"></div>
-							<FormGroup>
-								<FormControlLabel style={{margin: "auto"}} control={
-									<Switch checked={ showVfSubOptions } onChange={ handleVfSubOptionsChange }/>
-								} label="Show sub-options"/>
-							</FormGroup>
-							<div className="line-break-small"></div>
-							<div className={showVfSubOptions? (shouldSwitchGridToSlim()? "slim-mode-container" : "checkbox-grid-wide") : "checkbox-grid-slim"}>
-								{vfAllCheckboxParentGroup()}
+							<FormHelperText className="helper-text">{ verbLevelError? "Select at least one" : "" }</FormHelperText>
+							<div className="line-break-large"></div>
+							{vtSection()}
+							<FormHelperText className="helper-text">{ verbTypeError? "Select at least one" : ((verbTypeNoResultsError && !verbLevelError)? "These settings will give no verbs, select more options" : "") }</FormHelperText>
+						</FormControl>
+					</div>
+					<div className="line-break-large"></div>
+					<div>
+						<FormControl component="fieldset" variant="standard" error={isVerbFormError() || isExclusiveAuxError()}>
+							<FormLabel component="legend" className="form-title">Conjugation Settings</FormLabel>
+							{false && 
+								<div className="checkbox-group">
+									<FormLabel className="form-subtitle">Filter by JLPT Level</FormLabel>
+									<FormGroup>
+										<span>
+											<FormControlLabel
+												control={
+													<Checkbox checked={conjugationLevelData.clN5}
+														onChange={handleClChange}
+														name="clN5"
+														inputRef={vlInputRef}/>
+												}
+												label="N5"
+											/>
+											<FormControlLabel
+												control={
+													<Checkbox checked={conjugationLevelData.clN4}
+														onChange={handleClChange}
+														name="clN4"/>
+												}
+												label="N4"
+											/>
+											<FormControlLabel
+												control={
+													<Checkbox checked={conjugationLevelData.clN3}
+														onChange={handleClChange}
+														name="clN3"/>
+												}
+												label="N3"
+											/>
+											<FormControlLabel
+												control={
+													<Checkbox checked={conjugationLevelData.clN2}
+														onChange={handleClChange}
+														name="clN2"/>
+												}
+												label="N2"
+											/>
+											<FormControlLabel
+												control={
+													<Checkbox checked={conjugationLevelData.clN1}
+														onChange={handleClChange}
+														name="clN1"/>
+												}
+												label="N1"
+											/>
+										</span>
+									</FormGroup>
+								</div>
+							}
+							<div className="checkbox-group">
+								<FormLabel className="form-subtitle">Verb Forms</FormLabel>
 								<div className="line-break-small"></div>
-								{showVfSubOptions && 
-									<div>
-										{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
-										{vfCheckboxParentGroup("past", VerbFormDisplayNames.past)}
-										{vfCheckboxParentGroup("te", VerbFormDisplayNames.te)}
-										{vfCheckboxParentGroup("tai", VerbFormDisplayNames.tai)}
-										{vfCheckboxParentGroup("zu", VerbFormDisplayNames.zu)}
-										{vfCheckboxParentGroup("volitional", VerbFormDisplayNames.volitional)}
-										{vfCheckboxParentGroup("imperative", VerbFormDisplayNames.imperative)}
-										{vfCheckboxParentGroup("baConditional", VerbFormDisplayNames.baConditional)}
-										{vfCheckboxParentGroup("taraConditional", VerbFormDisplayNames.taraConditional)}
-										{vfCheckboxParentGroup("stem", VerbFormDisplayNames.stem)}
-									</div>
-								}
-								{!showVfSubOptions && 
-									<div className="checkbox-parent-group">
-										<div className="first-column">
+								<FormGroup>
+									<FormControlLabel style={{margin: "auto"}} control={
+										<Switch checked={ showVfSubOptions } onChange={ handleVfSubOptionsChange }/>
+									} label="Show sub-options"/>
+								</FormGroup>
+								<div className="line-break-small"></div>
+								<div className={showVfSubOptions? (shouldSwitchGridToSlim()? "slim-mode-container" : "checkbox-grid-wide") : "checkbox-grid-slim"}>
+									{vfAllCheckboxParentGroup()}
+									<div className="line-break-small"></div>
+									{showVfSubOptions && 
+										<div>
 											{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
 											{vfCheckboxParentGroup("past", VerbFormDisplayNames.past)}
 											{vfCheckboxParentGroup("te", VerbFormDisplayNames.te)}
 											{vfCheckboxParentGroup("tai", VerbFormDisplayNames.tai)}
 											{vfCheckboxParentGroup("zu", VerbFormDisplayNames.zu)}
-										</div>
-										<div style={{width: getColumnSpacingWidth()}}></div>
-										<div className="second-column">
 											{vfCheckboxParentGroup("volitional", VerbFormDisplayNames.volitional)}
 											{vfCheckboxParentGroup("imperative", VerbFormDisplayNames.imperative)}
 											{vfCheckboxParentGroup("baConditional", VerbFormDisplayNames.baConditional)}
 											{vfCheckboxParentGroup("taraConditional", VerbFormDisplayNames.taraConditional)}
 											{vfCheckboxParentGroup("stem", VerbFormDisplayNames.stem)}
 										</div>
-									</div>
-								}
-							</div>
-						</div>
-						<FormHelperText className="helper-text">{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
-						<div className="line-break-large"></div>
-						<div className="checkbox-group" style={{margin: "auto"}}>
-							<FormLabel className="form-subtitle">Additional Verb Forms</FormLabel>
-							<div className="line-break"></div>
-							<div className="checkbox-grid-slim">
-								{vfaAllCheckboxParentGroup()}
-								<div className="line-break-small"></div>
-								<div className="checkbox-parent-group">
-									<div className="first-column">
-										{vfaCheckboxParentGroup("passive", AuxFormDisplayNames.passive)}
-										{vfaCheckboxParentGroup("causative", AuxFormDisplayNames.causative)}
-									</div>
-									<div style={{width: getColumnSpacingWidth()}}></div>
-									<div className="second-column">
-										{vfaCheckboxParentGroup("potential", AuxFormDisplayNames.potential, true)}
-										{vfaCheckboxParentGroup("chau", AuxFormDisplayNames.chau)}
-									</div>
-								</div>
-								{vfaCheckboxParentGroup("causativePassive", AuxFormDisplayNames.causativePassive)}
-							</div>
-							<div className="line-break-small"></div>
-							<div>
-								<FormControlLabel
-									control={
-										<Checkbox checked={currentSettings.exclusiveAux}
-											onChange={handleVfaExclusiveChange}
-											name="vfaExclusive"
-											inputRef={vfaExclusiveInputRef}/>
 									}
-									label="Additional Exclusive"
-								/>
+									{!showVfSubOptions && 
+										<div className="checkbox-parent-group">
+											<div className="first-column">
+												{vfCheckboxParentGroup("present", VerbFormDisplayNames.present, true)}
+												{vfCheckboxParentGroup("past", VerbFormDisplayNames.past)}
+												{vfCheckboxParentGroup("te", VerbFormDisplayNames.te)}
+												{vfCheckboxParentGroup("tai", VerbFormDisplayNames.tai)}
+												{vfCheckboxParentGroup("zu", VerbFormDisplayNames.zu)}
+											</div>
+											<div style={{width: getColumnSpacingWidth()}}></div>
+											<div className="second-column">
+												{vfCheckboxParentGroup("volitional", VerbFormDisplayNames.volitional)}
+												{vfCheckboxParentGroup("imperative", VerbFormDisplayNames.imperative)}
+												{vfCheckboxParentGroup("baConditional", VerbFormDisplayNames.baConditional)}
+												{vfCheckboxParentGroup("taraConditional", VerbFormDisplayNames.taraConditional)}
+												{vfCheckboxParentGroup("stem", VerbFormDisplayNames.stem)}
+											</div>
+										</div>
+									}
+								</div>
 							</div>
-						</div>
-						<FormHelperText className="helper-text">Check to use additional verb combinations exclusively</FormHelperText>
-						<FormHelperText className="helper-text">{isExclusiveAuxError()? "Select at least one additional form before checking this box" : ""}</FormHelperText>
-					</FormControl>
-				</div>
-				<div className="line-break"></div>
-				<div className="form-button-row">
-					<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
-					<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>
-				</div>
-			</form>
-		</Box>
+							<FormHelperText className="helper-text">{ isVerbFormError()? "Select at least one" : "" }</FormHelperText>
+							<div className="line-break-large"></div>
+							<div className="checkbox-group" style={{margin: "auto"}}>
+								<FormLabel className="form-subtitle">Additional Verb Forms</FormLabel>
+								<div className="line-break"></div>
+								<div className="checkbox-grid-slim">
+									{vfaAllCheckboxParentGroup()}
+									<div className="line-break-small"></div>
+									<div className="checkbox-parent-group">
+										<div className="first-column">
+											{vfaCheckboxParentGroup("passive", AuxFormDisplayNames.passive)}
+											{vfaCheckboxParentGroup("causative", AuxFormDisplayNames.causative)}
+										</div>
+										<div style={{width: getColumnSpacingWidth()}}></div>
+										<div className="second-column">
+											{vfaCheckboxParentGroup("potential", AuxFormDisplayNames.potential, true)}
+											{vfaCheckboxParentGroup("chau", AuxFormDisplayNames.chau)}
+										</div>
+									</div>
+									{vfaCheckboxParentGroup("causativePassive", AuxFormDisplayNames.causativePassive)}
+								</div>
+								<div className="line-break-small"></div>
+								<div>
+									<FormControlLabel
+										control={
+											<Checkbox checked={currentSettings.exclusiveAux}
+												onChange={handleVfaExclusiveChange}
+												name="vfaExclusive"
+												inputRef={vfaExclusiveInputRef}/>
+										}
+										label="Additional Exclusive"
+									/>
+								</div>
+							</div>
+							<FormHelperText className="helper-text">Check to use additional verb combinations exclusively</FormHelperText>
+							<FormHelperText className="helper-text">{isExclusiveAuxError()? "Select at least one additional form before checking this box" : ""}</FormHelperText>
+						</FormControl>
+					</div>
+					<div className="line-break"></div>
+					<div className="form-button-row">
+						<Button variant="outlined" color="darkBlue" type="button" className="button-primary" onClick={ handleRestoreDefaults }>Restore Defaults</Button>
+						<Button variant="contained" color="darkBlue" type="submit" className="button-primary">Start</Button>
+					</div>
+				</form>
+			</Box>
+		);
+	};
+
+	return (
+		<div>
+			{loadState === LoadState.Loading && <p className="info-text">Loading...</p>}
+			{loadState === LoadState.Error && <p className="info-text">Sorry, the server is currently offline, please try again later</p>}
+			{loadState === LoadState.Loaded && renderSettingsForm()}
+		</div>
 	);
 };
  

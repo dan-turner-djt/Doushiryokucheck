@@ -1,0 +1,1 @@
+export const ROOT_ENDPOINT = "https://djt-backend-serv.xyz:5000";

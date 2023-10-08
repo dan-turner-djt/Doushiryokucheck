@@ -8,6 +8,7 @@ import { VerbFormsInfo, getQuestionStringForm, getQuestionStringVerb } from "../
 import { getAnswers } from "../../Utils/GetConjugation";
 import useMeasure from "react-use-measure";
 import { ErrorCode } from "../../ErrorCodes";
+import { ROOT_ENDPOINT } from "../../Connection/settings";
 
 export type TestFormProps = {
   testSettings: SettingsObject,
@@ -156,8 +157,7 @@ const TestForm = (props: TestFormProps) => {
 		const fullVerbList: VerbInfo[] = props.fullVerbList;
 		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];*/
 
-		//djt-backend-serv.xyz
-		const endpoint = "https://djt-backend-serv.xyz:5000/question";
+		const endpoint = ROOT_ENDPOINT + "/question";
 		fetch(endpoint)
 			.then((response: Response) => {
 				if (response.status === 200) {
