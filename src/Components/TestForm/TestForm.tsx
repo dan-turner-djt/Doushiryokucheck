@@ -31,6 +31,7 @@ const TestForm = (props: TestFormProps) => {
 	const [testFinished, setTestFinished] = useState<boolean>(false);
 	const [questionNumber, setQuestionNumber] = useState<number>(1);
 	const [questionInfo, setQuestionInfo] = useState<QuestionInfo>();
+	const [questionLoaded, setQuestionLoaded] = useState<boolean>(false);
 	const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = useState<number>(0);
 	const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
 	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
@@ -87,7 +88,6 @@ const TestForm = (props: TestFormProps) => {
 
 		if (showAnswerResult) {
 			// Pressed next from incorrect step
-			setShowAnswerResult(false);
 
 			if (!checkIfTestShouldContinue()) {
 				finishTest();
@@ -197,6 +197,9 @@ const TestForm = (props: TestFormProps) => {
 			answers: questionAnswers
 		});
 
+		setQuestionLoaded(true);
+		setShowAnswerResult(false);
+
 		setTimeout(() => {
 			// Wait slightly as it may not be defined immediately
 			answerInputRef.current?.giveFocus();
@@ -257,6 +260,46 @@ const TestForm = (props: TestFormProps) => {
 		return (460-width)/4 + "px";
 	};
 
+	const renderQuestionInfo = () => {
+		return (
+			<div>
+				<div className="question-section">
+					<p>{ getQuestionStringVerb(questionInfo?.verbInfo) }</p>
+					<p>{ getQuestionStringForm(questionInfo?.verbFormInfo) }</p>
+				</div>
+				<div className="line-break"></div>
+				<div className="fixed-size-area">
+					{showAnswerResult && <div>
+						{answeredCorrectly && <div>
+							<div className="correct-answer">
+								<p>Correct!</p>
+							</div>
+							<div className="line-break"></div>
+						</div>}
+						{!answeredCorrectly && <div>
+							<div className="incorrect-answer">
+								<p>Incorrect!</p>
+							</div>
+							<div className="line-break-large"></div>
+							<p>Correct answer: {((questionInfo?.answers[0].kanji)? questionInfo.answers[0].kanji + " / " : "") + questionInfo?.answers[0].kana}</p>
+							<div className="line-break-small"></div>
+							<div className="your-answer">
+								<p>Your answer: {answerInputVal}</p>
+							</div>
+						</div>}
+					</div>}
+					{!showAnswerResult && 
+						<Field type={ FieldType.String }
+							ref={ answerInputRef }
+							staticData={ fieldData.answerInput.staticData }
+							valueSetter={ setAnswerInput }
+						/>
+					}
+				</div>
+			</div>
+		);
+	};
+
 	return (
 		<Box sx={{ p: 1, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form test-form" onSubmit={ handleSubmit } ref={ formRef }>
@@ -302,43 +345,16 @@ const TestForm = (props: TestFormProps) => {
 								</span>}
 								<span style={{width: getQuestionLineSpacing()}}></span>
 							</span>
+							{questionLoaded && renderQuestionInfo()}
+							{!questionLoaded && <p className="status-text">Loading...</p>}
 							<div className="line-break-large"></div>
-							<div className="question-section">
-								<p>{ getQuestionStringVerb(questionInfo?.verbInfo) }</p>
-								<p>{ getQuestionStringForm(questionInfo?.verbFormInfo) }</p>
-							</div>
-							<div className="line-break"></div>
-							<div className="fixed-size-area">
-								{showAnswerResult && <div>
-									{answeredCorrectly && <div>
-										<div className="correct-answer">
-											<p>Correct!</p>
-										</div>
-										<div className="line-break"></div>
-									</div>}
-									{!answeredCorrectly && <div>
-										<div className="incorrect-answer">
-											<p>Incorrect!</p>
-										</div>
-										<div className="line-break-large"></div>
-										<p>Correct answer: {((questionInfo?.answers[0].kanji)? questionInfo.answers[0].kanji + " / " : "") + questionInfo?.answers[0].kana}</p>
-										<div className="line-break-small"></div>
-										<div className="your-answer">
-											<p>Your answer: {answerInputVal}</p>
-										</div>
-									</div>}
-								</div>}
-								{!showAnswerResult && 
-									<Field type={ FieldType.String }
-										ref={ answerInputRef }
-										staticData={ fieldData.answerInput.staticData }
-										valueSetter={ setAnswerInput }
-									/>
-								}
-							</div>
 							<div className="form-button-row">
 								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
-								<Button variant="contained" color="darkBlue" type="submit" className="button-primary" ref={ nextButtonRef }>{ showAnswerResult? "Next" : "Check"}</Button>
+								{showAnswerResult && <Button variant="contained" color="darkBlue" type="submit" className="button-primary" ref={ nextButtonRef }>Next</Button>}
+								{!showAnswerResult && <span>
+									{questionLoaded && <Button variant="contained" color="darkBlue" type="submit" className="button-primary" ref={ nextButtonRef }>Check</Button>}
+									{!questionLoaded && <Button variant="contained" color="darkBlue" type="submit" className="button-primary" disabled ref={ nextButtonRef }>Check</Button>}
+								</span>}
 							</div>
 						</div>}
 					</div>}
