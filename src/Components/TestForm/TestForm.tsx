@@ -156,7 +156,7 @@ const TestForm = (props: TestFormProps) => {
 		const fullVerbList: VerbInfo[] = props.fullVerbList;
 		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];*/
 
-		const endpoint = "http://3.8.4.192:5000/question";
+		const endpoint = "https://3.8.4.192:5000/question";
 		fetch(endpoint)
 			.then((response: Response) => {
 				if (response.status === 200) {
