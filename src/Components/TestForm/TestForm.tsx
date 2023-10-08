@@ -157,7 +157,7 @@ const TestForm = (props: TestFormProps) => {
 		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];*/
 
 		//djt-backend-serv.xyz
-		const endpoint = "https://ec2-13-42-230-216.eu-west-2.compute.amazonaws.com:5000/question";
+		const endpoint = "https://djt-backend-serv.xyz:5000/question";
 		fetch(endpoint)
 			.then((response: Response) => {
 				if (response.status === 200) {
