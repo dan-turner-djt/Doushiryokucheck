@@ -1328,8 +1328,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 	return (
 		<div>
-			{loadState === LoadState.Loading && <p className="info-text">Loading...</p>}
-			{loadState === LoadState.Error && <p className="info-text">Sorry, the server is currently offline, please try again later</p>}
+			{loadState === LoadState.Loading && <p className="status-text">Loading...</p>}
+			{loadState === LoadState.Error && <p className="status-text">Sorry, the server is currently offline, please try again later</p>}
 			{loadState === LoadState.Loaded && renderSettingsForm()}
 		</div>
 	);
