@@ -1,5 +1,6 @@
 export const enum ErrorCode {
   FetchVerbListFailed = "01",
   GetConjugationFailed = "02",
-  ConjugationResultNoKana = "03"
+  ConjugationResultNoKana = "03",
+  FetchQuestionFailed = "04"
 }

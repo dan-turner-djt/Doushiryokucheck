@@ -7,6 +7,7 @@ import { FormInfo, VerbInfo } from "jv-conjugator";
 import { VerbFormsInfo, getQuestionStringForm, getQuestionStringVerb } from "../../Utils/VerbFormsInfo";
 import { getAnswers } from "../../Utils/GetConjugation";
 import useMeasure from "react-use-measure";
+import { ErrorCode } from "../../ErrorCodes";
 
 export type TestFormProps = {
   testSettings: SettingsObject,
@@ -79,11 +80,7 @@ const TestForm = (props: TestFormProps) => {
 
 		if (testFinished) {
 			// Pressed restart button
-			try {
-				restartTest();
-			} catch (e) {
-				return;
-			}
+			restartTest();
 			return;
 		}
 
@@ -96,28 +93,24 @@ const TestForm = (props: TestFormProps) => {
 				return;
 			}
   
-			try {
-				loadNextQuestion();
-			}
-			catch (e) {
-				return;
-			}
-		} else {
-			// Pressed check from answer step
-			if (checkAnswerIsCorrect(answerInputVal)) {
-				setAnsweredCorrectly(true);
-				setAnsweredCorrectlyTotal(answeredCorrectlyTotal + 1);
-			} else {
-				setAnsweredCorrectly(false);
-			}
-
-			setShowAnswerResult(true);
-
-			setTimeout(() => {
-				// Wait slightly as it may not be defined immediately
-				nextButtonRef.current?.focus();
-			}, 10);
+			loadNextQuestion();
+			return;
 		}
+
+		// Pressed check from answer step
+		if (checkAnswerIsCorrect(answerInputVal)) {
+			setAnsweredCorrectly(true);
+			setAnsweredCorrectlyTotal(answeredCorrectlyTotal + 1);
+		} else {
+			setAnsweredCorrectly(false);
+		}
+
+		setShowAnswerResult(true);
+
+		setTimeout(() => {
+			// Wait slightly as it may not be defined immediately
+			nextButtonRef.current?.focus();
+		}, 10);
 	};
 
 	const checkIfTestShouldContinue = ():boolean =>  {
@@ -135,7 +128,7 @@ const TestForm = (props: TestFormProps) => {
 		try {
 			getQuestionData(questionNumber + 1);
 		} catch (e) {
-			throw new Error;
+			throw new Error((e as Error).message);
 		}
 	};
 
@@ -165,9 +158,18 @@ const TestForm = (props: TestFormProps) => {
 
 		const endpoint = "http://3.8.4.192:5000/question";
 		fetch(endpoint)
-			.then(response => response.json())
-			.then(data => {
+			.then((response: Response) => {
+				if (response.status === 200) {
+					return response.json();
+				}
+				throw new Error(response.status.toString());
+			})
+			.then((data) => {
 				setQuestionData(number, data);
+			})
+			.catch((err) => {
+				console.log(err);
+				setErrorOccured(ErrorCode.FetchQuestionFailed);
 			});
 	};
 
@@ -227,7 +229,7 @@ const TestForm = (props: TestFormProps) => {
 		try {
 			getQuestionData(1);
 		} catch (e) {
-			throw new Error;
+			throw new Error((e as Error).message);
 		}
 	};
 
