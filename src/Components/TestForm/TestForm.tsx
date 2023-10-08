@@ -133,7 +133,7 @@ const TestForm = (props: TestFormProps) => {
 		setAnswerInputVal("");
 
 		try {
-			getAndSetQuestionData(questionNumber + 1);
+			getQuestionData(questionNumber + 1);
 		} catch (e) {
 			throw new Error;
 		}
@@ -148,8 +148,8 @@ const TestForm = (props: TestFormProps) => {
 		}, 10);
 	};
 
-	const getAndSetQuestionData = (number: number) => {
-		let randomVerbFormInfo;
+	const getQuestionData = (number: number) => {
+		/*let randomVerbFormInfo;
 		if (props.verbFormsInfo.extraAux.length > 0) {
 			if(Math.random() > 0.5) {
 				randomVerbFormInfo = props.verbFormsInfo.extraAux[Math.floor(Math.random() * props.verbFormsInfo.extraAux.length)];
@@ -161,8 +161,23 @@ const TestForm = (props: TestFormProps) => {
 		}
 
 		const fullVerbList: VerbInfo[] = props.fullVerbList;
-		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];
-		
+		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];*/
+
+		const endpoint = "http://3.8.4.192:5000/question";
+		fetch(endpoint)
+			.then(response => response.json())
+			.then(data => {
+				setQuestionData(number, data);
+			});
+	};
+
+	const setQuestionData = (number: number, data: {verbInfo: any, formInfo: any}) => {
+		const randomVerbInfo: VerbInfo = data.verbInfo;
+		const randomVerbFormInfo = data.formInfo;
+
+		console.log(randomVerbInfo);
+		console.log(randomVerbFormInfo);
+
 		let questionAnswers: {kana: string, kanji?: string}[];
 		try {
 			questionAnswers = getAnswers(randomVerbInfo, randomVerbFormInfo.info);
@@ -210,7 +225,7 @@ const TestForm = (props: TestFormProps) => {
 		setTestFinished(false);
 
 		try {
-			getAndSetQuestionData(1);
+			getQuestionData(1);
 		} catch (e) {
 			throw new Error;
 		}
