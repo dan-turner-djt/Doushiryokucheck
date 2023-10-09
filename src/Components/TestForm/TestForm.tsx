@@ -162,10 +162,6 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const setQuestionData = (number: number, verbInfo: VerbInfo, formInfo: FormInfo, answers: QuestionAnswer[]) => {
-		console.log(verbInfo);
-		console.log(formInfo);
-		console.log(answers);
-
 		const fullFormInfo: FullFormInfo = convertToFullFormInfo(formInfo);
 
 		setQuestionInfo({
