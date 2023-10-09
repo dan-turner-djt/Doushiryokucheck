@@ -1,20 +1,17 @@
+import { AuxiliaryFormName, FormName } from "jv-conjugator";
+
 export enum VerbFormDisplayNames {
   stem = "Stem",
   present = "Present",
   past = "Past",
   te = "て Form",
-  tai = "たい Form",
-  zu = "ず Form",
-  volitional = "Volitional",
   imperative = "Imperative",
+  volitional = "Volitional",
   baConditional = "えば Conditional",
-  taraConditional = "たら Conditional"
-}
-
-export enum VerbFormSubTypeDisplayNames {
-  plain = "Plain",
-  polite = "Polite",
-  negative = "Negative",
+  taraConditional = "たら Conditional",
+  naide = "ないで Form",
+  zu = "ず Form",
+  tai = "たい Form"
 }
 
 export enum AuxFormDisplayNames {
@@ -23,6 +20,56 @@ export enum AuxFormDisplayNames {
   causative = "Causative",
   causativePassive = "Causative Passive",
   chau = "ちゃう Form"
+}
+
+export function convertToDisplayName(formName: FormName): string {
+	switch (formName) {
+	case FormName.Stem:
+		return VerbFormDisplayNames.stem;
+	case FormName.Present:
+		return VerbFormDisplayNames.present;
+	case FormName.Past:
+		return VerbFormDisplayNames.past;
+	case FormName.Te:
+		return VerbFormDisplayNames.te;
+	case FormName.Imperative:
+		return VerbFormDisplayNames.imperative;
+	case FormName.Volitional:
+		return VerbFormDisplayNames.volitional;
+	case FormName.BaConditional:
+		return VerbFormDisplayNames.baConditional;
+	case FormName.TaraConditional:
+		return VerbFormDisplayNames.taraConditional;
+	case FormName.Naide:
+		return VerbFormDisplayNames.naide;
+	case FormName.Zu:
+		return VerbFormDisplayNames.zu;
+	case FormName.Tai:
+		return VerbFormDisplayNames.tai;
+	default:
+		return VerbFormDisplayNames.stem;
+	}
+}
+
+export function convertToAuxDisplayName(formName: AuxiliaryFormName): string {
+	switch (formName) {
+	case AuxiliaryFormName.Potential:
+		return AuxFormDisplayNames.potential;
+	case AuxiliaryFormName.Passive:
+		return AuxFormDisplayNames.passive;
+	case AuxiliaryFormName.Causative:
+		return AuxFormDisplayNames.causative;
+	case AuxiliaryFormName.CausativePassive:
+		return AuxFormDisplayNames.causativePassive;
+	default:
+		return AuxFormDisplayNames.potential;
+	}
+}
+
+export enum VerbFormSubTypeDisplayNames {
+  plain = "Plain",
+  polite = "Polite",
+  negative = "Negative",
 }
 
 export type VerbFormData = {

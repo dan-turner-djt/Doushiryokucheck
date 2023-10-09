@@ -2,40 +2,50 @@ import { useEffect, useState } from "react";
 import SettingsForm from "../../Components/SettingsForm/SettingsForm";
 import TestForm from "../../Components/TestForm/TestForm";
 import { DefaultSettings, SettingsObject } from "../../SettingsDef";
-import { convertFiles } from "../../VerbFileConversion/Convert";
-import { VerbFormsInfo, convertVerbFormsInfo } from "../../Utils/VerbFormsInfo";
-import { getFullVerbList, getVerbLevelsArray } from "../../Utils/VerbInfo";
-import { VerbInfo } from "jv-conjugator";
+import { ROOT_ENDPOINT } from "../../Connection/settings";
 
 const enum InTestState {
 	True, False, Loading
 }
 
 const Home = () => {
-
+	const [userId, setUserId] = useState<number>(Math.floor(Math.random() * 1000000000000000));
 	const [inTest, setInTest] = useState<InTestState>(InTestState.False);
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
-	const [verbFormsInfo, setVerbFormsInfo] = useState<VerbFormsInfo>({main: [], extraAux: []});
-	const [verbLevelsInfo, setVerbLevelsInfo] = useState<string[]>([]);
-	const [fullVerbList, setFullVerbList] = useState<VerbInfo[]>([]);
-	const [errorOcurred, setErrorOccurred] = useState<string>("");
+	const [errorOcurred, setErrorOccurred] = useState<boolean>(false);
 
 	useEffect(() => {
 		if(inTest === InTestState.False) {
 			return;
 		}
-		setVerbFormsInfo(convertVerbFormsInfo(currentSettings.verbForms, currentSettings.auxForms, currentSettings.exclusiveAux));
-		setVerbLevelsInfo(getVerbLevelsArray(currentSettings));
+
+		setErrorOccurred(false);
 
 		try {
-			getFullVerbList(currentSettings)
-				.then((res: VerbInfo[]) => {
-					setFullVerbList(res);
+			const content = {settings: currentSettings};
+
+			const endpoint = ROOT_ENDPOINT + "/settings/" + userId;
+			fetch(endpoint, {
+				method: "POST",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(content)
+			})
+				.then((response: Response) => {
+					if (response.status !== 200) {
+						throw new Error(response.status.toString());
+					}
+
 					setInTest(InTestState.True);
+				})
+				.catch((err) => {
+					console.log(err);
+					setErrorOccurred(true);
 				});
 		} catch (e) {
-			setErrorOccurred((e as Error).message);
-			setInTest(InTestState.True);
+			setErrorOccurred(true);
 		}
 	}, [currentSettings]);
 
@@ -46,12 +56,7 @@ const Home = () => {
 
 	const quitTest = () => {
 		setInTest(InTestState.False);
-		setErrorOccurred("");
 		setCurrentSettings(DefaultSettings);
-	};
-
-	const handleConvertFiles = () => {
-		convertFiles();
 	};
 
 	return (
@@ -68,16 +73,16 @@ const Home = () => {
 				<p>Answers are accepted in both hiragana and the corresponding kanji, as well as common colloquial shortenings for certain forms.</p>
 				<div className="line-break"></div>
 				<p>Selected additional forms are combined with selected basic forms. It is possible to create unnatural yet grammatically correct combinations depending on the options selected.</p>
-				{/*<button type="button" onClick={handleConvertFiles}>Convert files</button>*/}
 			</div>}
 			<div className="form-container">
 				{(inTest === InTestState.True) && 
-          <TestForm testSettings={ currentSettings } inTest={ true } verbFormsInfo={ verbFormsInfo } verbLevelsInfo={ verbLevelsInfo } fullVerbList={ fullVerbList } errorOcurred={ errorOcurred } quitHandler={ quitTest }/>
+          <TestForm testSettings={ currentSettings } userId={ userId } inTest={ true } quitHandler={ quitTest }/>
 				}
 				{(inTest !== InTestState.True) && 
           <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
 				}
 			</div>
+			{errorOcurred && <p className="status-text">An error occured, please try again with different settings</p>}
 		</div>
 	);
 };

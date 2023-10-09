@@ -4,8 +4,7 @@ import Timer from "../Timer/Timer";
 import { Box, Button, FormControl, FormLabel } from "@mui/material";
 import Field, { FieldType } from "../Field/Field";
 import { FormInfo, VerbInfo } from "jv-conjugator";
-import { VerbFormsInfo, getQuestionStringForm, getQuestionStringVerb } from "../../Utils/VerbFormsInfo";
-import { getAnswers } from "../../Utils/GetConjugation";
+import { FullFormInfo, convertToFullFormInfo, getQuestionStringForm, getQuestionStringVerb } from "../../Utils/VerbFormsInfo";
 import useMeasure from "react-use-measure";
 import { ErrorCode } from "../../ErrorCodes";
 import { ROOT_ENDPOINT } from "../../Connection/settings";
@@ -13,18 +12,17 @@ import { ROOT_ENDPOINT } from "../../Connection/settings";
 export type TestFormProps = {
   testSettings: SettingsObject,
 	inTest: boolean,
-	verbFormsInfo: VerbFormsInfo,
-	verbLevelsInfo: string[],
-	fullVerbList: VerbInfo[],
-	errorOcurred: string, // An error may occur when trying to process the settings, so start the test in error state if so
+	userId: number,
   quitHandler: () => void
 }
 
+type QuestionAnswer = {kana: string, kanji?: string};
+
 type QuestionInfo = {
 	questionNumber: number,
-	verbFormInfo: {displayName: string, auxDisplayName?: string, info: FormInfo},
+	verbFormInfo: FullFormInfo,
 	verbInfo: VerbInfo,
-	answers: {kana: string, kanji?: string}[]
+	answers: QuestionAnswer[]
 }
 
 const TestForm = (props: TestFormProps) => {
@@ -35,7 +33,7 @@ const TestForm = (props: TestFormProps) => {
 	const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = useState<number>(0);
 	const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
 	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
-	const [errorOccurred, setErrorOccured] = useState<string>(props.errorOcurred);
+	const [errorOccurred, setErrorOccured] = useState<string>("");
 
 	const [formRef, { width }] = useMeasure();
 	const [formWidth, setFormWidth] = useState<number>(1920);
@@ -143,21 +141,7 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const getQuestionData = (number: number) => {
-		/*let randomVerbFormInfo;
-		if (props.verbFormsInfo.extraAux.length > 0) {
-			if(Math.random() > 0.5) {
-				randomVerbFormInfo = props.verbFormsInfo.extraAux[Math.floor(Math.random() * props.verbFormsInfo.extraAux.length)];
-			} else {
-				randomVerbFormInfo = props.verbFormsInfo.main[Math.floor(Math.random() * props.verbFormsInfo.main.length)];
-			}
-		} else {
-			randomVerbFormInfo = props.verbFormsInfo.main[Math.floor(Math.random() * props.verbFormsInfo.main.length)];
-		}
-
-		const fullVerbList: VerbInfo[] = props.fullVerbList;
-		const randomVerbInfo: VerbInfo =  fullVerbList[Math.floor(Math.random() * fullVerbList.length)];*/
-
-		const endpoint = ROOT_ENDPOINT + "/question";
+		const endpoint = ROOT_ENDPOINT + "/question/" + props.userId;
 		fetch(endpoint)
 			.then((response: Response) => {
 				if (response.status === 200) {
@@ -166,7 +150,10 @@ const TestForm = (props: TestFormProps) => {
 				throw new Error(response.status.toString());
 			})
 			.then((data) => {
-				setQuestionData(number, data);
+				const verbInfo: VerbInfo = data.verbInfo;
+				const formInfo: FormInfo = data.formInfo;
+				const answers: QuestionAnswer[] = data.answers;
+				setQuestionData(number, verbInfo, formInfo, answers);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -174,27 +161,18 @@ const TestForm = (props: TestFormProps) => {
 			});
 	};
 
-	const setQuestionData = (number: number, data: {verbInfo: any, formInfo: any}) => {
-		const randomVerbInfo: VerbInfo = data.verbInfo;
-		const randomVerbFormInfo = data.formInfo;
+	const setQuestionData = (number: number, verbInfo: VerbInfo, formInfo: FormInfo, answers: QuestionAnswer[]) => {
+		console.log(verbInfo);
+		console.log(formInfo);
+		console.log(answers);
 
-		console.log(randomVerbInfo);
-		console.log(randomVerbFormInfo);
-
-		let questionAnswers: {kana: string, kanji?: string}[];
-		try {
-			questionAnswers = getAnswers(randomVerbInfo, randomVerbFormInfo.info);
-		}
-		catch (e) {
-			setErrorOccured((e as Error).message);
-			throw new Error;
-		}
+		const fullFormInfo: FullFormInfo = convertToFullFormInfo(formInfo);
 
 		setQuestionInfo({
 			questionNumber: number,
-			verbFormInfo: randomVerbFormInfo,
-			verbInfo: randomVerbInfo,
-			answers: questionAnswers
+			verbFormInfo: fullFormInfo,
+			verbInfo: verbInfo,
+			answers: answers
 		});
 
 		setQuestionLoaded(true);
