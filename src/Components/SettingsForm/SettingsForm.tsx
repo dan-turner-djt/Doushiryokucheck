@@ -164,7 +164,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 		for(const o of Object.entries(auxFormData)) {
 			const formInfo = o[1];
-			if (o[1].standard === true) {
+			if (formInfo.standard === true) {
 				return false;
 			}
 		}

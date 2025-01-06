@@ -36,10 +36,6 @@ const TestForm = (props: TestFormProps) => {
 	const [errorOccurred, setErrorOccured] = useState<string>("");
 
 	const [formRef, { width }] = useMeasure();
-	const [formWidth, setFormWidth] = useState<number>(1920);
-	useEffect(() => {
-		setFormWidth(width);
-	}, [width]);
 
 	const shouldCondenseQuestionNumbers = () => {
 		if (props.testSettings.testType === TestType.Timed) {

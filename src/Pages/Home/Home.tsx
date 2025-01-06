@@ -9,7 +9,7 @@ const enum InTestState {
 }
 
 const Home = () => {
-	const [userId, setUserId] = useState<number>(Math.floor(Math.random() * 1000000000000000));
+	const [userId] = useState<number>(Math.floor(Math.random() * 1000000000000000));
 	const [inTest, setInTest] = useState<InTestState>(InTestState.False);
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 	const [errorOcurred, setErrorOccurred] = useState<boolean>(false);
