@@ -108,7 +108,7 @@ export const DefaultSettings: SettingsObject = {
 			plain: false, polite: false, negativePlain: false
 		},
 		baConditional: {
-			plain: false, polite: false
+			plain: false, polite: false, negativePlain: false, negativePolite: false
 		},
 		taraConditional: {
 			plain: false, polite: false, negativePlain: false, negativePolite: false
