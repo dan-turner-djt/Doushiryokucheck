@@ -98,7 +98,7 @@ export type VerbFormData = {
     plain: boolean, polite: boolean, negativePlain: boolean
   },
   baConditional: {
-    plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
+    plain: boolean, polite: boolean, negativePlain: boolean
   },
   taraConditional: {
     plain: boolean, polite: boolean, negativePlain: boolean, negativePolite: boolean
