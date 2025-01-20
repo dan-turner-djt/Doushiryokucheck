@@ -75,14 +75,19 @@ const Home = () => {
 				<p>Selected additional forms are combined with selected basic forms. It is possible to create unnatural yet grammatically correct combinations depending on the options selected.</p>
 			</div>}
 			<div className="form-container">
-				{(inTest === InTestState.True) && 
-          <TestForm testSettings={ currentSettings } userId={ userId } inTest={ true } quitHandler={ quitTest }/>
+				{(inTest === InTestState.True) &&
+					<TestForm testSettings={ currentSettings } userId={ userId } inTest={ true } quitHandler={ quitTest }/>
 				}
-				{(inTest !== InTestState.True) && 
-          <SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
+				{(inTest === InTestState.False) &&
+					<SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
+				}
+				{(inTest === InTestState.Loading) &&
+					<div>
+						{errorOcurred && <p className="status-text">An error occured, please refresh the page and try again</p>}
+						{!errorOcurred && <p className="status-text">Loading test...</p>}
+					</div>
 				}
 			</div>
-			{errorOcurred && <p className="status-text">An error occured, please try again with different settings</p>}
 		</div>
 	);
 };
