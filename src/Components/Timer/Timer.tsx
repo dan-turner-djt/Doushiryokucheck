@@ -2,15 +2,23 @@ import { useEffect, useState } from "react";
 
 export type TimerProps = {
   startingTime: number;
+  runTimer: boolean;
   timeUpFunction: () => void;
 }
 
-const Timer = ({startingTime, timeUpFunction}: TimerProps) => {
+const Timer = ({startingTime, runTimer, timeUpFunction}: TimerProps) => {
 	const [currentTime, setCurrentTime] = useState<number>(startingTime);
+	const [timerRunning, setTimerRunning] = useState<boolean>(false);
 	const [seconds, setSeconds] = useState<string>("");
 	const [minutes, setMinutes] = useState<string>("");
 
 	useEffect(() => {
+		setTimerRunning(runTimer);
+	}, [runTimer]);
+
+	useEffect(() => {
+		if (!timerRunning) return;
+		
 		const secs = currentTime % 60;
 		const mins = (currentTime - secs) / 60;
 		setMinutes(String(mins));
@@ -23,7 +31,9 @@ const Timer = ({startingTime, timeUpFunction}: TimerProps) => {
 		} else {
 			// Decrement timer
 			setTimeout(() => {
-				setCurrentTime(currentTime - 1);
+				if (timerRunning) {
+					setCurrentTime(currentTime - 1);
+				}
 			}, 1000);
 		}
 	}, [currentTime, timeUpFunction]);

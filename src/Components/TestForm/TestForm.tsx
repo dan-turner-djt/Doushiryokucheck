@@ -304,7 +304,7 @@ const TestForm = (props: TestFormProps) => {
 									<p>Question: {questionInfo?.questionNumber}/{getTotalQuestions()}</p>
 								</span>}
 								{props.testSettings.testType === TestType.Timed &&
-									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } timeUpFunction={ finishTest }></Timer>
+									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } runTimer={ questionLoaded && !showAnswerResult} timeUpFunction={ finishTest }></Timer>
 								}
 								{shouldCondenseQuestionNumbers() && <span>
 									<p>Correct:</p>
