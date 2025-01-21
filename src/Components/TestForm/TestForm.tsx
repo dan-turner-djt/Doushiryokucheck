@@ -137,6 +137,9 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const getQuestionData = (number: number) => {
+		setQuestionLoaded(false);
+		setShowAnswerResult(false);
+		
 		const endpoint = ROOT_ENDPOINT + "/question/" + props.userId;
 		fetch(endpoint)
 			.then((response: Response) => {
@@ -168,7 +171,6 @@ const TestForm = (props: TestFormProps) => {
 		});
 
 		setQuestionLoaded(true);
-		setShowAnswerResult(false);
 
 		setTimeout(() => {
 			// Wait slightly as it may not be defined immediately
