@@ -175,6 +175,10 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const vfaExclusiveInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
+		setCurrentSettings({...currentSettings, verbType: verbTypeData});
+	}, [verbTypeData]);
+
+	useEffect(() => {
 		setCurrentSettings({...currentSettings, verbForms: verbFormData});
 	}, [verbFormData]);
 
