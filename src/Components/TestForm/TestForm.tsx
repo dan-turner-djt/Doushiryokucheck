@@ -29,7 +29,9 @@ const TestForm = (props: TestFormProps) => {
 	const [testFinished, setTestFinished] = useState<boolean>(false);
 	const [questionNumber, setQuestionNumber] = useState<number>(1);
 	const [questionInfo, setQuestionInfo] = useState<QuestionInfo>();
+	const [nextQuestionInfo, setNextQuestionInfo] = useState<QuestionInfo>();
 	const [questionLoaded, setQuestionLoaded] = useState<boolean>(false);
+	const [nextQuestionLoaded, setNextQuestionLoaded] = useState<boolean>(false);
 	const [answeredCorrectlyTotal, setAnsweredCorrectlyTotal] = useState<number>(0);
 	const [showAnswerResult, setShowAnswerResult] = useState<boolean>(false);
 	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean>(true);
@@ -63,6 +65,8 @@ const TestForm = (props: TestFormProps) => {
 	const restartButtonRef = useRef<ElementRef<typeof Button>>(null);
 
 	useEffect(() => {
+		if (!props.inTest) return;
+
 		// When first loading the test form
 		try {
 			restartTest();
@@ -70,6 +74,15 @@ const TestForm = (props: TestFormProps) => {
 			return;
 		}
 	}, [props.inTest]);
+
+	useEffect(() => {
+		if (nextQuestionLoaded) {
+			if (!questionLoaded) {
+				// The next question finished fetching while we were already waiting to load it so load it immediately
+				loadNextQuestion(questionNumber);
+			}
+		}
+	}, [nextQuestionLoaded]);
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -81,18 +94,31 @@ const TestForm = (props: TestFormProps) => {
 		}
 
 		if (showAnswerResult) {
-			// Pressed next from incorrect step
+			// Pressed next from answer result step
 
-			if (!checkIfTestShouldContinue()) {
+			if (!checkIfTestShouldContinue(questionNumber)) {
 				finishTest();
 				return;
 			}
-  
-			loadNextQuestion();
+
+			const newQuestionNumber = questionNumber + 1;
+			setQuestionNumber(newQuestionNumber);
+			setAnswerInputVal("");
+			setShowAnswerResult(false);
+
+			if (nextQuestionLoaded)
+			{
+				// Next question has already finished fetching so load it now
+				loadNextQuestion(newQuestionNumber);
+			} else {
+				// Still waiting for the next question to finish fetching so display loading state
+				setQuestionLoaded(false);
+			}
+
 			return;
 		}
 
-		// Pressed check from answer step
+		// Pressed check from answering step
 		if (checkAnswerIsCorrect(answerInputVal)) {
 			setAnsweredCorrectly(true);
 			setAnsweredCorrectlyTotal(answeredCorrectlyTotal + 1);
@@ -108,23 +134,36 @@ const TestForm = (props: TestFormProps) => {
 		}, 10);
 	};
 
-	const checkIfTestShouldContinue = ():boolean =>  {
-		if (props.testSettings.testType === TestType.Amount && questionNumber >= (props.testSettings.testTypeObject as AmountSettingsObject).amount) {
+	const checkIfTestShouldContinue = (number: number):boolean =>  {
+		if (props.testSettings.testType === TestType.Amount && number >= (props.testSettings.testTypeObject as AmountSettingsObject).amount) {
 			return false;
 		}
 
 		return true;
 	};
 
-	const loadNextQuestion = () => {
-		setQuestionNumber(questionNumber + 1);
-		setAnswerInputVal("");
+	const loadNextQuestion = (number: number) => {
+		// Called when the question has finished fetching and we are ready to display it
+		setQuestionInfo(nextQuestionInfo);
+		setQuestionLoaded(true);
+
+		setFocusOnAnswerInput();
 
 		try {
-			getQuestionData(questionNumber + 1);
+			// Preemptively load the next question
+			if (checkIfTestShouldContinue(number)) {
+				getQuestionData(number + 1);
+			}
 		} catch (e) {
 			throw new Error((e as Error).message);
 		}
+	};
+
+	const setFocusOnAnswerInput = () => {
+		setTimeout(() => {
+			// Wait slightly as it may not be defined immediately
+			answerInputRef.current?.giveFocus();
+		}, 10);
 	};
 
 	const finishTest = () => {
@@ -137,8 +176,13 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const getQuestionData = (number: number) => {
-		setQuestionLoaded(false);
-		setShowAnswerResult(false);
+		const firstQuestion: boolean = number === 1;
+
+		if (firstQuestion) {
+			setQuestionLoaded(false);
+		}
+
+		setNextQuestionLoaded(false);
 		
 		const endpoint = ROOT_ENDPOINT + "/question/" + props.userId;
 		fetch(endpoint)
@@ -152,6 +196,7 @@ const TestForm = (props: TestFormProps) => {
 				const verbInfo: VerbInfo = data.verbInfo;
 				const formInfo: FormInfo = data.formInfo;
 				const answers: QuestionAnswer[] = data.answers;
+
 				setQuestionData(number, verbInfo, formInfo, answers);
 			})
 			.catch((err) => {
@@ -161,21 +206,36 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const setQuestionData = (number: number, verbInfo: VerbInfo, formInfo: FormInfo, answers: QuestionAnswer[]) => {
+		const firstQuestion = number === 1;
+		
 		const fullFormInfo: FullFormInfo = convertToFullFormInfo(formInfo);
 
-		setQuestionInfo({
-			questionNumber: number,
-			verbFormInfo: fullFormInfo,
-			verbInfo: verbInfo,
-			answers: answers
-		});
+		if (firstQuestion) {
+			setQuestionInfo({
+				questionNumber: number,
+				verbFormInfo: fullFormInfo,
+				verbInfo: verbInfo,
+				answers: answers
+			});
 
-		setQuestionLoaded(true);
+			// First question is ready to display now
+			setQuestionLoaded(true);
+			setFocusOnAnswerInput();
 
-		setTimeout(() => {
-			// Wait slightly as it may not be defined immediately
-			answerInputRef.current?.giveFocus();
-		}, 10);
+			// Preemptively start loading the next question
+			if (checkIfTestShouldContinue(number))
+			{
+				getQuestionData(number + 1);
+			}
+		} else {
+			setNextQuestionInfo({
+				questionNumber: number,
+				verbFormInfo: fullFormInfo,
+				verbInfo: verbInfo,
+				answers: answers
+			});
+			setNextQuestionLoaded(true);
+		}
 	};
 
 	const checkAnswerIsCorrect = (answer: string):boolean => {
@@ -300,10 +360,10 @@ const TestForm = (props: TestFormProps) => {
 								<span style={{width: getQuestionLineSpacing()}}></span>
 								{shouldCondenseQuestionNumbers() && <span>
 									<p>Question:</p>
-									<p>{questionInfo?.questionNumber}/{getTotalQuestions()}</p>
+									<p>{questionNumber}/{getTotalQuestions()}</p>
 								</span>}
 								{!shouldCondenseQuestionNumbers() && <span>
-									<p>Question: {questionInfo?.questionNumber}/{getTotalQuestions()}</p>
+									<p>Question: {questionNumber}/{getTotalQuestions()}</p>
 								</span>}
 								{props.testSettings.testType === TestType.Timed &&
 									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } runTimer={ questionLoaded && !showAnswerResult} timeUpFunction={ finishTest }></Timer>
