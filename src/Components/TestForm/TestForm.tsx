@@ -377,6 +377,7 @@ const TestForm = (props: TestFormProps) => {
 								</span>}
 								<span style={{width: getQuestionLineSpacing()}}></span>
 							</span>
+							<div className="line-break"></div>
 							{questionLoaded && renderQuestionInfo()}
 							{!questionLoaded && <p className="status-text">Loading...</p>}
 							<div className="line-break-large"></div>
