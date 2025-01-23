@@ -14,15 +14,14 @@ const Home = () => {
 	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 	const [errorOcurred, setErrorOccurred] = useState<boolean>(false);
 
-	useEffect(() => {
-		if(inTest === InTestState.False) {
-			return;
-		}
+	const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
+		setInTest(InTestState.Loading);
+		setCurrentSettings(newSettings);
 
 		setErrorOccurred(false);
 
 		try {
-			const content = {settings: currentSettings};
+			const content = {settings: newSettings};
 
 			const endpoint = ROOT_ENDPOINT + "/settings/" + userId;
 			fetch(endpoint, {
@@ -47,16 +46,10 @@ const Home = () => {
 		} catch (e) {
 			setErrorOccurred(true);
 		}
-	}, [currentSettings]);
-
-	const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
-		setInTest(InTestState.Loading);
-		setCurrentSettings(newSettings);
 	};
 
 	const quitTest = () => {
 		setInTest(InTestState.False);
-		setCurrentSettings(DefaultSettings);
 	};
 
 	return (
@@ -79,7 +72,7 @@ const Home = () => {
 					<TestForm testSettings={ currentSettings } userId={ userId } inTest={ true } quitHandler={ quitTest }/>
 				}
 				{(inTest === InTestState.False) &&
-					<SettingsForm initialSettings={currentSettings} submitHandler={ handleSubmitSettingsForm }></SettingsForm>
+					<SettingsForm initialSettings={ currentSettings } submitHandler={ handleSubmitSettingsForm }></SettingsForm>
 				}
 				{(inTest === InTestState.Loading) &&
 					<div>

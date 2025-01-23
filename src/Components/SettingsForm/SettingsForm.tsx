@@ -1,5 +1,5 @@
 import { ChangeEvent, ElementRef, FormEvent, RefObject, useEffect, useRef, useState } from "react";
-import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings } from "../../SettingsDef";
+import { DefaultSettings, SettingsObject, TestType, getTestTypeDefaultSettings, getTestTypeName, DefaultAmountSettings, DefaultTimedSettings, AmountSettingsObject, TimedSettingsObject } from "../../SettingsDef";
 import Field, { FieldRef, FieldType, StaticFieldData } from "../Field/Field";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, Switch, TextField } from "@mui/material";
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
@@ -30,6 +30,7 @@ const SettingsForm = (props: SettingsFormProps) => {
 			.then((data) => {
 				if (data.isLive === true) {
 					setLoadState(LoadState.Loaded);
+					setNewSettings(props.initialSettings);
 					return;
 				}
 				setLoadState(LoadState.Error);
@@ -87,13 +88,8 @@ const SettingsForm = (props: SettingsFormProps) => {
 		return checkAnyVt() && !checkAllVt();
 	};
 
-	const [verbLevelData, setVerbLevelData] = useState({
-		vlN5: DefaultSettings.verbLevel.vlN5,
-		vlN4: DefaultSettings.verbLevel.vlN4,
-		vlN3: DefaultSettings.verbLevel.vlN3,
-		vlN2: DefaultSettings.verbLevel.vlN2,
-		vlN1: DefaultSettings.verbLevel.vlN1
-	});
+	const [verbLevelData, setVerbLevelData] = useState(DefaultSettings.verbLevel);
+	
 	const verbLevelError = [verbLevelData.vlN5, verbLevelData.vlN4, verbLevelData.vlN3, verbLevelData.vlN2, verbLevelData.vlN1].filter((v) => v).length === 0;
 	const vlInputRef = useRef<HTMLInputElement>(null);
 
@@ -115,31 +111,13 @@ const SettingsForm = (props: SettingsFormProps) => {
 		return false;
 	};
 
-	const [verbTypeData, setVerbTypeData] = useState({
-		vtIchidan: DefaultSettings.verbType.vtIchidan,
-		vtIrregular: DefaultSettings.verbType.vtIrregular,
-		vtBu: DefaultSettings.verbType.vtBu,
-		vtGu: DefaultSettings.verbType.vtGu,
-		vtKu: DefaultSettings.verbType.vtKu,
-		vtMu: DefaultSettings.verbType.vtMu,
-		vtNu: DefaultSettings.verbType.vtNu,
-		vtRu: DefaultSettings.verbType.vtRu,
-		vtSu: DefaultSettings.verbType.vtSu,
-		vtTsu: DefaultSettings.verbType.vtTsu,
-		vtU: DefaultSettings.verbType.vtU
-	});
+	const [verbTypeData, setVerbTypeData] = useState(DefaultSettings.verbType);
+
 	const verbTypeError = [verbTypeData.vtIchidan, verbTypeData.vtIrregular, verbTypeData.vtBu, verbTypeData.vtGu, verbTypeData.vtKu,
 		verbTypeData.vtMu, verbTypeData.vtNu, verbTypeData.vtRu, verbTypeData.vtSu, verbTypeData.vtTsu, verbTypeData.vtU].filter((v) => v).length === 0;
 	const verbTypeNoResultsError: boolean = checkVerbTypeNoResults();
 	const vtInputRef = useRef<HTMLInputElement>(null);
 
-	const [conjugationLevelData, setConjugationLevelData] = useState({
-		clN5: true,
-		clN4: false,
-		clN3: false,
-		clN2: false,
-		clN1: false
-	});
 
 	const [verbFormData, setVerbFormData] = useState<VerbFormData>(DefaultSettings.verbForms);
 	
@@ -269,42 +247,25 @@ const SettingsForm = (props: SettingsFormProps) => {
 	};
 
 	const handleRestoreDefaults = () => {
-		setCurrentSettings(DefaultSettings);
+		setNewSettings(DefaultSettings);
+	};
 
-		// Reset each field's value and validity
+	const setNewSettings = (newSettings: SettingsObject) => {
+		setCurrentSettings(newSettings);
+
+		fieldData.wordAmount.staticData.startingValue = (newSettings.testTypeObject as AmountSettingsObject).amount;
+		fieldData.timeLimit.staticData.startingValue = (newSettings.testTypeObject as TimedSettingsObject).time;
+
 		for (const [key, value] of Object.entries(fieldData)) {
 			value.ref.current?.resetValue();
 			value.valid = true;
 			setFieldData({...fieldData, [key]: value});
 		}
 
-		verbTypeData.vtIchidan = DefaultSettings.verbType.vtIchidan;
-		verbTypeData.vtIrregular = DefaultSettings.verbType.vtIrregular;
-		verbTypeData.vtBu = DefaultSettings.verbType.vtBu;
-		verbTypeData.vtGu = DefaultSettings.verbType.vtGu;
-		verbTypeData.vtKu = DefaultSettings.verbType.vtKu;
-		verbTypeData.vtMu = DefaultSettings.verbType.vtMu;
-		verbTypeData.vtNu = DefaultSettings.verbType.vtNu;
-		verbTypeData.vtRu = DefaultSettings.verbType.vtRu;
-		verbTypeData.vtSu = DefaultSettings.verbType.vtSu;
-		verbTypeData.vtTsu = DefaultSettings.verbType.vtTsu;
-		verbTypeData.vtU = DefaultSettings.verbType.vtU;
-
-		verbLevelData.vlN5 = DefaultSettings.verbLevel.vlN5;
-		verbLevelData.vlN4 = DefaultSettings.verbLevel.vlN4;
-		verbLevelData.vlN3 = DefaultSettings.verbLevel.vlN3;
-		verbLevelData.vlN2 = DefaultSettings.verbLevel.vlN2;
-		verbLevelData.vlN1 = DefaultSettings.verbLevel.vlN1;
-
-		conjugationLevelData.clN5 = true;
-		conjugationLevelData.clN4 = false;
-		conjugationLevelData.clN3 = false;
-		conjugationLevelData.clN2 = false;
-		conjugationLevelData.clN1 = false;
-
-		setVerbFormData(DefaultSettings.verbForms);
-		setAuxFormData(DefaultSettings.auxForms);
-		setCurrentSettings({...currentSettings, exclusiveAux: DefaultSettings.exclusiveAux});
+		setVerbLevelData(newSettings.verbLevel);
+		setVerbTypeData(newSettings.verbType);
+		setVerbFormData(newSettings.verbForms);
+		setAuxFormData(newSettings.auxForms);
 	};
 
 	const handleVtChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -315,10 +276,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const handleVlChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setCurrentSettings({...currentSettings, verbLevel: {...currentSettings.verbLevel, [e.target.name]: e.target.checked}});
 		setVerbLevelData({...verbLevelData, [e.target.name]: e.target.checked});
-	};
-
-	const handleClChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setConjugationLevelData({...conjugationLevelData, [e.target.name]: e.target.checked});
 	};
 
 	const handleVfChange = (e: ChangeEvent<HTMLInputElement>, form: FormNames) => {
@@ -1185,56 +1142,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 					<div>
 						<FormControl component="fieldset" variant="standard" error={isVerbFormError() || isExclusiveAuxError()}>
 							<FormLabel component="legend" className="form-title">Conjugation Settings</FormLabel>
-							{false && 
-								<div className="checkbox-group">
-									<FormLabel className="form-subtitle">Filter by JLPT Level</FormLabel>
-									<FormGroup>
-										<span>
-											<FormControlLabel
-												control={
-													<Checkbox checked={conjugationLevelData.clN5}
-														onChange={handleClChange}
-														name="clN5"
-														inputRef={vlInputRef}/>
-												}
-												label="N5"
-											/>
-											<FormControlLabel
-												control={
-													<Checkbox checked={conjugationLevelData.clN4}
-														onChange={handleClChange}
-														name="clN4"/>
-												}
-												label="N4"
-											/>
-											<FormControlLabel
-												control={
-													<Checkbox checked={conjugationLevelData.clN3}
-														onChange={handleClChange}
-														name="clN3"/>
-												}
-												label="N3"
-											/>
-											<FormControlLabel
-												control={
-													<Checkbox checked={conjugationLevelData.clN2}
-														onChange={handleClChange}
-														name="clN2"/>
-												}
-												label="N2"
-											/>
-											<FormControlLabel
-												control={
-													<Checkbox checked={conjugationLevelData.clN1}
-														onChange={handleClChange}
-														name="clN1"/>
-												}
-												label="N1"
-											/>
-										</span>
-									</FormGroup>
-								</div>
-							}
 							<div className="checkbox-group">
 								<FormLabel className="form-subtitle">Verb Forms</FormLabel>
 								<div className="line-break-small"></div>
