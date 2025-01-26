@@ -1,63 +1,18 @@
-import { useEffect, useState } from "react";
 import SettingsForm from "../../Components/SettingsForm/SettingsForm";
 import TestForm from "../../Components/TestForm/TestForm";
-import { DefaultSettings, SettingsObject } from "../../SettingsDef";
-import { ROOT_ENDPOINT } from "../../Connection/settings";
-
-const enum InTestState {
-	True, False, Loading
-}
+import { useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
+import { InTestState } from "../../Redux/Test/testReducer";
 
 const Home = () => {
-	const [userId] = useState<number>(Math.floor(Math.random() * 1000000000000000));
-	const [inTest, setInTest] = useState<InTestState>(InTestState.False);
-	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
-	const [errorOcurred, setErrorOccurred] = useState<boolean>(false);
-
-	const handleSubmitSettingsForm = (newSettings: SettingsObject) => {
-		setInTest(InTestState.Loading);
-		setCurrentSettings(newSettings);
-
-		setErrorOccurred(false);
-
-		try {
-			const content = {settings: newSettings};
-
-			const endpoint = ROOT_ENDPOINT + "/settings/" + userId;
-			fetch(endpoint, {
-				method: "POST",
-				headers: {
-					"Accept": "application/json",
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify(content)
-			})
-				.then((response: Response) => {
-					if (response.status !== 200) {
-						throw new Error(response.status.toString());
-					}
-
-					setInTest(InTestState.True);
-				})
-				.catch((err) => {
-					console.log(err);
-					setErrorOccurred(true);
-				});
-		} catch (e) {
-			setErrorOccurred(true);
-		}
-	};
-
-	const quitTest = () => {
-		setInTest(InTestState.False);
-	};
+	const testState: number = useSelector((state: RootState) => state.test.testState);
 
 	return (
 		<div className="home">
-			{(inTest !== InTestState.True) &&
+			{(testState !== InTestState.True) &&
 				<h2 className="page-title">Japanese Verb Conjugation Tester</h2>
 			}
-			{(inTest !== InTestState.True) && <div className="content">
+			{(testState !== InTestState.True) && <div className="content">
 				<p>Welcome!</p>
 				<div className="line-break"></div>
 				<p>動詞力チェック / Doushiryoku Check is a Japanese verb conjugation testing tool to help Japanese learners test or improve their verb conjugation abilities.</p>
@@ -68,17 +23,17 @@ const Home = () => {
 				<p>Selected additional forms are combined with selected basic forms. It is possible to create unnatural yet grammatically correct combinations depending on the options selected.</p>
 			</div>}
 			<div className="form-container">
-				{(inTest === InTestState.True) &&
-					<TestForm testSettings={ currentSettings } userId={ userId } inTest={ true } quitHandler={ quitTest }/>
+				{(testState === InTestState.True) &&
+					<TestForm/>
 				}
-				{(inTest === InTestState.False) &&
-					<SettingsForm initialSettings={ currentSettings } submitHandler={ handleSubmitSettingsForm }></SettingsForm>
+				{(testState === InTestState.False) &&
+					<SettingsForm/>
 				}
-				{(inTest === InTestState.Loading) &&
-					<div>
-						{errorOcurred && <p className="status-text">An error occured, please refresh the page and try again</p>}
-						{!errorOcurred && <p className="status-text">Loading test...</p>}
-					</div>
+				{(testState === InTestState.Loading) &&
+					<p className="status-text">Loading test...</p>
+				}
+				{(testState === InTestState.Error) &&
+					<p className="status-text">An error occured, please refresh the page and try again</p>
 				}
 			</div>
 		</div>

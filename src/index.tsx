@@ -4,6 +4,8 @@ import "./styles.scss";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { WindowContextProvider } from "./Contexts/WindowContext";
+import { Provider } from "react-redux";
+import store from "./Redux/store";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -11,7 +13,9 @@ const root = ReactDOM.createRoot(
 root.render(
 	<StrictMode>
 		<WindowContextProvider>
-			<App />
+			<Provider store={ store }>
+				<App />
+			</Provider>
 		</WindowContextProvider>
 	</StrictMode>
 );

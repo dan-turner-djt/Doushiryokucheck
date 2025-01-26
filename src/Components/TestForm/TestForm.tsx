@@ -8,13 +8,10 @@ import { FullFormInfo, convertToFullFormInfo, getQuestionStringForm, getQuestion
 import useMeasure from "react-use-measure";
 import { ErrorCode } from "../../ErrorCodes";
 import { ROOT_ENDPOINT } from "../../Connection/settings";
-
-export type TestFormProps = {
-  testSettings: SettingsObject,
-	inTest: boolean,
-	userId: number,
-  quitHandler: () => void
-}
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
+import { setTestState } from "../../Redux/Test/testActions";
+import { InTestState } from "../../Redux/Test/testReducer";
 
 type QuestionAnswer = {kana: string, kanji?: string};
 
@@ -25,7 +22,11 @@ type QuestionInfo = {
 	answers: QuestionAnswer[]
 }
 
-const TestForm = (props: TestFormProps) => {
+const TestForm = () => {
+	const dispatch = useDispatch();
+	const settings: SettingsObject = useSelector((state: RootState) => state.settings.currentSettings);
+	const userId: number = useSelector((state: RootState) => state.settings.userId);
+
 	const [testFinished, setTestFinished] = useState<boolean>(false);
 	const [questionNumber, setQuestionNumber] = useState<number>(1);
 	const [questionInfo, setQuestionInfo] = useState<QuestionInfo>();
@@ -40,7 +41,7 @@ const TestForm = (props: TestFormProps) => {
 	const [formRef, { width }] = useMeasure();
 
 	const shouldCondenseQuestionNumbers = () => {
-		if (props.testSettings.testType === TestType.Timed) {
+		if (settings.testType === TestType.Timed) {
 			return width < 400;
 		}
 		
@@ -65,15 +66,12 @@ const TestForm = (props: TestFormProps) => {
 	const restartButtonRef = useRef<ElementRef<typeof Button>>(null);
 
 	useEffect(() => {
-		if (!props.inTest) return;
-
-		// When first loading the test form
 		try {
 			restartTest();
 		} catch (e) {
 			return;
 		}
-	}, [props.inTest]);
+	}, []);
 
 	useEffect(() => {
 		if (nextQuestionLoaded) {
@@ -135,7 +133,7 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const checkIfTestShouldContinue = (number: number):boolean =>  {
-		if (props.testSettings.testType === TestType.Amount && number >= (props.testSettings.testTypeObject as AmountSettingsObject).amount) {
+		if (settings.testType === TestType.Amount && number >= (settings.testTypeObject as AmountSettingsObject).amount) {
 			return false;
 		}
 
@@ -184,7 +182,7 @@ const TestForm = (props: TestFormProps) => {
 
 		setNextQuestionLoaded(false);
 		
-		const endpoint = ROOT_ENDPOINT + "/question/" + props.userId;
+		const endpoint = ROOT_ENDPOINT + "/question/" + userId;
 		fetch(endpoint)
 			.then((response: Response) => {
 				if (response.status === 200) {
@@ -270,7 +268,7 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const quitTest = () => {
-		props.quitHandler();
+		dispatch(setTestState(InTestState.False));	
 	};
 
 	const setAnswerInput = (newAnswerInput: string, valid: boolean) => {
@@ -279,8 +277,8 @@ const TestForm = (props: TestFormProps) => {
 	};
 
 	const getTotalQuestions = (): string => {
-		if (props.testSettings.testType === TestType.Amount) {
-			return String((props.testSettings.testTypeObject as AmountSettingsObject).amount);
+		if (settings.testType === TestType.Amount) {
+			return String((settings.testTypeObject as AmountSettingsObject).amount);
 		}
 
 		return "∞";
@@ -336,7 +334,7 @@ const TestForm = (props: TestFormProps) => {
 		<Box sx={{ p: 1, border: "1px solid black", borderRadius: 2 }}>
 			<form className="form test-form" onSubmit={ handleSubmit } ref={ formRef }>
 				<FormControl component="fieldset" variant="standard" className="test-form-fieldset">
-					<FormLabel component="legend" className="form-title">{ getTestTypeName(props.testSettings.testType) }</FormLabel>
+					<FormLabel component="legend" className="form-title">{ getTestTypeName(settings.testType) }</FormLabel>
 					{errorOccurred !== "" && <div>
 						<p>Sorry, an error has occurred</p>
 						<p>Error Code: {errorOccurred}</p>
@@ -348,7 +346,7 @@ const TestForm = (props: TestFormProps) => {
 						{testFinished && <div>
 							<div className="fixed-size-area">
 								<div className="line-break-large"></div>
-								<p>Total Correct: { answeredCorrectlyTotal + ((props.testSettings.testType === TestType.Amount)? ("/" + getTotalQuestions()) : "") }</p>
+								<p>Total Correct: { answeredCorrectlyTotal + ((settings.testType === TestType.Amount)? ("/" + getTotalQuestions()) : "") }</p>
 							</div>
 							<div className="form-button-row">
 								<Button variant="outlined" type="button" className="button-primary" onClick={ quitTest }>Quit</Button>
@@ -365,8 +363,8 @@ const TestForm = (props: TestFormProps) => {
 								{!shouldCondenseQuestionNumbers() && <span>
 									<p>Question: {questionNumber}/{getTotalQuestions()}</p>
 								</span>}
-								{props.testSettings.testType === TestType.Timed &&
-									<Timer startingTime={ (props.testSettings.testTypeObject as TimedSettingsObject).time } runTimer={ questionLoaded && !showAnswerResult} timeUpFunction={ finishTest }></Timer>
+								{settings.testType === TestType.Timed &&
+									<Timer startingTime={ (settings.testTypeObject as TimedSettingsObject).time } runTimer={ questionLoaded && !showAnswerResult} timeUpFunction={ finishTest }></Timer>
 								}
 								{shouldCondenseQuestionNumbers() && <span>
 									<p>Correct:</p>

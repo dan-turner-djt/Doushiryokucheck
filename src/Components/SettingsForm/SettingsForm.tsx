@@ -5,43 +5,23 @@ import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHe
 import { AuxFormData, AuxFormDisplayNames, AuxFormNames, FormNames, VerbFormData, VerbFormDisplayNames, VerbFormSubTypeDisplayNames, WithNegativeForms, WithNegativePoliteForms, WithPlainForms, WithPoliteForms } from "../../Verb/VerbFormDefs";
 import useMeasure from "react-use-measure";
 import { ROOT_ENDPOINT } from "../../Connection/settings";
-
-export type SettingsFormProps = {
-  initialSettings: SettingsObject;
-  submitHandler: (newSettings: SettingsObject) => void;
-}
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
+import { setSettings } from "../../Redux/Settings/settingsActions";
+import { setTestState } from "../../Redux/Test/testActions";
+import { InTestState } from "../../Redux/Test/testReducer";
 
 const enum LoadState {
 	Loading, Loaded, Error
 }
 
-const SettingsForm = (props: SettingsFormProps) => {
+const SettingsForm = () => {
+	const dispatch = useDispatch();
+	const savedSettings: SettingsObject = useSelector((state: RootState) => state.settings.currentSettings);
+	const userId: number = useSelector((state: RootState) => state.settings.userId);
+
 	const [loadState, setLoadState] = useState<LoadState>(LoadState.Loading);
-
-	useEffect(() => {
-		const endpoint = ROOT_ENDPOINT + "/checkLive";
-		fetch(endpoint)
-			.then((response: Response) => {
-				if (response.status === 200) {
-					return response.json();
-				}
-				throw new Error(response.status.toString());
-			})
-			.then((data) => {
-				if (data.isLive === true) {
-					setLoadState(LoadState.Loaded);
-					setNewSettings(props.initialSettings);
-					return;
-				}
-				setLoadState(LoadState.Error);
-			})
-			.catch((err) => {
-				console.log(err);
-				setLoadState(LoadState.Error);
-			});
-	}, []);
-
-	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(props.initialSettings);
+	const [currentSettings, setCurrentSettings] = useState<SettingsObject>(DefaultSettings);
 
 	const [formRef, { width }] = useMeasure();
 	const [formWidth, setFormWidth] = useState<number>(1920);
@@ -152,6 +132,47 @@ const SettingsForm = (props: SettingsFormProps) => {
 	const vfaInputRef = useRef<HTMLInputElement>(null);
 	const vfaExclusiveInputRef = useRef<HTMLInputElement>(null);
 
+	const setNewSettings = (newSettings: SettingsObject) => {
+		setCurrentSettings(newSettings);
+
+		fieldData.wordAmount.staticData.startingValue = (newSettings.testTypeObject as AmountSettingsObject)?.amount;
+		fieldData.timeLimit.staticData.startingValue = (newSettings.testTypeObject as TimedSettingsObject)?.time;
+
+		for (const [key, value] of Object.entries(fieldData)) {
+			value.ref.current?.resetValue();
+			value.valid = true;
+			setFieldData({...fieldData, [key]: value});
+		}
+
+		setVerbLevelData(newSettings.verbLevel);
+		setVerbTypeData(newSettings.verbType);
+		setVerbFormData(newSettings.verbForms);
+		setAuxFormData(newSettings.auxForms);
+	};
+
+	useEffect(() => {
+		const endpoint = ROOT_ENDPOINT + "/checkLive";
+		fetch(endpoint)
+			.then((response: Response) => {
+				if (response.status === 200) {
+					return response.json();
+				}
+				throw new Error(response.status.toString());
+			})
+			.then((data) => {
+				if (data.isLive === true) {
+					setLoadState(LoadState.Loaded);
+					setNewSettings(savedSettings);
+					return;
+				}
+				setLoadState(LoadState.Error);
+			})
+			.catch((err) => {
+				console.log(err);
+				setLoadState(LoadState.Error);
+			});
+	}, []);
+
 	useEffect(() => {
 		setCurrentSettings({...currentSettings, verbType: verbTypeData});
 	}, [verbTypeData]);
@@ -206,11 +227,43 @@ const SettingsForm = (props: SettingsFormProps) => {
 			}
 
 			// Form is valid, submit
-			props.submitHandler(currentSettings);
+			dispatch(setSettings(currentSettings));
+			submitSettings();
 		} else {
 			if (firstInvalidField.current) {
 				firstInvalidField.current.giveFocus();
 			}
+		}
+	};
+
+	const submitSettings = () => {
+		dispatch(setTestState(InTestState.Loading));
+
+		try {
+			const content = {settings: currentSettings};
+
+			const endpoint = ROOT_ENDPOINT + "/settings/" + userId;
+			fetch(endpoint, {
+				method: "POST",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(content)
+			})
+				.then((response: Response) => {
+					if (response.status !== 200) {
+						throw new Error(response.status.toString());
+					}
+
+					dispatch(setTestState(InTestState.True));
+				})
+				.catch((err) => {
+					console.log(err);
+					dispatch(setTestState(InTestState.Error));
+				});
+		} catch (e) {
+			dispatch(setTestState(InTestState.Error));
 		}
 	};
 
@@ -248,24 +301,6 @@ const SettingsForm = (props: SettingsFormProps) => {
 
 	const handleRestoreDefaults = () => {
 		setNewSettings(DefaultSettings);
-	};
-
-	const setNewSettings = (newSettings: SettingsObject) => {
-		setCurrentSettings(newSettings);
-
-		fieldData.wordAmount.staticData.startingValue = (newSettings.testTypeObject as AmountSettingsObject).amount;
-		fieldData.timeLimit.staticData.startingValue = (newSettings.testTypeObject as TimedSettingsObject).time;
-
-		for (const [key, value] of Object.entries(fieldData)) {
-			value.ref.current?.resetValue();
-			value.valid = true;
-			setFieldData({...fieldData, [key]: value});
-		}
-
-		setVerbLevelData(newSettings.verbLevel);
-		setVerbTypeData(newSettings.verbType);
-		setVerbFormData(newSettings.verbForms);
-		setAuxFormData(newSettings.auxForms);
 	};
 
 	const handleVtChange = (e: ChangeEvent<HTMLInputElement>) => {
