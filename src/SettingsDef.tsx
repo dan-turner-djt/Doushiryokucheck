@@ -17,7 +17,7 @@ export type TimedSettingsObject = {
 }
 
 export type SettingsObject = {
-  testType: TestType
+  testType: TestType,
   testTypeObject: AmountSettingsObject | EndlessSettingsObject | TimedSettingsObject,
 	verbType: {
 		vtIchidan: boolean,

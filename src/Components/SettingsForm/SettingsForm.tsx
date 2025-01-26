@@ -144,6 +144,9 @@ const SettingsForm = () => {
 			setFieldData({...fieldData, [key]: value});
 		}
 
+		fieldData.wordAmount.staticData.startingValue = DefaultAmountSettings.amount;
+		fieldData.timeLimit.staticData.startingValue = DefaultTimedSettings.time;
+
 		setVerbLevelData(newSettings.verbLevel);
 		setVerbTypeData(newSettings.verbType);
 		setVerbFormData(newSettings.verbForms);
@@ -280,22 +283,21 @@ const SettingsForm = () => {
 	};
 
 	const handleTestTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setCurrentSettings({...currentSettings, testType: Number(e.target.value), testTypeObject: getTestTypeDefaultSettings(Number(e.target.value))});
+		const testType = Number(e.target.value);
+		const newTestTypeObject = getTestTypeDefaultSettings(testType);
+		setCurrentSettings({...currentSettings, testType: testType, testTypeObject: newTestTypeObject});
 
-		// Reset these fields' validity which belong to test type sub settings
-		setFieldData({...fieldData, 
-			wordAmount: {...fieldData.wordAmount, valid: true}, 
-			timeLimit: {...fieldData.timeLimit, valid: true}
-		});
+		wordAmountRef.current?.resetValue();
+		timeLimitRef.current?.resetValue();
 	};
 
 	const setNewWordAmount = (newWordAmount: string, valid: boolean) => {
-		setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, amount: newWordAmount}});
+		setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, amount: Number(newWordAmount)}});
 		setFieldData({...fieldData, wordAmount: {...fieldData.wordAmount, valid: valid}});
 	};
 
 	const setNewTime = (newTime: string, valid: boolean) => {
-		setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, time: newTime}});
+		setCurrentSettings({...currentSettings, testTypeObject: {...currentSettings.testTypeObject, time: Number(newTime)}});
 		setFieldData({...fieldData, timeLimit: {...fieldData.timeLimit, valid: valid}});
 	};
 
@@ -1110,7 +1112,7 @@ const SettingsForm = () => {
 								</TextField>
 							</div>
 							<div className="type-sub-form">
-								{currentSettings.testType === TestType.Amount && <div className="amount-sub-form">
+								{currentSettings.testType === TestType.Amount && currentSettings.testTypeObject && <div className="amount-sub-form">
 									<Field
 										type={ FieldType.Number }
 										ref={ wordAmountRef }
