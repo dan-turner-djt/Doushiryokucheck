@@ -1,5 +1,6 @@
 import { VerbInfo, VerbType } from "jv-conjugator";
 import { saveAs } from "file-saver";
+import { ROOT_ENDPOINT } from "../Connection/settings";
 
 export function convertFiles() {
 	convertSingleFile(5, "godan");
@@ -113,4 +114,24 @@ function checkContainsLowerLevels(level: number, list: string[]): boolean {
 	}
 	
 	return false;
+}
+
+export function sendConvertRequest() {
+	const endpoint = ROOT_ENDPOINT + "/convert";
+	fetch(endpoint, {
+		method: "POST",
+		headers: {
+			"Accept": "application/json",
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({type: 0})
+	})
+		.then((response: Response) => {
+			if (response.status !== 200) {
+				throw new Error(response.status.toString());
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 }
